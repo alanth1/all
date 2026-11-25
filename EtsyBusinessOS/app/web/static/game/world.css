@@ -51,3 +51,4 @@ h3{font:12px Pix;color:#c4b5fd;letter-spacing:.08em}
 @keyframes pop{from{transform:scale(.6)}}@keyframes blink{50%{opacity:.2}}@keyframes bob{50%{margin-top:-3px}}@keyframes zz{0%{opacity:0;margin-top:0}50%{opacity:1}100%{opacity:0;margin-top:-14px}}
 @keyframes flick{0%,100%{opacity:1}45%{opacity:.4}50%{opacity:1}55%{opacity:.3}}@keyframes slide{from{opacity:0;transform:translateX(40px)}}@keyframes slidein{from{transform:translateX(60px);opacity:.4}}
 @media (min-width:2200px){#hud,#toasts,#tip,#hint,.pwin{zoom:1.35}}@media (min-width:3200px){#hud,#toasts,#tip,#hint,.pwin{zoom:1.8}}
+.npc-icon.pop{background:none!important;border:0!important;box-shadow:none!important;font-size:18px;display:block!important;animation:none}

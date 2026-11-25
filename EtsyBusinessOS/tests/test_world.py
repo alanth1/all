@@ -44,12 +44,13 @@ def test_world_page_and_assets(env):
     assets = game_assets()
     with TestClient(app) as c:
         r = c.get("/")
-        assert r.status_code == 200 and "phaser.min.js" in r.text and "window.AGENTS_META" in r.text
+        assert r.status_code == 200 and "hq3d.js" in r.text and "window.AGENTS_META" in r.text
+        assert "phaser.min.js" in c.get("/hq2d").text
         assert c.get("/dashboard").status_code == 200
         j = c.get("/api/world?since=0").json()
         assert len(j["agents"]) == 10
         assert len(c.get("/api/world/banter").json()) == 2
-        assert c.get("/static/game/hq.js").status_code == 200
+        assert c.get("/static/game3d/hq3d.js").status_code == 200
         if assets["npc"]:
             name, a = next(iter(assets["npc"].items()))
             assert len(a["rot"]) == 8
