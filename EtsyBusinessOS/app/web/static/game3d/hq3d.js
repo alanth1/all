@@ -10,17 +10,17 @@ const rnd = (a, b) => a + Math.random() * (b - a), pick = a => a[Math.floor(Math
 // ================================================================== renderer + pixel-art post process
 const host = document.getElementById('game');
 const renderer = new THREE.WebGLRenderer({ antialias: false });
-renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 2.3;
+renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.NeutralToneMapping; renderer.toneMappingExposure = 1.5;
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 host.appendChild(renderer.domElement); renderer.domElement.style.cssText = 'width:100%;height:100%;display:block;image-rendering:pixelated';
 const scene = new THREE.Scene();
-let PIX = Q.has('pix') ? +Q.get('pix') : 3, zoom = 1.25, rt;
+let PIX = Q.has('pix') ? +Q.get('pix') : 3, zoom = 1.45, rt;
 const cam = new THREE.OrthographicCamera(-1, 1, 1, -1, -200, 400);
 cam.position.set(30, 25, 30); cam.lookAt(W / 2, H * .92, D / 2);
 const PAL = ['#06092a', '#111129', '#162247', '#292c57', '#2d4e7d', '#313969', '#3b5389', '#4073a1', '#4f5791', '#6190ba', '#6376a9', '#8fd0e4',
   '#67e8f9', '#c084fc', '#f472b6', '#e0f2fe', '#4ade80', '#facc15', '#ef4444', '#fb923c', '#f1c27d', '#a16207', '#7c3aed', '#1e1b4b'].map(c => new THREE.Color(c));
 const post = new THREE.ShaderMaterial({
-  uniforms: { tColor: { value: null }, tDepth: { value: null }, res: { value: new THREE.Vector2() }, pal: { value: PAL }, palMix: { value: Q.has("nopal") ? 0 : .35 } },
+  uniforms: { tColor: { value: null }, tDepth: { value: null }, res: { value: new THREE.Vector2() }, pal: { value: PAL }, palMix: { value: Q.has("nopal") ? 0 : .22 } },
   vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0., 1.); }',
   fragmentShader: `
     uniform sampler2D tColor; uniform sampler2D tDepth; uniform vec2 res; uniform vec3 pal[24]; uniform float palMix; varying vec2 vUv;
@@ -55,14 +55,14 @@ addEventListener('pointermove', e => {
   if (!drag || !(e.buttons & 1)) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y; if (Math.abs(dx) + Math.abs(dy) > 4) drag.moved = true;
   const s = (cam.top - cam.bottom) / host.clientHeight; cam.position.copy(drag.p).addScaledVector(new THREE.Vector3(1, 0, -1).normalize(), -dx * s).addScaledVector(new THREE.Vector3(-1, 2, -1).normalize(), dy * s * .9);
 });
-scene.background = new THREE.Color(0x0e0d24);   // plain dark backdrop like the reference
+scene.background = new THREE.Color(0x1a1838);   // plain dark backdrop like the reference
 
 // ================================================================== materials / helpers
 const M = (c, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: .8, metalness: .05, ...o });
 const E = c => new THREE.MeshBasicMaterial({ color: c });
 const mats = {
-  wallL: M(0x34336a), wallR: M(0x2b3770), floor: M(0x55669e, { roughness: .45, metalness: .25 }), slab: M(0x1c1b3c), frame: M(0x232248), trim: M(0x121126),
-  desk: M(0x3a3866), deskTop: M(0x56548c), metal: M(0x7c86a6, { metalness: .5, roughness: .4 }), dark: M(0x161530),
+  wallL: M(0x6b6aa6), wallR: M(0x5e6aa8), floor: M(0x8f97c4, { roughness: .35, metalness: .2 }), slab: M(0x1c1b3c), frame: M(0x232248), trim: M(0x121126),
+  desk: M(0x55528e), deskTop: M(0x7a76b4), metal: M(0x7c86a6, { metalness: .5, roughness: .4 }), dark: M(0x161530),
   glass: new THREE.MeshPhysicalMaterial({ color: 0xa5d8ff, transparent: true, opacity: .22, roughness: .05, depthWrite: false }),
   cyan: E(0x67e8f9), purple: E(0xc084fc), pink: E(0xf472b6),
 };
@@ -73,11 +73,11 @@ function ctex(w, h, draw) { const c = document.createElement('canvas'); c.width 
 const plane = (w, h, t, x, y, z, ry = 0) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: t, transparent: true })); m.position.set(x, y, z); m.rotation.y = ry; scene.add(m); return m; };
 
 // ================================================================== lights
-scene.add(new THREE.HemisphereLight(0xb4c2ff, 0x3a2a60, 1.6));
+scene.add(new THREE.HemisphereLight(0xc8d0ff, 0x5a4a90, 2.2));
 const key = new THREE.DirectionalLight(0xb9c6ff, .7); key.position.set(16, 28, 12); key.castShadow = true; key.shadow.mapSize.set(2048, 2048);
 Object.assign(key.shadow.camera, { left: -14, right: 14, top: 14, bottom: -14 }); key.target.position.set(W / 2, 0, D / 2); scene.add(key, key.target);
 for (const [x, y, z, c, i] of [[3, H - .6, 2, 0x67e8f9, 30], [8, H - .6, 2, 0xc084fc, 26], [3, 2 * H - .6, 2, 0x67e8f9, 30], [8, 2 * H - .6, 2, 0xc084fc, 26], [8, H - 1, 7, 0x67e8f9, 22], [3, H - 1, 8, 0xa78bfa, 18]]) {
-  const l = new THREE.PointLight(c, i, 11, 1.5); l.position.set(x, y, z); scene.add(l);
+  const l = new THREE.PointLight(new THREE.Color(c).lerp(new THREE.Color(0xd8dcff), .55), i * .7, 11, 1.5); l.position.set(x, y, z); scene.add(l);
 }
 
 // ================================================================== city seen only through the windows
@@ -131,7 +131,7 @@ const screens = [], leds = [], spin = [];
 function monitor(p, x, y, z, w = .8) {
   const g = new THREE.Group(); g.position.set(x, y, z); p.add(g);
   box(.05, .48, w, mats.dark, 0, .14, 0, g); box(.14, .14, .1, mats.metal, .06, 0, 0, g);
-  const t = ctex(32, 20, c => { c.fillStyle = '#0a1a33'; c.fillRect(0, 0, 32, 20); });
+  const t = ctex(32, 20, c => { c.fillStyle = '#1d5a8a'; c.fillRect(0, 0, 32, 20); });
   const s = new THREE.Mesh(new THREE.PlaneGeometry(w * .9, .42), new THREE.MeshBasicMaterial({ map: t })); s.rotation.y = Math.PI / 2; s.position.set(.03, .38, 0); g.add(s);
   screens.push({ t, owner: p.userData.owner });
 }
@@ -212,6 +212,24 @@ plant(.5, 0, 9.4); block('l', .2, 9.1, .8, 9.7);
 crate(10.9, 0, 9.2); crate(10.2, 0, 9.5); block('l', 9.7, 8.8, 11.4, 9.9);
 const rug = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 2.4), M(0x5b21b6, { roughness: 1 })); rug.rotation.x = -Math.PI / 2; rug.position.set(6.4, .04, 7.6); rug.receiveShadow = true; scene.add(rug);
 bean(5.7, 0, 8.3, 0x0d9488); bean(7.1, 0, 8.6, 0x7c3aed); block('l', 5, 7.6, 7.8, 9.3);
+
+// ---- extra density (desk clusters like the reference)
+function glow(x, y, z) { const l = new THREE.PointLight(0xbfe9ff, 3, 3, 1.5); l.position.set(x, y, z); scene.add(l); }
+for (const [x, y, z] of [[.9, U + 1.3, 3], [6.1, U + 1.3, .9], [8.9, U + 1.3, .9], [8.1, 1.3, .9], [.9, 1.3, 7.4]]) glow(x, y, z);
+// lower centre cluster: two rows of back-to-back desks with chairs
+for (const [z, ry, cz] of [[4.6, -Math.PI / 2, 5.7], [6.4, Math.PI / 2, 5.3]]) for (const x of [6.6, 9.2]) {
+  deskUnit(x, 0, z, ry, null, Math.random() < .5 ? 3 : 2, 2.4); gamingChair(x, 0, z === 4.6 ? 3.5 : 7.5, z === 4.6 ? Math.PI / 2 : -Math.PI / 2, pick([0x3730a3, 0x1e3a8a, 0x4c1d95]));
+}
+block('l', 5.3, 4.05, 10.5, 6.95); glow(7.9, 1.4, 5.5);
+// upper right second row
+deskUnit(6.4, U, 2.6, Math.PI / 2, null, 2, 2.4); block('u', 5.1, 2.05, 7.7, 3.15);
+// wall clutter
+for (let k = 0; k < 6; k++) poster(U + 1.9 + (k % 2) * .8, 5.2 + k * .55, .42, .55);
+for (let k = 0; k < 4; k++) poster(2.2 + (k % 2) * .7, 4.6 + k * .6, .42, .55);
+wallScreen(U + 3.4, 5.6, 1.4, .8); wallScreen(3.7, 2.1, 1.3, .7);
+hangingPlant(.4, 3.9, 9.2); hangingPlant(.4, U + 3.9, 9.4);
+for (const [x, z] of [[3.4, 3.4], [5.1, 2.6], [11, 6.2]]) crate(x, 0, z); block('l', 3.1, 3.1, 3.7, 3.7); block('l', 4.8, 2.3, 5.4, 2.9); block('l', 10.7, 5.9, 11.3, 6.5);
+cableLine([[5.5, 3.8], [6.5, 3.4], [8, 3.6], [9.5, 3.4]], 0); cableLine([[3, 6], [4.2, 6.6], [5.2, 6.3]], 0);
 
 // ================================================================== lift
 const LIFT = { x: 11.1, z: 2.4 };
@@ -345,7 +363,7 @@ renderer.setAnimationLoop(() => {
   if (ct > .1) { drawCity(ct); ct = 0; }
   if (ft > .18) { ft = 0;
     for (const s of screens) { const c = s.t.userData.c, g = c.getContext('2d'), w = c.width, h = c.height, busy = s.kind || !s.owner || ['working', 'queued'].includes(npcs[s.owner]?.server.status);
-      g.fillStyle = '#0a1a33'; g.fillRect(0, 0, w, h); for (let k = 0; k < Math.floor(h / 4); k++) { if (Math.random() < (busy ? .25 : .7)) continue; g.fillStyle = pick(['#67e8f9', '#4ade80', '#a78bfa', '#8fd0e4']); g.fillRect(2, 2 + k * 4, rnd(4, w - 4), 2); } s.t.needsUpdate = true; }
+      g.fillStyle = '#2a6ea0'; g.fillRect(0, 0, w, h); for (let k = 0; k < Math.floor(h / 4); k++) { if (Math.random() < (busy ? .25 : .7)) continue; g.fillStyle = pick(['#e0f7ff', '#a5f3fc', '#c4b5fd', '#bbf7d0']); g.fillRect(2, 2 + k * 4, rnd(4, w - 4), 2); } s.t.needsUpdate = true; }
     for (const l of leds) l.visible = Math.random() > .25; }
   for (const s of spin) s.rotation.y += dt * .8;
   for (const n of Object.values(npcs)) n.update(dt);
