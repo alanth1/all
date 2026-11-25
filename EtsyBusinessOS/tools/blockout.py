@@ -27,34 +27,34 @@ def box(d, lv, u, v, a, b, h, top, left, right, line=(10, 10, 20)):
 
 
 FLOOR_U = [(0, 0), (10, 0), (10, 3.6), (4.5, 3.6), (4.5, 10), (0, 10)]
-LIFT = (7.4, 0, 2.6, 3.6)
+LIFT = (8.4, 0, 1.6, 1.8)
 # walkways (rectangles in grid units u0,v0,u1,v1)
 WALK = {
-    "l": [(1.6, 4.4, 9.9, 5.8), (1.6, 4.4, 3.0, 10), (7.0, 3.6, 9.0, 5.8), (8.2, 5.4, 10, 7.0)],
-    "u": [(2.0, 1.6, 7.4, 3.0), (2.0, 1.6, 3.4, 10)],
+    "l": [(1.8, 2.2, 10, 3.6), (1.8, 2.2, 3.2, 10), (8.4, 1.8, 10, 3.6), (3.2, 5.6, 10, 7.0)],
+    "u": [(2.0, 1.8, 10, 3.2), (2.0, 1.8, 3.4, 10)],
 }
-DOORS = {"l": [(2.3, 10, "v"), (10, 6.2, "u")]}   # bridge doors: left side (front-left edge) and right side
+DOORS = {"l": [(2.5, 10, "v"), (10, 6.3, "u")]}   # bridge doors: left side (front-left edge) and right side
 
 # Desks: (u, v, a, b, wall, label); seat is in front of the desk (back of the NPC to the camera)
 TOWERS = {
-    1: {"u": [("COMMAND DECK", [(0, 1.2, 1.4, 3.2, "L", "KAI-07 desk (3 monitors)")], [(0.2, 6.2, 1.4, 1.4, "holo table"), (0, 8.4, .9, 1.6, "bookshelf")]),
-              ("RESEARCH LAB", [(4.6, 0, 2.6, 1.4, "R", "RAZE-11 desk")], [(3.0, 0, 1.2, .6, "whiteboard")])],
-        "l": [("SERVER ROOM", [(0.0, 0.0, 1.0, 1.2, "-", "rack"), (0.0, 1.3, 1.0, 1.2, "-", "rack"), (0.0, 2.6, 1.0, 1.2, "-", "rack"), (1.2, 0, 2.6, 1.3, "R", "ZERO-1 desk")], [(0, 6.4, 1.2, 1.6, "cooling unit")]),
-              ("ARCHIVE", [(4.4, 0, 2.6, 1.3, "R", "SABLE-6 desk")], [(4.2, 6.4, 1.2, 1.2, "cabinet"), (5.6, 6.4, 1.2, 1.2, "cabinet"), (6.4, 7.6, 2.4, 1.0, "shelves"), (4.0, 8.4, 1.4, 1.2, "boxes")])]},
-    2: {"u": [("WRITERS STUDIO", [(0, 1.6, 1.4, 3.0, "L", "JUNO-X9 desk")], [(0, 6.0, .8, 2.4, "bookshelf"), (0.2, 8.6, 1.4, 1.2, "bean bag")]),
-              ("QA BAY", [(4.6, 0, 2.6, 1.4, "R", "VOLT-3 desk")], [(3.2, 0, 1.2, 1.4, "scanner arch")])],
-        "l": [("SHOP FLOOR", [(1.2, 0, 2.6, 1.3, "R", "NYX-21 desk + approval button")], [(0, 0, 1.0, 1.0, "plant"), (0, 6.4, 1.2, 2.6, "shop counter"), (4.0, 7.2, 2.2, 1.3, "packing table")]),
-              ("FINANCE VAULT", [(4.4, 0, 2.6, 1.3, "R", "KADE-12 desk")], [(7.4, 7.2, 1.4, 1.4, "safe"), (5.4, 7.4, 1.4, 1.0, "gold coins"), (9.6, 8.0, .4, 1.8, "vault door (wall)")])]},
-    3: {"u": [("GROWTH STUDIO", [(0, 1.6, 1.4, 2.8, "L", "HEX-04 desk")], [(0, 6.2, .4, 2.4, "green screen"), (0.8, 8.6, 1.2, 1.2, "ring light + camera")]),
-              ("DATA ROOM", [(4.6, 0, 2.6, 1.4, "R", "ORIN-88 desk")], [(3.2, 0, 1.2, .5, "dashboard wall")])],
-        "l": [("LOUNGE & PANTRY", [], [(0, 0, 1.2, 1.2, "vending"), (0, 1.3, 1.0, 1.0, "coffee"), (0, 2.4, 1.0, 1.0, "fridge+microwave"), (1.2, 0, 1.2, 1.0, "arcade blue"), (2.6, 0, 1.2, 1.0, "arcade pink"),
-                                         (3.6, 6.4, 2.6, 1.2, "couch"), (4.0, 7.8, 1.6, 1.0, "coffee table"), (0.4, 6.8, 1.0, 1.0, "bean bag"), (0.4, 8.4, 1.0, 1.0, "bean bag"), (6.4, 7.6, 3.0, 1.8, "ping-pong")])]},
+    1: {"u": [("COMMAND DECK", [(0, 3.6, 1.2, 3.0, "L", "KAI-07 desk")], [(0, 0, .9, 1.6, "bookshelf"), (0, 7.4, .9, 1.4, "holo table (low)")]),
+              ("RESEARCH LAB", [(4.6, 0, 2.6, 1.2, "R", "RAZE-11 desk")], [(2.6, 0, 1.6, .6, "whiteboard")])],
+        "l": [("SERVER ROOM", [(0, 0, .9, 1.0, "-", "rack"), (1.0, 0, .9, 1.0, "-", "rack"), (0, 4.0, 1.2, 3.0, "L", "ZERO-1 desk")], [(0, 1.1, .9, 1.0, "rack"), (0, 8.0, 1.0, 1.4, "cooling unit")]),
+              ("ARCHIVE", [(4.6, 0, 2.6, 1.2, "R", "SABLE-6 desk")], [(2.2, 0, 1.0, .9, "cabinet"), (3.3, 0, 1.0, .9, "cabinet"), (7.8, 8.0, 1.6, 1.0, "boxes (low)")])]},
+    2: {"u": [("WRITERS STUDIO", [(0, 3.6, 1.2, 3.0, "L", "JUNO-X9 desk")], [(0, 0, .8, 2.4, "bookshelf"), (0, 7.6, 1.2, 1.2, "bean bag (low)")]),
+              ("QA BAY", [(4.6, 0, 2.6, 1.2, "R", "VOLT-3 desk")], [(2.6, 0, 1.6, .9, "scanner arch")])],
+        "l": [("SHOP FLOOR", [(0, 4.0, 1.2, 3.0, "L", "NYX-21 desk + approval button")], [(0, 0, 1.0, 2.4, "shop counter"), (4.2, 8.0, 2.2, 1.2, "packing table (low)")]),
+              ("FINANCE VAULT", [(4.6, 0, 2.6, 1.2, "R", "KADE-12 desk")], [(2.2, 0, 1.4, .3, "vault door (wall)"), (3.4, .2, 1.0, .9, "safe"), (7.6, 8.0, 1.4, 1.0, "gold coins (low)")])]},
+    3: {"u": [("GROWTH STUDIO", [(0, 3.6, 1.2, 3.0, "L", "HEX-04 desk")], [(0, 0, .3, 2.6, "green screen"), (0, 7.6, 1.2, 1.2, "bean bag (low)")]),
+              ("DATA ROOM", [(4.6, 0, 2.6, 1.2, "R", "ORIN-88 desk")], [(2.6, 0, 1.6, .3, "dashboard wall")])],
+        "l": [("LOUNGE & PANTRY", [], [(0, 0, 1.0, 1.0, "vending"), (0, 1.1, .9, .9, "coffee"), (1.1, 0, 1.0, .9, "fridge"), (2.3, 0, 1.0, .9, "arcade blue"), (3.5, 0, 1.0, .9, "arcade pink"),
+                                         (0, 4.0, 1.2, 2.6, "couch (low)"), (1.6, 4.4, 1.0, 1.8, "coffee table (low)"), (4.4, 8.0, 1.2, 1.2, "bean bag (low)"), (6.0, 8.2, 1.2, 1.2, "bean bag (low)"), (6.6, 3.8, 2.6, 1.4, "ping-pong (low)")])]},
 }
 
 
 def seat_of(d):
     u, v, a, b, wall, _ = d
-    return (u + a / 2, v + b + .8) if wall == "R" else (u + a + .8, v + b / 2) if wall == "L" else None
+    return (u + a / 2, v + b + .7) if wall == "R" else (u + a + .7, v + b / 2) if wall == "L" else None
 
 
 def render(t, annotated):
@@ -121,7 +121,7 @@ def render(t, annotated):
                     x, y = P(lv, u + a / 2, v + b / 2, hh + 90); d.text((x - 60, y), label, fill=(255, 255, 255), font=font)
             else:
                 u, v, a, b, label = it
-                box(d, lv, u, v, a, b, 90 if any(k in label for k in ("bean", "table", "coins", "ping")) else 160, (150, 140, 170), (110, 100, 130), (90, 80, 110))
+                box(d, lv, u, v, a, b, 60 if "(low)" in label else 160, (150, 140, 170), (110, 100, 130), (90, 80, 110))
                 if annotated:
                     x, y = P(lv, u + a / 2, v + b / 2, 190); d.text((x - 40, y), label, fill=(220, 220, 240), font=font)
     # mezzanine glass railing (front edges of the upper level)
