@@ -341,41 +341,27 @@ const MK = (() => { const g = new THREE.Group(); scene.add(g);
   pLight(C.mag, 320, 46, -2, 22, 10, scene); pLight(0x6a8cff, 220, 40, -30, 14, 8, scene); pLight(C.cyan, 200, 30, -10, 8, 8, scene); const core = pLight(C.cyan, 12, 10, 2.4, 9, 3.5, g);
   g.position.set(-16.5, 0, -5); g.scale.setScalar(1.05);
   let nextRoar = now() + rnd(9000, 14000), roarT = -1;
-  return { g, update(dt, t) { const br = Math.sin(t * 1.3); head.rotation.z = Math.sin(t * .7) * .04 + (roarT >= 0 ? .2 : 0); tail.rotation.y = Math.sin(t * .8) * .08; tail.rotation.z = Math.sin(t * .6) * .03;
-      legs[0].rotation.z = Math.sin(t * .5) * .05; legs[1].rotation.z = -Math.sin(t * .5) * .05; g.position.x = -16.5 + Math.sin(t * .1) * .8; g.position.y = br * .04;
-      if (now() > nextRoar && !Q.has('noevents')) { nextRoar = now() + rnd(16000, 26000); roarT = 0; Sound.roar(); shake = .4; }
+  let st = 'away', stT = 0, awaySince = now() - 20000, X = -52; g.visible = false;
+  return { g, get here() { return st !== 'away'; }, update(dt, t) { const br = Math.sin(t * 1.3); stT += dt;
+      if (st === 'away') { if (!SkyEvents.ev && now() - awaySince > 15000 && !Q.has('noevents')) { st = 'in'; stT = 0; g.visible = true; X = -52; g.rotation.y = 0; toast('⚠ Kaiju mekanik mendekat dari distrik barat'); Sound.step(); } }
+      else if (st === 'in') { X += 4.2 * dt; if (X >= -16.5) { X = -16.5; st = 'stay'; stT = 0; nextRoar = now() + 1500; } }
+      else if (st === 'stay') { if (stT > rnd(38, 40)) { st = 'out'; stT = 0; g.rotation.y = Math.PI; } }
+      else if (st === 'out') { X -= 4.2 * dt; if (X < -60) { st = 'away'; g.visible = false; awaySince = now(); } }
+      const walking = st === 'in' || st === 'out'; if (walking && Math.floor(t * 1.4) !== this._s) { this._s = Math.floor(t * 1.4); shake = Math.max(shake, .3); Sound.step(); } head.rotation.z = Math.sin(t * .7) * .04 + (roarT >= 0 ? .2 : 0); tail.rotation.y = Math.sin(t * .8) * .08; tail.rotation.z = Math.sin(t * .6) * .03;
+      const sw = walking ? .38 : .05, sp2 = walking ? 2.2 : .5; legs[0].rotation.z = Math.sin(t * sp2 * 2) * sw; legs[1].rotation.z = -Math.sin(t * sp2 * 2) * sw; g.position.x = X; g.position.y = br * .04 + (walking ? Math.abs(Math.sin(t * sp2 * 2)) * .3 : 0);
+      if (st === 'stay' && now() > nextRoar && !Q.has('noevents')) { nextRoar = now() + rnd(16000, 26000); roarT = 0; Sound.roar(); shake = .4; }
       if (roarT >= 0) { roarT += dt; const op = Math.min(1, roarT * 3) * (roarT > 2.4 ? Math.max(0, 1 - (roarT - 2.4) * 3) : 1); jaw.rotation.z = -.55 * op; mouthLight.intensity = 30 * op; mouth.visible = op > .2; if (roarT > 2.8) roarT = -1; }
       else { jaw.rotation.z = -.04 - Math.max(0, Math.sin(t * .6)) * .07; mouthLight.intensity = 0; mouth.visible = false; } core.intensity = 12 + Math.sin(t * 3) * 4; } };
 })();
 // holographic shark (bites over the street) + koi swimming in the sky + face posters + left billboard
 const holoMat = (c, o = .55) => new THREE.MeshBasicMaterial({ color: new THREE.Color(c).multiplyScalar(1.6), transparent: true, opacity: o, wireframe: true, toneMapped: false, depthWrite: false });
-const shark = new THREE.Group(); scene.add(shark);
-{ const body = smoothPts([[-4, 0], [-2, 1], [1, 1.35], [3, 1], [4.6, .35], [5.1, -.05], [4.4, -.35], [4.9, -.75], [3.4, -.85], [1, -.95], [-1.6, -.85], [-3.2, -.45]], 4);
-  neonFill(body, C.cyan, shark, .14); neonOutline(body, C.cyan, shark, .06);
-  for (const f of [[[-.2, 1.3], [.9, 3], [1.9, 1.2]], [[-3.7, .1], [-5.8, 2], [-5.1, .05], [-5.9, -1.6], [-3.8, -.3]], [[.6, -.9], [.1, -2], [1.6, -.95]]]) { neonFill(f, C.cyan, shark, .2); neonOutline(f, C.cyan, shark, .045); }
-  for (let k = 0; k < 8; k++) { const x = 3.6 + k * .17; neonFill([[x, -.36], [x + .08, -.62], [x + .16, -.36]], 0xdffcff, shark, .9); neonFill([[x, -.62], [x + .08, -.4], [x + .16, -.62]], 0xdffcff, shark, .9); }
-  for (let k = 0; k < 5; k++) neonOutline([[2.2 - k * .35, .6], [2.25 - k * .35, -.2], [2.3 - k * .35, .6]], C.cyan, shark, .02);
-  const eye = new THREE.Mesh(new THREE.CircleGeometry(.14, 12), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xffffff).multiplyScalar(3), toneMapped: false })); eye.position.set(3.6, .35, .02); shark.add(eye);
-  shark.position.set(-1, 7.5, -6); shark.rotation.z = .2; shark.scale.setScalar(1.1); }
-const koi = new THREE.Group(); scene.add(koi);
-{ const body = smoothPts([[-2.3, 0], [-1.5, .7], [0, 1.1], [1.6, .95], [2.6, .4], [2.95, 0], [2.6, -.38], [1.6, -.85], [0, -1], [-1.5, -.6]], 5);
-  const tx = ctex(128, 64, c => { const gr = c.createLinearGradient(0, 0, 128, 0); gr.addColorStop(0, '#3ff0ff'); gr.addColorStop(.55, '#ff5aa0'); gr.addColorStop(1, '#ff9a5a'); c.fillStyle = gr; c.fillRect(0, 0, 128, 64); });
-  const fill = new THREE.Mesh(new THREE.ShapeGeometry(new THREE.Shape(body.map(q => new THREE.Vector2(...q)))), new THREE.MeshBasicMaterial({ map: tx, transparent: true, opacity: .55, depthWrite: false, side: THREE.DoubleSide, toneMapped: false }));
-  { const uv = fill.geometry.attributes.uv, pos = fill.geometry.attributes.position; for (let i = 0; i < uv.count; i++) uv.setXY(i, (pos.getX(i) + 2.3) / 5.3, (pos.getY(i) + 1) / 2.1); } koi.add(fill); neonOutline(body, 0xff6aa8, koi, .055);
-  for (let r = 0; r < 3; r++) for (let k = 0; k < 6; k++) { const x = -1 + k * .5, y = -.45 + r * .42; const a = new THREE.Mesh(new THREE.TorusGeometry(.2, .015, 4, 10, Math.PI), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xffd0e4).multiplyScalar(1.6), transparent: true, opacity: .6, toneMapped: false })); a.position.set(x, y, .02); a.rotation.z = -Math.PI / 2; koi.add(a); }
-  const tailG = new THREE.Group(); tailG.position.x = -2.2; koi.add(tailG); const tl = smoothPts([[0, 0], [-1.6, 1.5], [-2.1, 1.3], [-1.2, 0], [-2.1, -1.3], [-1.6, -1.5]], 4); neonFill(tl, 0xff6aa8, tailG, .3); neonOutline(tl, 0xff6aa8, tailG, .045);
-  for (let k = 0; k < 4; k++) neonOutline([[0, 0], [-1.7 + k * .15, 1.2 - k * .7], [-1.6 + k * .15, 1.1 - k * .7]], 0xffd0e4, tailG, .015);
-  for (const f of [[[-.6, 1.02], [.3, 1.9], [1, 1]], [[.7, -.8], [.1, -1.7], [1.4, -.9]], [[-.9, -.6], [-1.4, -1.3], [-.4, -.75]]]) { const ff = smoothPts(f, 3); neonFill(ff, 0x3ff0ff, koi, .25); neonOutline(ff, 0x3ff0ff, koi, .035); }
-  const eye = new THREE.Mesh(new THREE.CircleGeometry(.12, 12), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xffffff).multiplyScalar(3), toneMapped: false })); eye.position.set(2.1, .25, .03); koi.add(eye);
-  for (const s2 of [-1, 1]) neonOutline([[2.7, -.2], [3.3, -.5 + s2 * .2], [3.7, -.9 + s2 * .3]], 0xffd0e4, koi, .02);
-  koi.userData.tail = tailG; koi.position.set(0, 21, -6); koi.scale.setScalar(1.1); }
 // roof gear:// roof gear: big dishes, AC unit, antenna mast, cables to billboard, patrol drones with spotlights, kanji sign
 { CUR = scene; const yR = FH * 5; for (const [x, z, r, ry] of [[27.2, 3.6, 1.6, .5], [31.6, 2.4, 1.3, -.4]]) { const d = new THREE.Mesh(new THREE.SphereGeometry(r, 18, 8, 0, Math.PI * 2, 0, Math.PI / 2.3), M(0x252b38, { side: THREE.DoubleSide, metalness: .6, roughness: .4 })); d.rotation.set(-2.2, ry, .3); d.position.set(x, yR + 2.4, z); scene.add(d); box(.14, 2.2, .14, mats.metal, x, yR, z); cone2(x, yR + 2.6, z); }
   function cone2(x, y, z) { box(.06, .9, .06, mats.metal, x + .4, y, z + .3); box(.14, .14, .14, E(C.red, 3), x + .4, y + .9, z + .3); }
   box(2.2, 1.4, 1.2, M(0xc8ced8, { metalness: .3 }), 13.4, yR, 4.4); const fan = new THREE.Mesh(new THREE.CylinderGeometry(.5, .5, .04, 16), mats.dark); fan.rotation.x = Math.PI / 2; fan.position.set(13.8, yR + .7, 5.02); scene.add(fan); anim.spin.push(fan); fan.userData.fast = true;
   for (const [a, b, sag] of [[[17, yR + 3.2, .3], [10.5, yR + .7, 5.8], 1.6], [[25, yR + 3.2, .3], [34, yR + .7, 5.6], 1.8], [[21, yR + 4.2, .3], [27.2, yR + 2.4, 3.6], 1], [[19, yR + 4.6, .3], [12.4, yR + 2, 2], 1.2], [[33, yR, 4], [36.4, FH * 3.8, 6.4], 2.2]]) cable(new THREE.Vector3(...a), new THREE.Vector3(...b), sag, 0x0c0f17, .05);
   neonSign('岸戸電脳館', C.mag, 9.2, FH * 3.3, D + .7, .7, 0, true); neonSign('蘭店', C.mag, 15.2, yR + 1.3, D + .1, .55); }
-const patrol = []; for (let i = 0; i < 2; i++) { const g = new THREE.Group(); scene.add(g); rbox(1.4, .35, .9, .1, M(0x1a1f2c, { metalness: .7 }), 0, 0, 0, g); box(1.5, .06, .06, E(C.amber, 2.6), 0, .02, .46, g); const sp = new THREE.Mesh(new THREE.ConeGeometry(2.4, 9, 18, 1, true), new THREE.MeshBasicMaterial({ color: 0xcfe0ff, transparent: true, opacity: .07, depthWrite: false, side: THREE.DoubleSide })); sp.position.y = -4.5; g.add(sp); patrol.push({ g, sp, ph: i * 3, x: i ? 30 : 12 }); }
+const patrol = []; for (let i = 0; i < 2; i++) { const g = new THREE.Group(); scene.add(g); rbox(1.4, .35, .9, .1, M(0x1a1f2c, { metalness: .7 }), 0, 0, 0, g); box(1.5, .06, .06, E(C.amber, 2.6), 0, .02, .46, g); const sp = new THREE.Mesh(new THREE.ConeGeometry(.9, 6, 18, 1, true), new THREE.MeshBasicMaterial({ color: 0xcfe0ff, transparent: true, opacity: .025, depthWrite: false, side: THREE.DoubleSide })); sp.position.y = -3; g.add(sp); patrol.push({ g, sp, ph: i * 3, x: i ? 30 : 12 }); }
 // street life: umbrella pedestrians, ramen cook + flames
 const peds3 = []; for (let i = 0; i < 7; i++) { const b = makeBody({ color: pick(['#ff3fa4', '#3ff0ff', '#ffb347', '#c9a6ff', '#9fffcf']) }, 200 + i); scene.add(b.root); const um = new THREE.Group(); b.root.add(um); um.position.set(.1, 2.25, 0);
   const can = new THREE.Mesh(new THREE.ConeGeometry(.6, .32, 12, 1, true), M(pick([0x1b2232, 0x2a2236, 0x0e2a33]), { side: THREE.DoubleSide })); can.position.y = .16; um.add(can); const rim = new THREE.Mesh(new THREE.TorusGeometry(.6, .02, 4, 20), E(pick([C.cyan, C.mag, C.amber]), 2.6)); rim.rotation.x = Math.PI / 2; um.add(rim); box(.02, .7, .02, mats.dark, 0, -.6, 0, um);
@@ -741,10 +727,10 @@ const SkyEvents = (() => {
           if (o.m.position.y < -4) { g.remove(o.m); g.remove(o.tr); list.splice(i, 1); if (o.big) { const b = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 8), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xff9f43).multiplyScalar(3), transparent: true, opacity: .9, toneMapped: false })); b.position.copy(o.m.position); g.add(b); booms.push({ b, t: 0 }); flash = .5; Sound.boom(); shake = .6; } } }
         for (let i = booms.length - 1; i >= 0; i--) { const o = booms[i]; o.t += dt; o.b.scale.setScalar(1 + o.t * 26); o.b.material.opacity = Math.max(0, .9 - o.t); if (o.t > 1) { g.remove(o.b); booms.splice(i, 1); } } } }; },
   };
-  function start(kind) { if (ev) scene.remove(ev.g); kind = kind || pick(Object.keys(MAKE)); ev = MAKE[kind](); ev.kind = kind; ev.t0 = now(); scene.add(ev.g); ev.update(0, now() / 1000, 0);
+  function start(kind) { if (ev) scene.remove(ev.g); kind = kind || pick(Object.keys(MAKE).filter(k2 => k2 !== 'kaiju')); ev = MAKE[kind](); ev.kind = kind; ev.t0 = now(); scene.add(ev.g); ev.update(0, now() / 1000, 0);
     if (kind === 'kaiju') Sound.roar(); if (kind === 'ufo') Sound.ufo(); if (kind === 'mecha') Sound.mecha(); if (kind === 'whale') Sound.chime(); if (kind === 'meteors') Sound.whoosh();
     toast('⚠ ' + TITLE[kind]); reactToEvent(LINES[kind], kind === 'kaiju' || kind === 'meteors'); }
-  function update(dt) { if (ev) { const k = (now() - ev.t0) / ev.dur; if (k > 1) { scene.remove(ev.g); ev = null; nextAt = now() + rnd(55000, 100000); } else ev.update(k, now() / 1000, dt); } else if (now() > nextAt && !Q.has('noevents')) start(); }
+  function update(dt) { if (ev) { const k = (now() - ev.t0) / ev.dur; if (k > 1) { scene.remove(ev.g); ev = null; nextAt = now() + rnd(20000, 35000); } else ev.update(k, now() / 1000, dt); } else if (now() > nextAt && !MK.here && !Q.has('noevents')) start(); }
   return { start, update, get ev() { return ev; } };
 })();
 
@@ -780,7 +766,7 @@ addEventListener('pointermove', e => { if (!drag || !(e.buttons & 1)) return; co
   const s = camState.dist * Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) * 2 / host.clientHeight; camState.tx = clamp(drag.tx - dx * s, -30, 40); camState.ty = clamp(drag.ty + dy * s, 1, 26); });
 addEventListener('pointerup', e => { if (drag && !drag.moved) onClick(e); drag = null; });
 addEventListener('keydown', e => { const k = e.key.toLowerCase();
-  if (k === 'escape') closePanel(); if (k === 'm') Sound.toggle(); if (k === 'e') SkyEvents.start(); if (k === 'o') Surprises.outage(); if (k === 'r') Phase.start(); if (k === 'v') Vtol.go();
+  if (k === 'escape') closePanel(); if (k === 'm') Sound.toggle(); 
   if (e.key === 'Home') { camState.zoom = 1; camState.tx = VIEW.cx; camState.ty = VIEW.cy; }
   const f = { 1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5 }[e.key]; if (f !== undefined) { camState.zoom = 2.6; camState.tx = 22; camState.ty = FL[f].y + 1.8; } });
 
@@ -826,8 +812,7 @@ renderer.setAnimationLoop(() => {
   if (Math.random() < dt * .7) { spawnCar(Math.random() < .5 ? 0 : 1); if (Math.random() < .3) Sound.car(); }
   for (let i = traffic.length - 1; i >= 0; i--) { const c = traffic[i]; c.x += c.v * dt; c.g.position.set(c.x, .35 + Math.sin(t * 3 + c.ph) * .06, c.z); if (c.x < -70 || c.x > 85) { scene.remove(c.g); traffic.splice(i, 1); } }
   for (const c of skyTraffic) { c.x += c.v * dt; if (c.x > 170) c.x = -150; if (c.x < -150) c.x = 170; c.g.position.set(c.x, c.y + Math.sin(t + c.x) * .3, c.z); }
-  MK.update(dt, t); shark.position.y = 7.5 + Math.sin(t * .8) * .4; shark.rotation.y = Math.sin(t * .3) * .1; shark.visible = Math.random() > .02;
-  koi.position.set(1 + Math.sin(t * .12) * 6, 19.5 + Math.sin(t * .37) * 1.2, -6 + Math.cos(t * .12) * 2); koi.rotation.y = Math.cos(t * .12) > 0 ? 0 : Math.PI; koi.rotation.z = Math.sin(t * .37) * .15; koi.userData.tail.rotation.y = Math.sin(t * 4) * .5;
+  MK.update(dt, t);
   for (const p of patrol) { p.g.position.set(p.x + Math.sin(t * .3 + p.ph) * 6, 25 + Math.sin(t + p.ph) * .5, 3 + Math.cos(t * .25 + p.ph) * 2); p.sp.rotation.z = Math.sin(t * .6 + p.ph) * .25; }
   for (const p of peds3) { p.x += p.v * dt; if (p.x > 44) p.x = -36; if (p.x < -36) p.x = 44; const b = p.b, s2 = Math.sin(t * 7 + p.ph); b.root.position.set(p.x, 0, p.z); b.root.rotation.y = p.v > 0 ? Math.PI / 2 : -Math.PI / 2; b.legL.rotation.x = s2 * .5; b.legR.rotation.x = -s2 * .5; b.armL.rotation.x = -s2 * .4; b.armR.rotation.set(-1.9, 0, .2); b.hips.position.y = .92 + Math.abs(Math.cos(t * 7 + p.ph)) * .03; }
   cook.armR.rotation.set(-1.2 + Math.sin(t * 6) * .3, 0, .2); cook.armL.rotation.set(-1 + Math.sin(t * 5 + 1) * .2, 0, -.1); cook.head.rotation.x = .25;
