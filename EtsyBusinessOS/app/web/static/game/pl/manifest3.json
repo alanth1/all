@@ -6,5 +6,13 @@
  "RAZE-11:celebrate": {
   "status": "completed",
   "frames": 9
+ },
+ "JUNO-X9:celebrate": {
+  "status": "completed",
+  "frames": 9
+ },
+ "VOLT-3:celebrate": {
+  "status": "completed",
+  "frames": 9
  }
 }
