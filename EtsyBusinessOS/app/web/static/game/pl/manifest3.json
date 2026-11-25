@@ -14,5 +14,109 @@
  "VOLT-3:celebrate": {
   "status": "completed",
   "frames": 9
+ },
+ "NYX-21:celebrate": {
+  "status": "completed",
+  "frames": 9
+ },
+ "HEX-04:celebrate": {
+  "status": "completed",
+  "frames": 9
+ },
+ "SABLE-6:celebrate": {
+  "status": "completed",
+  "frames": 9
+ },
+ "ORIN-88:celebrate": {
+  "status": "completed",
+  "frames": 9
+ },
+ "KADE-12:celebrate": {
+  "status": "completed",
+  "frames": 9
+ },
+ "ZERO-1:celebrate": {
+  "status": "completed",
+  "frames": 9
+ },
+ "KAI-07:frustrated": {
+  "status": "completed",
+  "frames": 9
+ },
+ "RAZE-11:frustrated": {
+  "status": "completed",
+  "frames": 9
+ },
+ "JUNO-X9:frustrated": {
+  "status": "completed",
+  "frames": 9
+ },
+ "VOLT-3:frustrated": {
+  "status": "completed",
+  "frames": 9
+ },
+ "NYX-21:frustrated": {
+  "status": "completed",
+  "frames": 9
+ },
+ "HEX-04:frustrated": {
+  "status": "completed",
+  "frames": 9
+ },
+ "SABLE-6:frustrated": {
+  "status": "completed",
+  "frames": 9
+ },
+ "ORIN-88:frustrated": {
+  "status": "completed",
+  "frames": 9
+ },
+ "KADE-12:frustrated": {
+  "status": "completed",
+  "frames": 9
+ },
+ "ZERO-1:frustrated": {
+  "status": "completed",
+  "frames": 9
+ },
+ "KAI-07:talk": {
+  "status": "completed",
+  "frames": 9
+ },
+ "RAZE-11:talk": {
+  "status": "completed",
+  "frames": 9
+ },
+ "JUNO-X9:talk": {
+  "status": "completed",
+  "frames": 9
+ },
+ "VOLT-3:talk": {
+  "status": "completed",
+  "frames": 9
+ },
+ "NYX-21:talk": {
+  "status": "completed",
+  "frames": 9
+ },
+ "HEX-04:talk": {
+  "status": "completed",
+  "frames": 9
+ },
+ "SABLE-6:talk": {
+  "status": "completed",
+  "frames": 9
+ },
+ "ORIN-88:talk": {
+  "status": "completed",
+  "frames": 9
+ },
+ "KADE-12:talk": {
+  "status": "completed",
+  "frames": 9
+ },
+ "ZERO-1:talk": {
+  "status": "completed",
+  "frames": 9
  }
 }
