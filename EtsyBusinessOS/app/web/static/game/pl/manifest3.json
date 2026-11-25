@@ -118,5 +118,45 @@
  "ZERO-1:talk": {
   "status": "completed",
   "frames": 9
+ },
+ "KAI-07:yawn": {
+  "status": "completed",
+  "frames": 9
+ },
+ "RAZE-11:yawn": {
+  "status": "completed",
+  "frames": 9
+ },
+ "JUNO-X9:yawn": {
+  "status": "completed",
+  "frames": 9
+ },
+ "VOLT-3:yawn": {
+  "status": "completed",
+  "frames": 9
+ },
+ "NYX-21:yawn": {
+  "status": "completed",
+  "frames": 9
+ },
+ "HEX-04:yawn": {
+  "status": "completed",
+  "frames": 9
+ },
+ "SABLE-6:yawn": {
+  "status": "completed",
+  "frames": 9
+ },
+ "ORIN-88:yawn": {
+  "status": "completed",
+  "frames": 9
+ },
+ "KADE-12:yawn": {
+  "status": "completed",
+  "frames": 9
+ },
+ "ZERO-1:yawn": {
+  "status": "completed",
+  "frames": 9
  }
 }

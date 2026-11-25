@@ -1,4 +1,4 @@
-# Etsy Business OS — v1.1.0-rc1
+# Etsy Business OS — v1.2.0-rc1
 
 Software lokal untuk mengelola toko Etsy dengan satu AI lokal (Gemma 12B via Ollama).
 **AI berpikir · Python mengeksekusi · Database mengingat · Automasi mengatur · Anda yang memutuskan.**
@@ -14,7 +14,7 @@ Software lokal untuk mengelola toko Etsy dengan satu AI lokal (Gemma 12B via Oll
 Untuk mode LIVE ikuti menu **Setup API guide** di aplikasi: instal Ollama → unduh model → Benchmark → hubungkan Etsy, Pinterest, YouTube → ubah Mode ke LIVE.
 
 ## Tampilan utama: NEONLOOM HQ (kantor hidup)
-Saat dibuka, aplikasi menampilkan gedung kantor isometrik bergaya pixel-art cyberpunk. **Tidak ada menu atau tombol pengaturan** — setiap fungsi punya ruangan dan NPC sendiri:
+Saat dibuka, aplikasi menampilkan **tiga menara kantor bertingkat** (pixel-art cyberpunk) di tengah kota neon, layar penuh. **Tidak ada menu atau tombol pengaturan** — setiap fungsi punya ruangan dan NPC sendiri:
 
 | Ruangan | NPC | Isi (klik ruangan / NPC) |
 |---|---|---|
@@ -36,7 +36,7 @@ Saat dibuka, aplikasi menampilkan gedung kantor isometrik bergaya pixel-art cybe
 - **Ruangan yang bermasalah** (job gagal, koneksi API putus, GPU panas, RAM penuh, approval menunggu) menyalakan lampu alarm; ZERO-1 datang memeriksa.
 - Di LIVE mode, saat GPU sedang kosong, AI lokal menulis obrolan santai baru untuk NPC (bisa dimatikan).
 - Kontrol: scroll = zoom, tarik = geser, klik ruangan/NPC, `Esc` = tutup panel, tombol `` ` `` = tampilan klasik (/dashboard).
-- Grafik: NPC dan tile lantai dibuat dengan **PixelLab**; furnitur, efek, cuaca digambar oleh kode. Font Silkscreen & VT323 (lisensi OFL). Engine: Phaser 3.90 (MIT), disimpan lokal.
+- Grafik: menara & furnitur = gambar Gemini milik Anda (`app/web/static/game/towers/`); NPC, animasi, kucing, mobil terbang = **PixelLab**; layar, lampu, cuaca, efek = kode. Tombol `Home` = kembali ke tampilan penuh. Font Silkscreen & VT323 (lisensi OFL). Engine: Phaser 3.90 (MIT), disimpan lokal.
 
 ## Isi aplikasi (tampilan klasik /dashboard)
 | Menu | Fungsi |

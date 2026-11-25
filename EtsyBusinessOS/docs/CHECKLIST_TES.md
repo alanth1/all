@@ -8,7 +8,7 @@ Centang satu per satu. Kalau ada yang gagal: buka menu **Diagnostics**, lalu kir
 - [ ] Tutup jendela console, jalankan START.bat lagi → terbuka cepat (tanpa setup ulang).
 
 ## A2. Kantor hidup (NEONLOOM HQ)
-- [ ] Gedung isometrik tampil penuh di layar 24", tajam; scroll zoom & tarik geser lancar.
+- [ ] Tiga menara bertingkat tampil penuh di layar 24" dengan kota neon & mobil terbang; scroll zoom & tarik geser lancar; tombol Home = tampilan penuh.
 - [ ] 10 NPC berjalan, ngopi, ngobrol (gelembung chat), main arcade, rebahan; malam hari ada yang tidur (z z).
 - [ ] Klik tiap ruangan → panel fitur terbuka (mis. Server Room = Pengaturan). Esc / klik area gelap menutup.
 - [ ] Klik NPC → kartu NPC (foto, status, pikiran, ucapan terakhir).

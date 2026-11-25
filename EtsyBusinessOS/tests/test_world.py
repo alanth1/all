@@ -49,7 +49,7 @@ def test_world_page_and_assets(env):
         j = c.get("/api/world?since=0").json()
         assert len(j["agents"]) == 10
         assert len(c.get("/api/world/banter").json()) == 2
-        assert c.get("/static/game/world.js").status_code == 200
+        assert c.get("/static/game/hq.js").status_code == 200
         if assets["npc"]:
             name, a = next(iter(assets["npc"].items()))
             assert len(a["rot"]) == 8

@@ -15,7 +15,7 @@
   W.hex = hex;
   const TX = (t, x) => W.towerX(t) + x, TY = (y) => W.TOP + y;
   const floorPt = (fid, x, y) => ({ x: TX(W.FLOORS[fid].t, x), y: TY(y) });
-  const NPC_SCALE = 2.6;
+  const NPC_SCALE = 3.6;
 
   class HQ extends Phaser.Scene {
     constructor() { super('hq'); this.npcs = {}; this.lastEvent = 0; this.state = null; this.occupied = new Set(); this.issueVisits = {}; this.pets = []; }
@@ -45,10 +45,10 @@
       this.setupInput();
       if (DEBUG) this.drawDebug();
       this.time.addEvent({ delay: 220, loop: true, callback: () => this.tickFX() });
-      this.time.addEvent({ delay: 1000, loop: true, callback: () => this.tickLife() });
+      setInterval(() => this.tickLife(), 1000);   // real-time, independent of frame rate
       this.time.addEvent({ delay: 2600, loop: true, callback: () => this.spawnCar() });
       this.time.addEvent({ delay: 30000, loop: true, callback: () => this.updateSky() });
-      this.poll(); this.time.addEvent({ delay: 3000, loop: true, callback: () => this.poll() });
+      this.poll(); setInterval(() => this.poll(), 3000);
       this.scale.on('resize', () => this.fitCamera());
     }
 
