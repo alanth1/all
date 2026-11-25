@@ -1,0 +1,30 @@
+{
+ "anims": {
+  "KAI-07:typing": {
+   "status": "completed",
+   "frames": 9
+  },
+  "RAZE-11:typing": {
+   "status": "completed",
+   "frames": 9
+  },
+  "JUNO-X9:typing": {
+   "status": "completed",
+   "frames": 9
+  },
+  "VOLT-3:typing": {
+   "status": "completed",
+   "frames": 9
+  },
+  "NYX-21:typing": {
+   "status": "completed",
+   "frames": 9
+  },
+  "HEX-04:typing": {
+   "status": "completed",
+   "frames": 9
+  }
+ },
+ "cat": {},
+ "cars": {}
+}

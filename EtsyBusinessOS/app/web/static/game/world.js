@@ -23,6 +23,14 @@
         for (const [dir, urls] of Object.entries(a.walk || {})) urls.forEach((u, i) => this.load.image(`${name}_walk_${dir}_${i}`, u));
       }
       for (const [k, url] of Object.entries(ASSETS.tiles)) this.load.image(`tile_${k}`, url);
+      const loadAnims = (name, a) => { for (const [anim, dirs] of Object.entries(a.anims || {})) for (const [dir, urls] of Object.entries(dirs)) urls.forEach((u, i) => this.load.image(`${name}_${anim}_${dir}_${i}`, u)); };
+      for (const [name, a] of Object.entries(ASSETS.npc)) loadAnims(name, a);
+      for (const [name, a] of Object.entries(ASSETS.pets || {})) {
+        for (const [dir, url] of Object.entries(a.rot || {})) this.load.image(`${name}_rot_${dir}`, url);
+        for (const [dir, urls] of Object.entries(a.walk || {})) urls.forEach((u, i) => this.load.image(`${name}_walk_${dir}_${i}`, u));
+        loadAnims(name, a);
+      }
+      (ASSETS.cars || []).forEach((u, i) => this.load.image(`plcar_${i}`, u));
     }
 
     create() {
@@ -161,7 +169,9 @@
     spawnCar() {
       const { left, right, top } = this.skyBounds;
       const dir = Math.random() < .5 ? 1 : -1, y = rnd(top + 25, top + 95);
-      const car = this.add.image(dir > 0 ? left - 10 : right + 10, y, 'car').setFlipX(dir < 0).setTint(pick([0xffffff, 0x67e8f9, 0xf9a8d4]));
+      const n = (ASSETS.cars || []).length;
+      const car = n ? this.add.image(dir > 0 ? left - 20 : right + 20, y, `plcar_${Math.floor(Math.random() * n)}`).setScale(rnd(.28, .42)).setFlipX(dir < 0)
+                    : this.add.image(dir > 0 ? left - 10 : right + 10, y, 'car').setFlipX(dir < 0).setTint(pick([0xffffff, 0x67e8f9, 0xf9a8d4]));
       this.cars.add(car);
       this.tweens.add({ targets: car, x: dir > 0 ? right + 10 : left - 10, duration: rnd(7000, 14000), onComplete: () => car.destroy() });
       if ((this.state?.weather?.kind) === 'storm' && Math.random() < .25) { this.flash.setAlpha(.7); this.tweens.add({ targets: this.flash, alpha: 0, duration: 400 }); }
@@ -391,6 +401,13 @@
             anims[dir] = k;
           }
         }
+        const poses = {};
+        for (const [anim, dirs] of Object.entries(a.anims || {})) for (const [dir, urls] of Object.entries(dirs)) {
+          const k = `${meta.name}_${anim}_${dir}`; const idx = urls.map((_, i) => i).slice(urls.length > 4 ? 1 : 0); // frame 0 = input pose
+          const rate = { typing: 9, idle: 5, coffee: 6, sleep: 3 }[anim] || 6;
+          if (!this.anims.exists(k)) this.anims.create({ key: k, frames: idx.map(i => ({ key: `${meta.name}_${anim}_${dir}_${i}` })), frameRate: rate, repeat: -1, repeatDelay: anim === 'coffee' ? 1200 : 0 });
+          (poses[anim] = poses[anim] || {})[dir] = k;
+        }
         let fb = null;
         if (!hasPL) {
           W.fallbackNPC(this, meta.name, meta.color);
@@ -408,8 +425,13 @@
         const frameH = sprite.height;
         sprite.setScale(Math.min(1, 46 / frameH));
         const npc = new NPC(this, meta, sprite, anims, hasPL ? a.rot : null, fb, work);
+        npc.poses = poses;
+        npc.chair = W.FURNITURE.find(f => f.t === 'chair' && f.x === work.x && f.y === work.y);
+        npc.sitDown();
         this.npcs[meta.name] = npc;
       }
+      this.pets = [];
+      for (const [name, a] of Object.entries(ASSETS.pets || {})) if (a.rot && Object.keys(a.rot).length) this.pets.push(new Pet(this, name, a));
     }
 
     // ---------------------------------------------------------------- labels
@@ -569,6 +591,7 @@
 
     update(time, dt) {
       for (const n of Object.values(this.npcs)) n.update(dt);
+      for (const p of this.pets || []) p.update(dt);
       this.animateFrame(time);
       UI.layout(this);
     }
@@ -589,7 +612,7 @@
       this.zzz = el('npc-zzz hidden', 'z<small>z</small>');
       this.tag.addEventListener('click', () => UI.openNPC(this));
       this.bubble.addEventListener('click', () => UI.openNPC(this));
-      this.sit = true; this.sitting = true;
+      this.sitting = false;
     }
     log(t) { this.history.unshift({ t, at: new Date().toLocaleTimeString().slice(0, 5) }); this.history = this.history.slice(0, 12); }
     face(dir) {
@@ -605,6 +628,7 @@
       this.sprite.setTexture(this.fallback ? `fb_${this.name}_${base}_0` : (this.anims[base] ? `${this.name}_walk_${base}_0` : this.sprite.texture.key)).setFlipX(flip);
     }
     walkAnim(dir) {
+      if (this.posing) { this.posing = null; }
       const base = dir.startsWith('north') ? 'north-east' : 'south-east';
       const flip = dir.endsWith('west');
       const k = this.anims[base] || this.anims['south-east'];
@@ -621,6 +645,7 @@
     arrive() {
       this.sprite.anims.stop(); this.path = [];
       if (this.arriveFace) this.face(this.arriveFace);
+      if (!this.sitting && this.facing && this.facing.startsWith('south')) this.pose('idle', this.facing);
       const cb = this.onArrive; this.onArrive = null; cb && cb(true);
     }
     update(dt) {
@@ -635,12 +660,30 @@
         else this.sprite.setPosition(this.sprite.x + dx / dist * step, this.sprite.y + dy / dist * step);
       }
       const walking = this.path.length > 0;
-      const bob = walking && this.noAnim ? -Math.abs(Math.sin(nowMs() / 90)) * 2 : (this.sitting && this.server.status === 'working' ? Math.round(Math.sin(nowMs() / 110)) * .5 : 0);
+      const bob = walking && this.noAnim ? -Math.abs(Math.sin(nowMs() / 90)) * 2 : (this.sitting && !this.posing && this.server.status === 'working' ? Math.round(Math.sin(nowMs() / 110)) * .5 : 0);
       this.sprite.y += bob - (this._bob || 0); this._bob = bob;
       this.sprite.setDepth(this.sprite.y + (this.sitting ? 6 : 2));
     }
-    standUp() { if (this.sitting) { this.sitting = false; this.sprite.y += 3; } }
-    sitDown() { if (!this.sitting) { this.sitting = true; this.sprite.y -= 3; } }
+    pose(anim, dir) {
+      const p = this.poses && this.poses[anim]; if (!p) return false;
+      const flipMap = { 'north-east': 'north-west', 'north-west': 'north-east', 'south-west': 'south-east', 'south-east': 'south-west' };
+      let k = p[dir], flip = false;
+      if (!k && p[flipMap[dir]]) { k = p[flipMap[dir]]; flip = true; }
+      if (!k) return false;
+      this.sprite.setFlipX(flip); this.sprite.play(k, true); this.posing = anim; return true;
+    }
+    endPose() { if (this.posing) { this.posing = null; this.sprite.anims.stop(); this.face(this.facing); } if (this.chair && this.chair.sprite) this.chair.sprite.setVisible(true); }
+    standUp() { this.endPose(); if (this.sitting) { this.sitting = false; this.sprite.y += this.seatShift || 0; this.seatShift = 0; } }
+    sitDown() {
+      if (this.sitting) return;
+      this.sitting = true;
+      const atDesk = this.cell.x === this.work.x && this.cell.y === this.work.y;
+      if (atDesk && this.pose('typing', this.work.face)) {
+        if (this.chair && this.chair.sprite) this.chair.sprite.setVisible(false);  // the typing sprite brings its own chair
+        if (!['working', 'queued'].includes(this.server.status)) this.sprite.anims.pause();
+        this.seatShift = 0;
+      } else { this.seatShift = 3; this.sprite.y -= 3; }
+    }
     isFree() { return this.mode === 'free' && !this.inChat && this.server.status !== 'working' && this.server.status !== 'queued'; }
     release() { if (this.spot) { this.scene.occupied.delete(this.spot); this.spot = null; } this.zzz.classList.add('hidden'); }
 
@@ -649,6 +692,7 @@
       if (a.status === prev) return;
       this.icon.className = 'npc-icon ' + (a.status === 'error' ? 'err' : a.status === 'waiting' ? 'wait' : '');
       this.icon.textContent = a.status === 'error' ? '!' : a.status === 'waiting' ? '?' : '';
+      if (this.posing === 'typing') { if (['working', 'queued'].includes(a.status)) this.sprite.anims.resume(); else this.sprite.anims.pause(); }
       if (a.status === 'working' || a.status === 'queued') {
         if (this.inChat) this.endChat(true);
         this.release(); this.mode = 'work';
@@ -678,6 +722,7 @@
       this.goTo(s.x, s.y, s.face, (ok) => {
         if (!ok) { this.release(); this.mode = 'free'; return; }
         if (s.sit) this.sitDown();
+        if (kind === 'snack') { this.face('south-east'); this.pose('coffee', 'south-east'); }
         const lines = { snack: ['Kopi dulu ☕', 'Snack biar fokus.', 'Air putih, sehat!'], game: ['Satu ronde aja 🎮', 'Highscore baru!', 'Ayo combo!'] }[kind] || ['…'];
         this.say(pick(lines), 3500, 'chat');
         this.scene.time.delayedCall(kind === 'game' ? rnd(14000, 26000) : rnd(6000, 10000), () => { if (this.spot === id) { this.release(); this.mode = 'free'; this.goDesk('back'); } });
@@ -738,6 +783,47 @@
       const b = this.bubble; b.className = `bubble ${kind}`; b.innerHTML = `<span class="who">${this.name}</span>${esc(text)}`;
       this.bubbleBusy = kind !== 'think'; clearTimeout(this._bt);
       this._bt = setTimeout(() => { b.classList.add('hidden'); this.bubbleBusy = false; }, ms);
+    }
+  }
+
+  // ------------------------------------------------------------------ Pet (office cat)
+  class Pet {
+    constructor(scene, name, a) {
+      this.scene = scene; this.name = name; this.cell = { x: 21, y: 20 }; this.path = []; this.speed = 22; this.next = 0;
+      const p = iso(this.cell.x + .5, this.cell.y + .5);
+      this.sprite = scene.add.sprite(p.x, p.y, `${name}_rot_south-east`).setOrigin(.5, .9);
+      this.sprite.setScale(Math.min(1, 26 / this.sprite.height));
+      this.walk = {};
+      for (const [dir, urls] of Object.entries(a.walk || {})) { const k = `${name}_walk_${dir}`; if (!scene.anims.exists(k)) scene.anims.create({ key: k, frames: urls.map((_, i) => ({ key: `${name}_walk_${dir}_${i}` })), frameRate: 9, repeat: -1 }); this.walk[dir] = k; }
+      const sl = (a.anims || {}).sleep || {}; const sd = Object.keys(sl)[0];
+      if (sd) { this.sleepKey = `${name}_sleep_${sd}`; if (!scene.anims.exists(this.sleepKey)) scene.anims.create({ key: this.sleepKey, frames: sl[sd].map((_, i) => ({ key: `${name}_sleep_${sd}_${i}` })).slice(1), frameRate: 3, repeat: -1 }); }
+      this.bubble = el('bubble hidden', ''); this.sprite.setInteractive({ useHandCursor: true });
+      this.sprite.on('pointerup', () => this.say(pick(['Meow~', 'Mrrr…', 'Prrr 💜', 'Meow? (minta snack)'])));
+    }
+    say(t) { const b = this.bubble; b.className = 'bubble chat'; b.innerHTML = `<span class="who">NEKO</span>${esc(t)}`; clearTimeout(this._t); this._t = setTimeout(() => b.classList.add('hidden'), 3000); }
+    update(dt) {
+      if (!this.path.length && nowMs() > this.next) {
+        this.sprite.anims.stop();
+        if (Math.random() < .35 && this.sleepKey) { this.sprite.setFlipX(false).play(this.sleepKey); this.next = nowMs() + rnd(15000, 40000); }
+        else {
+          const room = Math.random() < .7 ? W.roomById.lounge : pick(W.ROOMS);
+          const c = W.randomCellIn(room); const path = W.findPath(this.cell.x, this.cell.y, c.x, c.y);
+          if (path && path.length) this.path = path; this.next = nowMs() + rnd(4000, 12000);
+        }
+      }
+      if (this.path.length) {
+        const [nx, ny] = this.path[0]; const t = iso(nx + .5, ny + .5);
+        const dx = t.x - this.sprite.x, dy = t.y - this.sprite.y, dist = Math.hypot(dx, dy);
+        const dir = DIRS[`${nx - this.cell.x},${ny - this.cell.y}`] || 'south-east';
+        const base = dir.startsWith('north') ? 'north-east' : 'south-east', k = this.walk[base];
+        if (k) { this.sprite.setFlipX(dir.endsWith('west')); if (this.sprite.anims.currentAnim?.key !== k || !this.sprite.anims.isPlaying) this.sprite.play(k); }
+        const step = this.speed * dt / 1000;
+        if (dist <= step) { this.sprite.setPosition(t.x, t.y); this.cell = { x: nx, y: ny }; this.path.shift(); if (!this.path.length) { this.sprite.anims.stop(); this.sprite.setTexture(`${this.name}_rot_${dir}`).setFlipX(false); } }
+        else this.sprite.setPosition(this.sprite.x + dx / dist * step, this.sprite.y + dy / dist * step);
+      }
+      this.sprite.setDepth(this.sprite.y + 1);
+      const cam = this.scene.cameras.main, z = cam.zoom;
+      this.bubble.style.transform = `translate(${(this.sprite.x - cam.worldView.x) * z}px, ${(this.sprite.y - 24 - cam.worldView.y) * z}px) translate(-50%, -100%)`;
     }
   }
 

@@ -125,13 +125,18 @@ def game_assets() -> dict:
     out = {"npc": {}, "tiles": {}}
     if not root.exists():
         return out
+    import re as _re
     for d in sorted(p for p in root.iterdir() if p.is_dir()):
         rot = {f.stem[4:]: f"/static/game/pl/{quote(d.name)}/{f.name}" for f in d.glob("rot_*.png")}
-        walk: dict = {}
-        for f in sorted(d.glob("walk_*.png"), key=lambda f: (f.stem.rsplit("_", 1)[0], int(f.stem.rsplit("_", 1)[1]))):
-            direction = f.stem[5:].rsplit("_", 1)[0]
-            walk.setdefault(direction, []).append(f"/static/game/pl/{quote(d.name)}/{f.name}")
-        out["npc"][d.name] = {"rot": rot, "walk": walk}
+        anims: dict = {}
+        for f in d.glob("*.png"):
+            m = _re.fullmatch(r"(walk|typing|idle|coffee|sleep)_([a-z-]+)_(\d+)", f.stem)
+            if m:
+                anims.setdefault(m.group(1), {}).setdefault(m.group(2), []).append((int(m.group(3)), f"/static/game/pl/{quote(d.name)}/{f.name}"))
+        anims = {k: {dk: [u for _, u in sorted(v)] for dk, v in dv.items()} for k, dv in anims.items()}
+        key = "pets" if d.name == "CAT" else "npc"
+        out.setdefault(key, {})[d.name] = {"rot": rot, "walk": anims.pop("walk", {}), "anims": anims}
+    out["cars"] = [f"/static/game/pl/{f.name}" for f in sorted(root.glob("car_*.png"))]
     for f in root.glob("tile_*.png"):
         out["tiles"][f.stem[5:]] = f"/static/game/pl/{f.name}"
     return out
