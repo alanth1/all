@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% from "_macros.html" import badge %}
+{% block heading %}<b>Audit Log</b> <span class="muted small">append-only record of every system and user action</span>{% endblock %}
+{% block content %}<form method="get" class="row" style="max-width:420px"><div><input type="text" name="q" value="{{ qtxt }}" placeholder="filter (e.g. listing, publish, human)"></div><div style="flex:none"><button class="sec">Filter</button></div></form>
+<div class="card tw" style="margin-top:10px"><table class="small"><tr><th>Time</th><th>Actor</th><th>Action</th><th>Entity</th><th>Outcome</th><th>Detail</th></tr>
+{% for r in rows %}<tr><td>{{ r.created_at[:19] }}</td><td>{{ r.actor }}</td><td>{{ r.action }}</td><td>{{ r.entity }} {{ r.entity_id or '' }}</td><td>{{ badge(r.outcome) }}</td><td class="mono muted">{{ (r.detail or '')[:200] }}</td></tr>{% endfor %}</table></div>{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}{% from "_macros.html" import badge %}
+{% block heading %}<b>Social Media</b> <span class="muted small">autonomous publishing of existing, marketing-ready assets</span>{% endblock %}
+{% block content %}
+<div class="grid g4">{% for p, a in avail.items() %}<div class="card"><b>{{ p|title }}</b><div>{{ badge('ok' if a[0] else 'unavailable') }} <span class="small muted">{{ a[1] }}</span></div></div>{% endfor %}</div>
+<p><form method="post" action="/social/plan" class="inline"><button class="sec">🗓️ Plan & schedule now</button></form> <span class="small muted">Runs hourly. Mark assets as ready in <a href="/assets">Assets</a>.</span></p>
+<div class="grid g2">
+<div class="card tw"><h3 style="margin-top:0">Calendar</h3><table><tr><th>When (UTC)</th><th>Platform</th><th>Title</th><th>Status</th></tr>
+{% for c in cal %}<tr><td class="small">{{ c.scheduled_at[:16] }}</td><td>{{ c.platform }}</td><td class="small">{{ c.title }}</td><td>{{ badge(c.status) }} {% if c.job_id %}<a class="small" href="/automation/job/{{ c.job_id }}">job</a>{% endif %}</td></tr>{% else %}<tr><td colspan="4" class="muted">empty</td></tr>{% endfor %}</table></div>
+<div class="card tw"><h3 style="margin-top:0">Published (verified)</h3><table><tr><th>Date</th><th>Platform</th><th>Title</th><th class="n">Impr.</th><th class="n">Views</th><th class="n">Clicks</th></tr>
+{% for p in posts %}<tr><td class="small">{{ p.published_at[:16] }}</td><td>{{ p.platform }}</td><td class="small"><a href="{{ p.url }}" target="_blank">{{ p.title }}</a></td><td class="n">{{ p.imp or '-' }}</td><td class="n">{{ p.views or '-' }}</td><td class="n">{{ p.oc or '-' }}</td></tr>{% else %}<tr><td colspan="6" class="muted">none yet</td></tr>{% endfor %}</table></div>
+</div>
+{% if failed %}<h2>Retry queue / failures</h2><div class="card tw"><table>{% for j in failed %}<tr><td><a href="/automation/job/{{ j.id }}">#{{ j.id }}</a></td><td>{{ badge(j.state) }}</td><td class="small">{{ j.error }}</td></tr>{% endfor %}</table></div>{% endif %}
+<h2>Content variants</h2><div class="card tw"><table><tr><th>Asset</th><th>Platform</th><th>Title</th><th>Description</th><th>Status</th><th></th></tr>
+{% for v in variants %}<tr><td class="small">{{ v.rel_path }}</td><td>{{ v.platform }}</td><td class="small">{{ v.title }}</td><td class="small muted">{{ v.description[:140] }}</td><td>{{ badge(v.status) }}</td>
+<td>{% if v.status == 'ready' %}<form method="post" action="/social/variant/{{ v.id }}/disable" class="inline"><button class="sec small">disable</button></form>{% endif %}</td></tr>{% endfor %}</table></div>
+{% endblock %}

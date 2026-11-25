@@ -1,0 +1,57 @@
+{% extends "base.html" %}{% from "_macros.html" import kpi, badge %}
+{% macro rows(items) %}{% for x in items %}<tr><td>{{ x.code }} {{ x.name }}</td><td class="n">{{ money(x.amount) }}</td></tr>{% endfor %}{% endmacro %}
+{% block heading %}<b>Accounting</b> <span class="muted small">double-entry · base currency {{ base }} · posted entries are immutable</span>{% endblock %}
+{% block content %}
+<form class="row" method="get" style="max-width:520px"><div><label>From</label><input type="date" name="start" value="{{ start }}"></div><div><label>To</label><input type="date" name="end" value="{{ end }}"></div><div style="flex:none"><button class="sec">Apply</button></div></form>
+<div class="tabs" style="margin-top:12px"><a href="#pl">P&L</a><a href="#bs">Balance sheet</a><a href="#cf">Cash flow</a><a href="#fees">Etsy fees</a><a href="#prod">Product profitability</a><a href="#tax">Tax summary</a><a href="#expenses">Expenses</a><a href="#recon">Reconciliation</a><a href="#fx">FX rates</a><a href="#journal">Journal</a><a href="#coa">Chart of accounts</a><a href="/accounting/export.beancount">⬇ Beancount export</a></div>
+<div class="grid g4">{{ kpi("Net revenue", money(pl.net_revenue)) }}{{ kpi("Expenses", money(pl.total_expenses)) }}{{ kpi("Net profit", money(pl.net_profit)) }}
+{{ kpi("Trial balance", "balanced ✔" if tb.balanced else "NOT balanced ✖", "debit " ~ money(tb.total_debit) ~ " / credit " ~ money(tb.total_credit)) }}</div>
+<div class="grid g3" style="margin-top:14px">
+<div class="card" id="pl"><h3 style="margin-top:0">Profit & Loss</h3><table class="small">{{ rows(pl.revenue) }}<tr><td>less refunds</td><td></td></tr>{{ rows(pl.contra_revenue) }}<tr><th>Net revenue</th><th class="n">{{ money(pl.net_revenue) }}</th></tr>{{ rows(pl.expenses) }}<tr><th>Net profit</th><th class="n">{{ money(pl.net_profit) }}</th></tr></table></div>
+<div class="card" id="bs"><h3 style="margin-top:0">Balance sheet <span class="small muted">as of {{ bs.asof }}</span></h3><table class="small">{{ rows(bs.assets) }}<tr><th>Total assets</th><th class="n">{{ money(bs.total_assets) }}</th></tr>{{ rows(bs.liabilities) }}{{ rows(bs.equity) }}<tr><td>Retained earnings</td><td class="n">{{ money(bs.retained_earnings) }}</td></tr><tr><th>Liabilities + equity</th><th class="n">{{ money(bs.total_liabilities + bs.total_equity) }}</th></tr></table>{{ badge('ok' if bs.balanced else 'error') }}</div>
+<div class="card" id="cf"><h3 style="margin-top:0">Cash flow</h3><table class="small"><tr><td>Opening (cash, bank, Etsy account)</td><td class="n">{{ money(cf.opening) }}</td></tr><tr><td>Operating</td><td class="n">{{ money(cf.operating) }}</td></tr><tr><td>Financing / owner</td><td class="n">{{ money(cf.financing) }}</td></tr><tr><th>Closing</th><th class="n">{{ money(cf.closing) }}</th></tr></table></div>
+</div>
+<div class="grid g2" style="margin-top:14px">
+<div class="card tw" id="fees"><h3 style="margin-top:0">Etsy fee report</h3><table class="small"><tr><th>Type</th><th class="n">Count</th><th class="n">Total</th></tr>{% for f in fees %}<tr><td>{{ f.ledger_type }}</td><td class="n">{{ f.n }}</td><td class="n">{{ money(f.total) }}</td></tr>{% endfor %}</table></div>
+<div class="card tw" id="prod"><h3 style="margin-top:0">Product profitability</h3><table class="small"><tr><th>Listing</th><th class="n">Units</th><th class="n">Revenue</th><th class="n">Fees {{ badge('estimated') }}</th><th class="n">Contribution</th></tr>{% for p in prod %}<tr><td>{{ p.title }}</td><td class="n">{{ p.units }}</td><td class="n">{{ money(p.revenue) }}</td><td class="n">{{ money(p.allocated_fees_estimated) }}</td><td class="n">{{ money(p.contribution_estimated) }}</td></tr>{% endfor %}</table></div>
+</div>
+<div class="card" id="tax" style="margin-top:14px"><h3 style="margin-top:0">Tax summary <span class="small muted">{{ tax.start }} → {{ tax.end }}</span></h3>
+<table class="small"><tr><td>Gross revenue</td><td class="n">{{ money(tax.gross_revenue) }}</td></tr><tr><td>Refunds</td><td class="n">{{ money(tax.refunds) }}</td></tr>{{ rows(tax.expenses_by_account) }}<tr><th>Net profit</th><th class="n">{{ money(tax.net_profit) }}</th></tr><tr><td>Tax shown on buyer receipts</td><td class="n">{{ money(tax.buyer_tax_on_receipts) }}</td></tr></table><p class="small muted">{{ tax.note }}</p></div>
+
+<h2 id="expenses">Expenses</h2>
+<div class="card"><form method="post" action="/accounting/expense"><div class="row">
+<div><label>Date</label><input type="date" name="expense_date" required></div><div><label>Vendor</label><input type="text" name="vendor"></div>
+<div><label>Description</label><input type="text" name="description" required></div><div><label>Amount</label><input type="text" name="amount" required></div>
+<div><label>Currency</label><input type="text" name="currency" value="{{ base }}"></div>
+<div><label>Account (empty = AI suggests)</label><select name="account_code"><option value="">AI suggestion</option>{% for a in coa if a.type=='expense' %}<option value="{{ a.code }}">{{ a.code }} {{ a.name }}</option>{% endfor %}</select></div>
+<div style="flex:none"><button>Add</button></div></div></form>
+<div class="tw"><table class="small"><tr><th>Date</th><th>Vendor</th><th>Description</th><th class="n">Amount</th><th>AI suggestion</th><th>Status</th><th></th></tr>
+{% for x in expenses %}{% set s = loads(x.ai_suggestion, {}) %}<tr><td>{{ x.expense_date }}</td><td>{{ x.vendor }}</td><td>{{ x.description }}</td><td class="n">{{ money(x.amount_cents, x.currency) }}</td>
+<td>{% if s %}{{ s.account_code }} ({{ (s.confidence*100)|round|int }}%) <span class="muted">{{ s.reason }}</span>{% endif %}</td><td>{{ badge(x.status) }}</td>
+<td>{% if x.status=='pending' %}<form method="post" action="/accounting/expense/{{ x.id }}/post" class="inline"><select name="account_code">{% for a in coa if a.type=='expense' %}<option value="{{ a.code }}" {% if s.account_code==a.code or x.account_code==a.code %}selected{% endif %}>{{ a.code }} {{ a.name }}</option>{% endfor %}</select> <button class="ok">Post</button></form>
+<form method="post" action="/accounting/expense/{{ x.id }}/reject" class="inline"><button class="sec">Reject</button></form>{% endif %}</td></tr>{% endfor %}</table></div></div>
+
+<h2 id="recon">Reconciliation</h2>
+<div class="card"><form method="post" action="/accounting/bank-import" enctype="multipart/form-data"><div class="row">
+<div><label>Bank statement CSV (date, description, amount)</label><input type="file" name="file" accept=".csv"></div><div><label>Currency</label><input type="text" name="currency" value="{{ base }}"></div>
+<div style="flex:none"><button>Import & reconcile</button></div></div></form>
+<form method="post" action="/accounting/reconcile" style="margin-top:8px"><button class="sec">Re-run reconciliation</button></form>
+<div class="tw"><table class="small"><tr><th>Kind</th><th>Ref A</th><th>Ref B</th><th class="n">A</th><th class="n">B</th><th class="n">Difference</th><th>Status</th><th>Note</th></tr>
+{% for r in recon %}<tr><td>{{ r.kind }}</td><td>{{ r.ref_a }}</td><td>{{ r.ref_b or '-' }}</td><td class="n">{{ money(r.amount_a_cents) }}</td><td class="n">{{ money(r.amount_b_cents) }}</td><td class="n">{{ money(r.difference_cents) }}</td><td>{{ badge(r.status) }}</td><td class="muted">{{ r.note }}</td></tr>{% endfor %}</table></div></div>
+
+<h2 id="fx">Exchange rates</h2>
+<div class="card"><form method="post" action="/accounting/rate"><div class="row"><div><label>Date</label><input type="date" name="rate_date" required></div>
+<div><label>Currency</label><input type="text" name="quote_ccy" placeholder="EUR" required></div><div><label>1 unit = ? {{ base }}</label><input type="text" name="rate" required></div>
+<div><label>Source</label><input type="text" name="source" value="manual"></div><div style="flex:none"><button>Save</button></div></div></form>
+<table class="small">{% for r in rates %}<tr><td>{{ r.rate_date }}</td><td>{{ r.quote }}→{{ r.base }}</td><td class="n">{{ r.rate }}</td><td class="muted">{{ r.source }}</td></tr>{% endfor %}</table></div>
+
+<h2 id="journal">Journal (last 100)</h2>
+<div class="card tw"><table class="small"><tr><th>#</th><th>Date</th><th>Memo</th><th>Source</th><th class="n">Amount</th><th>Status</th><th>By</th><th></th></tr>
+{% for e in journal %}<tr><td>{{ e.id }}</td><td>{{ e.entry_date }}</td><td>{{ e.memo }}</td><td class="muted">{{ e.source_type }}:{{ e.source_ref }}</td><td class="n">{{ money(e.amt) }}</td><td>{{ badge(e.status) }}</td><td>{{ e.created_by }}</td>
+<td>{% if e.status=='posted' and not e.reversed_by and e.source_type != 'reversal' %}<details><summary>reverse</summary><form method="post" action="/accounting/reverse/{{ e.id }}"><input type="text" name="reason" placeholder="reason" required><button class="danger" data-confirm="Post a reversal entry?">Reverse</button></form></details>{% elif e.reversed_by %}reversed by #{{ e.reversed_by }}{% endif %}</td></tr>{% endfor %}</table></div>
+
+<h2 id="coa">Chart of accounts</h2>
+<div class="card"><table class="small">{% for a in coa %}<tr><td>{{ a.code }}</td><td>{{ a.name }}</td><td>{{ a.type }}</td></tr>{% endfor %}</table>
+<form method="post" action="/accounting/account"><div class="row"><div><label>Code</label><input type="text" name="code" required></div><div><label>Name</label><input type="text" name="name" required></div>
+<div><label>Type</label><select name="type">{% for t in ['asset','liability','equity','revenue','contra_revenue','expense'] %}<option>{{ t }}</option>{% endfor %}</select></div><div style="flex:none"><button class="sec">Add account</button></div></div></form></div>
+{% endblock %}

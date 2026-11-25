@@ -1,0 +1,27 @@
+{% extends "base.html" %}{% from "_macros.html" import kpi, badge, chart, agentcard %}
+{% block heading %}<b>Dashboard</b> <span class="muted small">{{ k.period.start }} → {{ k.period.end }}</span>{% endblock %}
+{% block content %}
+<div class="grid g4">
+ {{ kpi("Revenue (30d)", money(k.sales.total_revenue.value), "growth: " ~ (k.sales.revenue_growth.value|string ~ "%" if k.sales.revenue_growth.value is not none else "n/a")) }}
+ {{ kpi("Orders", k.sales.total_orders.value, "AOV " ~ money(k.sales.average_order_value.value)) }}
+ {{ kpi("Net profit", money(k.financial.net_profit.value), "fees " ~ money(k.financial.etsy_fees.value)) }}
+ {{ kpi("Conversion", (k.shop.conversion_rate.value|string ~ "%") if k.shop.conversion_rate.value is not none else "import visits", "orders / imported visits") }}
+</div>
+<div class="grid g2" style="margin-top:14px">
+ <div class="card"><h3 style="margin-top:0">Needs your action</h3>
+  {% if actions %}<ul>{% for t, href in actions %}<li><a href="{{ href }}">{{ t }}</a></li>{% endfor %}</ul>{% else %}<p class="muted">Nothing waiting. 🎉</p>{% endif %}
+  <h3>Daily revenue</h3>{{ chart(series) }}
+ </div>
+ <div class="card"><h3 style="margin-top:0">Engine status</h3>
+  <table>
+   <tr><td>AI (Ollama)</td><td>{% if mode=='demo' %}{{ badge('demo') }}{% elif ollama.ok %}{{ badge('connected') }} <span class="small muted">{{ ollama.loaded|length }} model(s) in memory</span>{% else %}{{ badge('error') }} <span class="small muted">Ollama not running</span>{% endif %}</td></tr>
+   {% for p, c in conns.items() %}<tr><td>{{ p|title }} API</td><td>{{ badge('demo' if mode=='demo' else c.status) }} <span class="small muted">{{ c.account_name or '' }}</span></td></tr>{% endfor %}
+   {% for p in ['instagram','facebook'] %}<tr><td>{{ p|title }}</td><td>{{ badge('unavailable') }} <span class="small muted">{{ avail[p][1] }}</span></td></tr>{% endfor %}
+  </table>
+  <h3>Latest notifications</h3>
+  {% for n in notes %}<div class="small">{{ badge(n.level) }} {{ n.title }} <span class="muted">{{ n.body[:120] }}</span> {% if n.link %}<a href="{{ n.link }}">open</a>{% endif %}</div>{% else %}<p class="muted small">none</p>{% endfor %}
+ </div>
+</div>
+<h2>AI team <a class="small" href="/office">open office view →</a></h2>
+<div class="agents">{% for a in agents %}{{ agentcard(a) }}{% endfor %}</div>
+{% endblock %}

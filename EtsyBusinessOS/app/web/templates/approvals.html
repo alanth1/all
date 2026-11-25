@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% from "_macros.html" import badge %}
+{% block heading %}<b>Approval Center</b> <span class="muted small">nothing is published on Etsy without your explicit approval</span>{% endblock %}
+{% block content %}
+<div class="card tw"><table><tr><th>#</th><th>Title</th><th>State</th><th>Validation</th><th class="n">Price</th><th>Updated</th><th></th></tr>
+{% for r in rows %}{% set v = loads(r.validation, {}) %}
+<tr><td>{{ r.id }}</td><td>{{ r.title }}</td><td>{{ badge(r.state) }}</td>
+<td>{% if v.ok %}{{ badge('ok') }}{% else %}{{ badge('error') }} <span class="small muted">{{ v.checks|selectattr('ok','false')|selectattr('severity','equalto','error')|list|length }} error(s)</span>{% endif %}</td>
+<td class="n">{{ money(r.price_cents) }}</td><td class="small">{{ r.updated_at[:16] }}</td><td><a class="btn sec" href="/approvals/{{ r.id }}">Review</a></td></tr>
+{% else %}<tr><td colspan="7" class="muted">No listings yet. Go to <a href="/listings">Listings</a> and generate one from a product.</td></tr>{% endfor %}
+</table></div>{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}{% from "_macros.html" import badge %}
+{% block heading %}<b>Research</b> <span class="muted small">official Etsy API only · every finding is labelled</span>{% endblock %}
+{% block content %}
+<div class="grid g3">
+<div class="card"><h3 style="margin-top:0">Keyword research</h3><form method="post" action="/research/keyword">
+ <label>Keyword</label><input type="text" name="keyword" placeholder="cabin house plan">
+ <label><input type="checkbox" name="track" value="1"> track daily</label><button>🔍 Research</button></form>
+ {% if tracked %}<p class="small muted">Tracked: {% for t in tracked %}{{ t.keyword }}{% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}</div>
+<div class="card"><h3 style="margin-top:0">Competitor listing</h3><form method="post" action="/research/competitor">
+ <label>Etsy listing URL or ID</label><input type="text" name="url" placeholder="https://www.etsy.com/listing/123456789/..."><button>Analyse via API</button></form></div>
+<div class="card"><h3 style="margin-top:0">Manual-assisted research</h3><form method="post" action="/research/manual">
+ <label>URL</label><input type="text" name="url"><label>Title</label><input type="text" name="title" required>
+ <div class="row"><div><label>Price</label><input type="text" name="price"></div><div><label>Tags (comma)</label><input type="text" name="tags"></div></div>
+ <label>Notes</label><input type="text" name="notes"><button class="sec">Save & analyse</button></form></div>
+</div>
+<h2>Reports</h2><div class="card tw"><table><tr><th>Date</th><th>Type</th><th>Title</th></tr>
+{% for r in reports %}<tr><td class="small">{{ r.created_at[:16] }}</td><td>{{ r.kind }}</td><td><a href="/research/report/{{ r.id }}">{{ r.title }}</a></td></tr>{% else %}<tr><td colspan="3" class="muted">No reports yet.</td></tr>{% endfor %}</table></div>
+<h2>Source registry</h2><div class="card tw"><table><tr><th>Source</th><th>Method</th><th>Permission</th><th>Rate limit</th><th>Last access</th><th>Notes</th></tr>
+{% for s in sources %}<tr><td>{{ s.name }}<div class="small"><a href="{{ s.tos_reference }}" target="_blank">terms</a></div></td><td>{{ s.access_method }}</td><td>{{ badge({'allowed':'ok','manual_only':'warn','denied':'err'}.get(s.permission_status, s.permission_status)) }} {{ s.permission_status }}</td>
+<td class="small">{{ s.rate_limit }}</td><td class="small">{{ (s.last_access or '-')[:16] }}</td><td class="small muted">{{ s.notes }}</td></tr>{% endfor %}</table></div>
+{% endblock %}

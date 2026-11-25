@@ -1,0 +1,24 @@
+{% extends "base.html" %}{% from "_macros.html" import badge %}
+{% block heading %}<b>Assets & Products</b> <span class="muted small">source folders are read-only - files are never changed</span>{% endblock %}
+{% block content %}
+<div class="grid g2">
+<div class="card"><h3 style="margin-top:0">Folders</h3>
+ {% for f in folders %}<div class="mono">{{ f }}</div>{% else %}<p class="muted">No folder yet. Add one in <a href="/settings#assets">Settings</a>.</p>{% endfor %}
+ <p class="small muted">Structure: <span class="mono">&lt;folder&gt;/&lt;Product name&gt;/…files</span>. Files inside a sub-folder named <b>marketing</b> are marketing-ready for social media.</p>
+ <form method="post" action="/assets/scan"><button class="sec">🔎 Scan now</button></form></div>
+<div class="card"><h3 style="margin-top:0">Products</h3>
+ <div class="tabs"><a href="/assets">All</a>{% for p in prods %}<a href="/assets?product={{ p.id }}" {% if pid|string == p.id|string %}style="border-color:#f97316"{% endif %}>{{ p.name }}</a>{% endfor %}</div>
+ {% if pid %}{% set p = prods|selectattr('id','equalto',pid|int)|first %}{% if p %}{% set f = loads(p.facts, {}) %}
+ <form method="post" action="/products/{{ p.id }}/facts"><label>Known numbers (for accuracy check), e.g. <span class="mono">bedroom=2, bathroom=1, sq ft=850</span></label>
+ <input type="text" name="numbers" value="{% for k, v in (f.numbers or {}).items() %}{{ k }}={{ v }}{% if not loop.last %}, {% endif %}{% endfor %}">
+ <label>Notes for the writer (what is included in the PDF, etc.)</label><textarea name="notes">{{ f.notes }}</textarea><button class="sec">Save facts</button></form>{% endif %}{% endif %}
+</div></div>
+{% if dups %}<div class="card" style="margin-top:14px"><b>Duplicates detected</b> (same content in different files):<ul class="small">{% for d in dups %}<li>{{ d.paths }}</li>{% endfor %}</ul></div>{% endif %}
+<h2>Files ({{ rows|length }})</h2>
+<div class="card tw"><table><tr><th>File</th><th>Product</th><th>Type</th><th>Info</th><th>Compatible with</th><th>Marketing</th></tr>
+{% for a in rows %}{% set c = loads(a.compat, {}) %}<tr><td class="small">{{ a.rel_path }} <span class="muted">v{{ a.version }}</span></td><td>{{ a.product or '-' }}</td><td>{{ a.kind }}</td>
+<td class="small muted">{% if a.width %}{{ a.width }}×{{ a.height }} {% endif %}{% if a.duration_s %}{{ a.duration_s }}s {% endif %}{% if a.pages %}{{ a.pages }} pages {% endif %}{{ (a.size_bytes/1024/1024)|round(1) }} MB</td>
+<td class="small">{% for k, v in c.items() if v %}<span class="badge b-ok">{{ k }}</span> {% endfor %}</td>
+<td><form method="post" action="/assets/{{ a.id }}/ready" class="inline"><input type="hidden" name="ready" value="{{ 0 if a.marketing_ready else 1 }}"><button class="sec small">{{ '✔ ready' if a.marketing_ready else 'mark ready' }}</button></form></td></tr>
+{% else %}<tr><td colspan="6" class="muted">No files scanned yet.</td></tr>{% endfor %}</table></div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends "base.html" %}{% from "_macros.html" import badge %}
+{% block heading %}<b>Settings</b> <span class="muted small">every change is saved as a new settings version</span>{% endblock %}
+{% block content %}
+<div class="tabs"><a href="#mode">Mode</a><a href="#ai">AI model</a><a href="#connections">Connections</a><a href="#assets">Asset folders</a><a href="#brain">Brain</a><a href="#seo">SEO rules</a><a href="#listing">Listing defaults</a><a href="#social">Social</a><a href="#system">System</a></div>
+
+<div class="card" id="mode"><h3 style="margin-top:0">Mode</h3>
+<p class="small muted"><b>DEMO</b> = sample data + demo AI (safe to explore). <b>LIVE</b> = real Ollama model and real APIs. Data from demo is tagged and never mixed with live records.</p>
+<form method="post" action="/settings/mode" class="row" style="max-width:420px"><div><select name="mode"><option value="demo" {% if s.mode=='demo' %}selected{% endif %}>DEMO</option><option value="live" {% if s.mode=='live' %}selected{% endif %}>LIVE</option></select></div><div style="flex:none"><button>Save</button></div></form></div>
+
+<div class="card" id="ai" style="margin-top:14px"><h3 style="margin-top:0">AI model (Ollama)</h3>
+<p>Ollama: {% if ollama.ok %}{{ badge('connected') }} installed: <span class="mono">{{ ollama.models|join(', ') or 'none' }}</span>{% else %}{{ badge('error') }} <span class="small">not running - install from ollama.com/download and start it</span>{% endif %}</p>
+{% if ollama.loaded %}<p class="small">In memory: {% for m in ollama.loaded %}{{ m.name }} ({{ (m.size_vram/1e9)|round(1) }} GB VRAM){% endfor %}</p>{% endif %}
+<form method="post" action="/settings/ai"><div class="row">
+<div><label>Primary model (12B, Q4)</label><input type="text" name="primary_model" value="{{ s.ai.primary_model }}"></div>
+<div><label>Fallback model (small)</label><input type="text" name="fallback_model" value="{{ s.ai.fallback_model }}"></div>
+<div><label>Active model (set by benchmark; empty = primary)</label><input type="text" name="active_model" value="{{ s.ai.active_model }}"></div></div>
+<div class="row"><div><label>Ollama URL</label><input type="text" name="ollama_url" value="{{ s.ai.ollama_url }}"></div><div><label>Context (num_ctx)</label><input type="number" name="num_ctx" value="{{ s.ai.num_ctx }}"></div>
+<div><label>Unload after idle (seconds)</label><input type="number" name="idle_unload_seconds" value="{{ s.ai.idle_unload_seconds }}"></div><div><label>Min tokens/sec to pass</label><input type="number" step="0.5" name="min_tokens_per_sec" value="{{ s.ai.min_tokens_per_sec }}"></div></div>
+<button class="sec">Save AI settings</button></form>
+<div class="row" style="margin-top:10px;max-width:760px">
+<form method="post" action="/settings/ai/pull" class="row"><div><input type="text" name="model" value="{{ s.ai.primary_model }}"></div><div style="flex:none"><button class="sec">⬇ Download model</button></div></form>
+<form method="post" action="/settings/ai/benchmark"><button>⏱ Run benchmark</button></form></div>
+<p class="small muted">The benchmark tests the primary model (speed, VRAM, valid JSON, rule following). If it fails, it tests the fallback and selects the one that passes. The exact Ollama model tag may differ on ollama.com - type the tag you installed.</p>
+{% for b in bench %}{% set r = loads(b.result, {}) %}<details {% if loop.first %}open{% endif %}><summary>{{ b.created_at[:16] }} · {{ b.model }} · {{ 'PASSED' if b.passed else 'FAILED' }}</summary>
+<table class="small"><tr><th>avg tokens/s</th><td>{{ r.avg_tokens_per_sec }}</td><th>VRAM</th><td>{{ r.vram_gb }} GB of {{ r.total_gb }} GB (fully on GPU: {{ r.fully_on_gpu }})</td><th>valid JSON</th><td>{{ r.json_valid_rate }}</td></tr></table>
+{% for run in r.runs or [] %}<div class="small mono">{{ run }}</div>{% endfor %}{% for e in r.errors or [] %}<div class="small" style="color:#fca5a5">{{ e }}</div>{% endfor %}</details>{% endfor %}
+</div>
+
+<div class="card" id="connections" style="margin-top:14px"><h3 style="margin-top:0">Connections</h3>
+<p class="small muted">Keys are stored encrypted on this PC. See the <a href="/setup">setup guide</a> for how to get them.</p>
+<div class="grid g3">
+{% for p, label, k1, k2 in [('etsy','Etsy Open API v3','Keystring (API key)','Shared secret'),('pinterest','Pinterest API v5','App ID','App secret'),('youtube','YouTube (Google OAuth Desktop client)','Client ID','Client secret')] %}
+<div class="card" style="background:var(--panel2)"><b>{{ label }}</b> {{ badge(conns[p].status) }}<div class="small muted">{{ conns[p].account_name or '' }} {{ (conns[p].last_error or '')[:160] }}</div>
+<form method="post" action="/settings/keys/{{ p }}"><label>{{ k1 }}</label><input type="password" name="key" placeholder="{{ 'saved ••••' if keys[p] else '' }}"><label>{{ k2 }}</label><input type="password" name="secret">
+{% if p=='pinterest' %}<label><input type="checkbox" name="sandbox" value="1"> Trial access (use sandbox)</label>{% endif %}<button class="sec">Save keys</button></form>
+<p class="small muted">Redirect URI to register: <span class="mono">{{ redirects[p] }}</span></p>
+<div class="row"><a class="btn" href="/connect/{{ p }}">Connect</a><form method="post" action="/test/{{ p }}"><button class="sec">Test</button></form><form method="post" action="/disconnect/{{ p }}"><button class="sec">Disconnect</button></form></div></div>{% endfor %}
+<div class="card" style="background:var(--panel2)"><b>Instagram / Facebook</b> {{ badge('unavailable') }}<p class="small muted">Disabled until Meta App Review is approved. The engine is ready; publishing stays off.</p></div>
+<div class="card" style="background:var(--panel2)"><b>Ollama</b><form method="post" action="/test/ollama"><button class="sec">Test</button></form></div>
+</div></div>
+
+<div class="card" id="assets" style="margin-top:14px"><h3 style="margin-top:0">Asset folders (read-only)</h3>
+<form method="post" action="/settings/assets"><label>One folder per line, e.g. <span class="mono">D:\Etsy\Products</span></label><textarea name="folders">{{ s.assets.folders|join('\n') }}</textarea>
+<div class="row"><div><label>Scan every (minutes)</label><input type="number" name="scan_minutes" value="{{ s.assets.scan_minutes }}"></div><div><label>Marketing-ready sub-folder name</label><input type="text" name="marketing_ready_dirname" value="{{ s.assets.marketing_ready_dirname }}"></div></div><button class="sec">Save</button></form></div>
+
+<div class="card" id="brain" style="margin-top:14px"><h3 style="margin-top:0">Shared Brain folder</h3>
+<form method="post" action="/settings/brain" class="row"><div><label>Folder (empty = app default). Point this to an Obsidian vault folder if you like.</label><input type="text" name="path" value="{{ s.brain.path }}"></div><div style="flex:none"><button class="sec">Save</button></div></form></div>
+
+<div class="card" id="seo" style="margin-top:14px"><h3 style="margin-top:0">SEO rules <span class="small muted">version {{ s.seo_rules.version }}</span></h3>
+<form method="post" action="/settings/seo"><div class="row">
+<div><label>Max title words</label><input type="number" name="max_title_words" value="{{ s.seo_rules.max_title_words }}"></div><div><label>Required title suffix</label><input type="text" name="required_suffix" value="{{ s.seo_rules.required_suffix }}"></div>
+<div><label>Tag count</label><input type="number" name="tag_count" value="{{ s.seo_rules.tag_count }}"></div><div><label>Min description words</label><input type="number" name="min_description_words" value="{{ s.seo_rules.min_description_words }}"></div></div>
+<div class="row"><div><label>Banned words (comma)</label><input type="text" name="banned_words" value="{{ s.seo_rules.banned_words|join(', ') }}"></div><div><label>Words allowed to repeat (comma)</label><input type="text" name="repeat_ignore" value="{{ s.seo_rules.repeat_ignore|join(', ') }}"></div></div>
+<label><input type="checkbox" name="focus_keyword_first" value="1" {% if s.seo_rules.focus_keyword_first %}checked{% endif %}> Focus keyword at the beginning</label>
+<label><input type="checkbox" name="no_repeated_words" value="1" {% if s.seo_rules.no_repeated_words %}checked{% endif %}> No repeated words in title</label><button class="sec">Save rules</button></form></div>
+
+<div class="card" id="listing" style="margin-top:14px"><h3 style="margin-top:0">Listing defaults</h3>
+<form method="post" action="/settings/listing-defaults"><div class="row">
+<div><label>Who made</label><select name="who_made">{% for w in ['i_did','someone_else','collective'] %}<option {% if s.listing_defaults.who_made==w %}selected{% endif %}>{{ w }}</option>{% endfor %}</select></div>
+<div><label>When made</label><select name="when_made">{% for w in ['made_to_order','2020_2026','2010_2019'] %}<option {% if s.listing_defaults.when_made==w %}selected{% endif %}>{{ w }}</option>{% endfor %}</select></div>
+<div><label>Default taxonomy ID (Etsy category)</label><input type="number" name="taxonomy_id" value="{{ s.listing_defaults.taxonomy_id }}"></div><div><label>Quantity</label><input type="number" name="quantity" value="{{ s.listing_defaults.quantity }}"></div></div><button class="sec">Save</button></form></div>
+
+<div class="card" id="social" style="margin-top:14px"><h3 style="margin-top:0">Social publishing</h3>
+<form method="post" action="/settings/social"><div class="row">
+<div><label>Pinterest posts/day</label><input type="number" name="pin_per_day" value="{{ s.social.pinterest.posts_per_day }}"></div><div><label>Pinterest hours (UTC, comma)</label><input type="text" name="pin_hours" value="{{ s.social.pinterest.post_hours|join(',') }}"></div>
+<div><label>Pinterest board</label>{% if boards %}<select name="board_id">{% for b in boards %}<option value="{{ b.id }}" {% if s.social.pinterest.board_id==b.id %}selected{% endif %}>{{ b.name }}</option>{% endfor %}</select>{% else %}<input type="text" name="board_id" value="{{ s.social.pinterest.board_id }}" placeholder="board id (connect Pinterest to choose)">{% endif %}</div></div>
+<div class="row"><div><label>YouTube videos/week</label><input type="number" name="yt_per_week" value="{{ s.social.youtube.posts_per_week }}"></div><div><label>YouTube hours (UTC)</label><input type="text" name="yt_hours" value="{{ s.social.youtube.post_hours|join(',') }}"></div>
+<div><label>YouTube privacy</label><select name="yt_privacy">{% for p in ['public','unlisted','private'] %}<option {% if s.social.youtube.privacy==p %}selected{% endif %}>{{ p }}</option>{% endfor %}</select></div></div><button class="sec">Save</button></form></div>
+
+<div class="card" id="system" style="margin-top:14px"><h3 style="margin-top:0">System</h3>
+<form method="post" action="/backup" class="inline"><button class="sec">💾 Backup database now</button></form> <span class="small muted">Automatic daily backup in data/backups (14 kept).</span>
+<h3>Settings history</h3><table class="small">{% for v in versions %}<tr><td>v{{ v.version }}</td><td>{{ v.changed_by }}</td><td>{{ v.created_at }}</td></tr>{% endfor %}</table></div>
+{% endblock %}

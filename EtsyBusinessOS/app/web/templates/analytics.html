@@ -1,0 +1,32 @@
+{% extends "base.html" %}{% from "_macros.html" import kpi, chart, badge %}
+{% block heading %}<b>Analytics</b> <span class="muted small">numbers computed by Python/SQL; AI only explains</span>{% endblock %}
+{% block content %}
+<form class="row" method="get" style="max-width:520px"><div><label>From</label><input type="date" name="start" value="{{ start }}"></div><div><label>To</label><input type="date" name="end" value="{{ end }}"></div><div style="flex:none"><button class="sec">Apply</button></div></form>
+<h2>Sales</h2><div class="grid g4">
+{{ kpi("Total revenue", money(k.sales.total_revenue.value), k.sales.total_revenue.source) }}{{ kpi("Orders", k.sales.total_orders.value, k.sales.total_orders.source) }}
+{{ kpi("Average order value", money(k.sales.average_order_value.value), "computed") }}{{ kpi("Refund rate", (k.sales.refund_rate.value|string ~ '%') if k.sales.refund_rate.value is not none else '-', "computed") }}</div>
+<div class="card" style="margin-top:14px"><b>Daily revenue</b> <span class="small muted">growth vs previous period: {{ k.sales.revenue_growth.value if k.sales.revenue_growth.value is not none else 'n/a' }}%</span>{{ chart(series) }}
+{% if k.anomalies %}<p class="small">⚠ Anomalies: {% for a in k.anomalies %}{{ a.day }} ({{ money(a.revenue) }}, z={{ a.z }}){% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}</div>
+<h2>Shop performance</h2><div class="grid g4">
+{{ kpi("Listing views", k.shop.listing_views.value, k.shop.listing_views.source) }}{{ kpi("New favorites", k.shop.favorites.value, k.shop.favorites.source) }}
+{{ kpi("Visits", k.shop.visits.value if k.shop.visits.value is not none else 'not imported', k.shop.visits.source ~ ' (' ~ k.shop.visits.days_imported ~ ' days)') }}
+{{ kpi("Conversion rate", (k.shop.conversion_rate.value|string ~ '%') if k.shop.conversion_rate.value is not none else '-', k.shop.conversion_rate.source) }}</div>
+<div class="grid g2" style="margin-top:14px">
+<div class="card tw"><b>Top products</b><table><tr><th>Listing</th><th class="n">Units</th><th class="n">Revenue</th></tr>{% for p in k.sales.product_revenue.value %}<tr><td class="small">{{ p.title }}</td><td class="n">{{ p.units }}</td><td class="n">{{ money(p.revenue) }}</td></tr>{% endfor %}</table></div>
+<div class="card tw"><b>Traffic sources</b> <span class="small muted">(import)</span><table>{% for s in k.shop.traffic_sources.value %}<tr><td>{{ s.channel }}</td><td class="n">{{ s.visits }}</td></tr>{% else %}<tr><td class="muted">not imported</td></tr>{% endfor %}</table>
+<b>Search terms</b> <span class="small muted">(import)</span><table>{% for t in terms %}<tr><td>{{ t.term }}</td><td class="n">{{ t.v }}</td></tr>{% else %}<tr><td class="muted">not imported</td></tr>{% endfor %}</table></div></div>
+<h2>Marketing & financial</h2><div class="grid g4">
+{{ kpi("Published posts", k.marketing.published_posts.value) }}{{ kpi("Impressions", k.marketing.impressions.value, "Pinterest API") }}
+{{ kpi("Outbound clicks", k.marketing.outbound_clicks.value, "Pinterest API") }}{{ kpi("Video views", k.marketing.views.value, "YouTube API") }}
+{{ kpi("Gross revenue (ledger)", money(k.financial.gross_revenue.value)) }}{{ kpi("Etsy fees", money(k.financial.etsy_fees.value)) }}
+{{ kpi("Operating expenses", money(k.financial.operating_expenses.value)) }}{{ kpi("Net profit", money(k.financial.net_profit.value)) }}</div>
+<h2 id="import">Import Shop Stats</h2>
+<div class="card"><p class="small muted">The Etsy API has no endpoint for visits, traffic sources or search terms. Open Etsy → Shop Manager → Stats, then paste the table here (or upload CSV). Takes about 2 minutes per week.</p>
+<form method="post" action="/analytics/import" enctype="multipart/form-data"><div class="row">
+<div><label>What is it?</label><select name="kind"><option value="daily">Daily visits (columns: date, visits[, views, orders, revenue])</option><option value="traffic_sources">Traffic sources (source, visits[, date])</option><option value="search_terms">Search terms (search term, visits)</option></select></div>
+<div><label>CSV file</label><input type="file" name="file" accept=".csv,.txt"></div></div>
+<label>…or paste the table (comma or tab separated, first row = headers)</label><textarea name="text" placeholder="date,visits&#10;2026-11-01,120"></textarea><button>Import</button></form></div>
+<h2>AI analysis</h2><form method="post" action="/analytics/report"><button class="sec">🧠 Ask Nova to explain the last 30 days</button></form>
+{% for r in reports %}{% set i = loads(r.interpretation, {}) %}<div class="card" style="margin-top:10px"><b>{{ i.headline }}</b> <span class="small muted">{{ r.period_start }}→{{ r.period_end }} · {{ i.model }}</span> {{ badge('ai_interpretation') }}
+<div class="grid g2 small">{% for key in ['what_changed','likely_reasons','product_insights','recommendations','data_gaps'] %}<div><b>{{ key.replace('_',' ') }}</b><ul>{% for x in i[key] or [] %}<li>{{ x }}</li>{% endfor %}</ul></div>{% endfor %}</div></div>{% endfor %}
+{% endblock %}

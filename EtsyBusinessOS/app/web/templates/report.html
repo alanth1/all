@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% from "_macros.html" import badge %}
+{% macro show(d) %}{% if d is mapping %}<table class="small">{% for k, v in d.items() %}<tr><th style="width:200px">{{ k }}</th><td>{{ show(v) }}</td></tr>{% endfor %}</table>
+{% elif d is iterable and d is not string %}{% if d and d[0] is mapping %}<table class="small"><tr>{% for k in d[0].keys() %}<th>{{ k }}</th>{% endfor %}</tr>{% for row in d %}<tr>{% for v in row.values() %}<td>{{ v }}</td>{% endfor %}</tr>{% endfor %}</table>
+{% else %}<ul>{% for x in d %}<li>{{ show(x) }}</li>{% endfor %}</ul>{% endif %}{% else %}{{ d }}{% endif %}{% endmacro %}
+{% block heading %}<b>{{ r.title }}</b> <span class="small muted">{{ r.created_at[:16] }} · model {{ body.model }}</span>{% endblock %}
+{% block content %}
+<p class="small muted">Labels: {{ badge('verified') }} from the official API · {{ badge('estimated') }} computed indicator · {{ badge('ai_interpretation') }} AI opinion · {{ badge('hypothesis') }} to be tested</p>
+{% for s in body.sections %}<div class="card" style="margin-bottom:14px"><h3 style="margin-top:0">{{ s.title }} {{ badge(s.label) }}</h3>{{ show(s.data) }}</div>{% endfor %}
+<p class="small muted">Prices in the verified section are in cents.</p>
+{% endblock %}

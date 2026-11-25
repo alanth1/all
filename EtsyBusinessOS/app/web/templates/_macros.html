@@ -1,0 +1,10 @@
+{% macro badge(s) %}<span class="badge b-{{ (s or '')|lower }}">{{ s }}</span>{% endmacro %}
+{% macro kpi(label, value, sub='') %}<div class="card kpi"><div class="l">{{ label }}</div><div class="v">{{ value }}</div>{% if sub %}<div class="s">{{ sub }}</div>{% endif %}</div>{% endmacro %}
+{% macro chart(series, key='revenue') %}
+{% set mx = (series|map(attribute=key)|max) or 1 %}{% set n = series|length %}
+<svg class="chart" viewBox="0 0 {{ n*10 }} 100" preserveAspectRatio="none" role="img" aria-label="daily {{ key }}">
+{% for p in series %}<rect x="{{ loop.index0*10+1 }}" y="{{ 100 - (p[key]/mx*95) }}" width="8" height="{{ p[key]/mx*95 }}" fill="#f97316" opacity=".85"><title>{{ p.day }}: {{ p[key] }}</title></rect>{% endfor %}
+</svg>{% endmacro %}
+{% macro agentcard(a) %}<div class="agent"><div class="avatar" style="background:{{ a.color }}">{{ a.name[:2] }}</div>
+<div style="min-width:0"><b>{{ a.name }}</b> <span class="badge b-{{ a.status }}">{{ a.status|upper }}</span><div class="small muted">{{ a.role }} · {{ a.room }}</div>
+<div class="small muted">{% if a.current %}doing: {{ a.current }}{% elif a.waiting %}{{ a.waiting }} waiting approval{% elif a.queued %}{{ a.queued }} queued{% else %}&nbsp;{% endif %}</div></div></div>{% endmacro %}

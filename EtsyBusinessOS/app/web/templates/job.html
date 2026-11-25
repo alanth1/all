@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% from "_macros.html" import badge %}
+{% block heading %}<b>Job #{{ j.id }}</b> {{ j.type }} {{ badge(j.state) }}{% endblock %}
+{% block content %}
+<div class="grid g2"><div class="card"><table class="small">{% for k in ['agent','lane','priority','attempts','max_attempts','idempotency_key','run_after','started_at','finished_at','created_at'] %}<tr><th>{{ k }}</th><td>{{ j[k] }}</td></tr>{% endfor %}</table>
+<div class="row" style="margin-top:10px"><form method="post" action="/automation/job/{{ j.id }}/retry"><button class="sec">Retry now</button></form><form method="post" action="/automation/job/{{ j.id }}/cancel"><button class="danger">Cancel</button></form></div></div>
+<div class="card"><b>Payload</b><pre>{{ j.payload }}</pre><b>Result</b><pre>{{ j.result or '-' }}</pre>{% if j.error %}<b>Error</b><pre>{{ j.error }}</pre>{% endif %}</div></div>
+<h2>Events</h2><div class="card"><table class="small">{% for e in ev %}<tr><td>{{ e.created_at }}</td><td>{{ badge(e.state) }}</td><td>{{ e.message }}</td></tr>{% endfor %}</table></div>
+{% endblock %}

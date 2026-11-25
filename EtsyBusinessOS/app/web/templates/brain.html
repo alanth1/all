@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block heading %}<b>Shared Brain</b> <span class="muted small">Markdown notes every agent reads · open the same folder in Obsidian</span>{% endblock %}
+{% block content %}<p class="small muted">Folder: <span class="mono">{{ folder }}</span> (change in <a href="/settings#brain">Settings</a>)</p>
+<div class="grid" style="grid-template-columns:260px 1fr"><div class="card">{% for n in notes %}<div><a href="/brain?note={{ n.name|urlencode }}" {% if n.name==name %}style="color:#fff;font-weight:700"{% endif %}>{{ n.name }}</a></div>{% endfor %}
+<form method="get" action="/brain" style="margin-top:12px"><label>New note</label><input type="text" name="note" placeholder="05 Pricing Policy.md"></form></div>
+<div class="card"><form method="post" action="/brain/save"><input type="hidden" name="name" value="{{ name }}"><b>{{ name }}</b><textarea name="body" style="min-height:460px;font-family:Consolas,monospace">{{ body }}</textarea><button>Save</button></form></div></div>{% endblock %}

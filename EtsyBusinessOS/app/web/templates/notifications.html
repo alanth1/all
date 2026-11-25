@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% from "_macros.html" import badge %}
+{% block heading %}<b>Notifications</b>{% endblock %}
+{% block content %}<div class="card tw"><table><tr><th>Time</th><th>Level</th><th>Title</th><th>Detail</th><th></th></tr>
+{% for n in rows %}<tr><td class="small">{{ n.created_at[:16] }}</td><td>{{ badge(n.level) }}</td><td>{{ n.title }}</td><td class="small muted">{{ n.body }}</td><td>{% if n.link %}<a href="{{ n.link }}">open</a>{% endif %}</td></tr>{% endfor %}
+</table></div>{% endblock %}

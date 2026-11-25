@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% from "_macros.html" import badge %}
+{% block heading %}<b>Automation Monitor</b> <span class="muted small">persistent job queue · AI lane runs one task at a time</span>{% endblock %}
+{% block content %}
+<div class="tabs"><a href="/automation">All</a>{% for s, n in stats.items() %}<a href="/automation?state={{ s }}">{{ s }} ({{ n }})</a>{% endfor %}</div>
+<div class="card tw"><table class="small"><tr><th>#</th><th>Type</th><th>Agent</th><th>Lane</th><th>State</th><th class="n">Tries</th><th>Run after</th><th>Updated</th><th>Error</th></tr>
+{% for j in rows %}<tr id="job-{{ j.id }}"><td><a href="/automation/job/{{ j.id }}">{{ j.id }}</a></td><td>{{ j.type }}</td><td>{{ j.agent }}</td><td>{{ j.lane }}</td><td>{{ badge(j.state) }}</td><td class="n">{{ j.attempts }}/{{ j.max_attempts }}</td><td>{{ j.run_after[:16] }}</td><td>{{ j.updated_at[:16] }}</td><td class="muted">{{ (j.error or '')[:120] }}</td></tr>{% endfor %}
+</table></div>{% endblock %}

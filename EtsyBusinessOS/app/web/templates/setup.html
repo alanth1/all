@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block heading %}<b>Setup API guide</b> <span class="muted small">do these once; each step has a Test button in Settings</span>{% endblock %}
+{% block content %}
+<div class="grid g2">
+<div class="card"><h3 style="margin-top:0">1 · Ollama + Gemma (local AI)</h3><ol class="small">
+<li>Install Ollama for Windows: <a href="https://ollama.com/download" target="_blank">ollama.com/download</a>. It runs in the system tray.</li>
+<li>In <a href="/settings#ai">Settings → AI</a> type the model tag (for example the Gemma 12B Q4 tag listed on ollama.com) and click <b>Download model</b>. Also download the small fallback model.</li>
+<li>Click <b>Run benchmark</b>. The app keeps the model that passes on your PC (12 GB VRAM, 8 GB RAM).</li>
+<li>Switch <a href="/settings#mode">Mode</a> to <b>LIVE</b>.</li></ol>
+<p class="small muted">Tip: close games/browsers with many tabs while AI is working - RAM is 8 GB.</p></div>
+
+<div class="card"><h3 style="margin-top:0">2 · Etsy Open API v3</h3><ol class="small">
+<li>Open <a href="https://www.etsy.com/developers/your-apps" target="_blank">etsy.com/developers/your-apps</a> → <b>Create a new app</b>.</li>
+<li>Copy the <b>Keystring</b> and <b>Shared secret</b> into <a href="/settings#connections">Settings → Connections → Etsy</a>.</li>
+<li>Register this redirect URI (callback URL) in the app: <span class="mono">{{ redirects.etsy }}</span></li>
+<li>Click <b>Connect</b> and approve the scopes (listings read/write, shop read, transactions read).</li>
+<li>Click <b>Test</b>. New apps start with personal access; that is enough for your own shop.</li></ol></div>
+
+<div class="card"><h3 style="margin-top:0">3 · Pinterest API v5</h3><ol class="small">
+<li>Business account → <a href="https://developers.pinterest.com/apps/" target="_blank">developers.pinterest.com/apps</a> → <b>Connect app</b>.</li>
+<li>Add redirect URI: <span class="mono">{{ redirects.pinterest }}</span></li>
+<li>Save App ID + secret in Settings. While you have <b>Trial access</b>, tick "use sandbox" (pins go to the sandbox). Request <b>Standard access</b> for real publishing.</li>
+<li>Connect, then choose a board in <a href="/settings#social">Settings → Social</a>.</li></ol></div>
+
+<div class="card"><h3 style="margin-top:0">4 · YouTube Data API v3</h3><ol class="small">
+<li><a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a> → new project → enable <b>YouTube Data API v3</b>.</li>
+<li>OAuth consent screen: External, add yourself as test user, scopes youtube.upload + youtube.readonly.</li>
+<li>Credentials → OAuth client ID → type <b>Desktop app</b>. Copy client ID + secret into Settings. (Desktop clients accept the local redirect <span class="mono">{{ redirects.youtube }}</span>.)</li>
+<li>Connect. Note: until Google audits your app, uploaded videos are locked to <b>private</b> - the app warns you when that happens.</li></ol></div>
+
+<div class="card"><h3 style="margin-top:0">5 · Instagram & Facebook</h3><p class="small">Marked <b>unavailable</b>. They need Meta App Review (business verification + permissions such as content publishing). When approved, these platforms can be enabled in a later version.</p></div>
+<div class="card"><h3 style="margin-top:0">6 · Weekly routine (2 minutes)</h3><ul class="small"><li>Approve listings in the <a href="/approvals">Approval Center</a>.</li>
+<li>Paste Shop Stats (visits, traffic sources, search terms) in <a href="/analytics#import">Analytics → Import</a>.</li><li>Import your bank CSV in <a href="/accounting#recon">Accounting → Reconciliation</a>.</li></ul></div>
+</div>{% endblock %}

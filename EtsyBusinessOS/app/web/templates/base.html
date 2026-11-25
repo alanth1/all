@@ -1,0 +1,33 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Etsy Business OS{% endblock %}</title><link rel="stylesheet" href="/static/style.css"></head>
+<body><div class="layout">
+<nav class="side">
+  <div class="brand">ETSY <span>BUSINESS OS</span><div class="small muted">v{{ VERSION }}</div></div>
+  {% set items = [("/", "🏠", "Dashboard"), ("/office", "🏢", "AI Office"), ("/approvals", "✅", "Approval Center"), ("/listings", "📝", "Listings"),
+     ("/assets", "🗂️", "Assets & Products"), ("/research", "🔍", "Research"), ("/social", "📣", "Social Media"), ("/analytics", "📊", "Analytics"),
+     ("/accounting", "💰", "Accounting"), ("/automation", "⚙️", "Automation"), ("/audit", "📜", "Audit Log"), ("/brain", "🧠", "Shared Brain")] %}
+  {% for href, ico, label in items %}<a href="{{ href }}" class="{{ 'on' if (path == href or (href != '/' and path.startswith(href))) }}">{{ ico }} {{ label }}</a>{% endfor %}
+  <div class="sec">System</div>
+  <a href="/settings" class="{{ 'on' if path.startswith('/settings') }}">🔧 Settings</a>
+  <a href="/setup" class="{{ 'on' if path.startswith('/setup') }}">🧭 Setup API guide</a>
+  <a href="/diagnostics" class="{{ 'on' if path.startswith('/diagnostics') }}">🩺 Diagnostics</a>
+</nav>
+<div>
+<header class="top">
+  <div>{% block heading %}{% endblock %}</div>
+  <div class="row" style="flex:none;gap:14px">
+    <span class="badge {{ 'b-demo' if mode=='demo' else 'b-ok' }}">{{ mode|upper }} MODE</span>
+    <span class="small muted">AI: <b>{{ 'demo generator' if mode=='demo' else ai_model }}</b></span>
+    <span class="small muted">Queue: <b>{{ queue }}</b></span>
+    <a href="/notifications">🔔 {{ unread }}</a>
+  </div>
+</header>
+<main>
+{% if mode == 'demo' %}<div class="demo-banner">DEMO MODE: sample data and a deterministic demo AI are used. Nothing is sent to Etsy, Pinterest or YouTube. Switch to LIVE in <a href="/settings">Settings</a> after connecting your accounts.</div>{% endif %}
+{% if msg %}<div class="msg ok">{{ msg }}</div>{% endif %}{% if err %}<div class="msg err">{{ err }}</div>{% endif %}
+{% block content %}{% endblock %}
+</main></div></div>
+<script>document.querySelectorAll('form[method=post]').forEach(f=>{if(!f.querySelector('input[name=csrf]')){const i=document.createElement('input');i.type='hidden';i.name='csrf';i.value='{{ CSRF }}';f.appendChild(i)}});
+document.querySelectorAll('[data-confirm]').forEach(b=>b.addEventListener('click',e=>{if(!confirm(b.dataset.confirm))e.preventDefault()}));</script>
+{% block scripts %}{% endblock %}
+</body></html>
