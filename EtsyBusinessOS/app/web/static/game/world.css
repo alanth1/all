@@ -52,3 +52,9 @@ h3{font:12px Pix;color:#c4b5fd;letter-spacing:.08em}
 @keyframes flick{0%,100%{opacity:1}45%{opacity:.4}50%{opacity:1}55%{opacity:.3}}@keyframes slide{from{opacity:0;transform:translateX(40px)}}@keyframes slidein{from{transform:translateX(60px);opacity:.4}}
 @media (min-width:2200px){#hud,#toasts,#tip,#hint,.pwin{zoom:1.35}}@media (min-width:3200px){#hud,#toasts,#tip,#hint,.pwin{zoom:1.8}}
 .npc-icon.pop{background:none!important;border:0!important;box-shadow:none!important;font-size:18px;display:block!important;animation:none}
+/* palette B HUD: rainy terminal */
+#hud{background:rgba(10,14,22,.78)!important;border:1px solid #2a3550!important;border-left:3px solid #ff3fa4!important;box-shadow:0 0 18px rgba(255,63,164,.18),inset 0 0 24px rgba(63,240,255,.05)!important;color:#b9c8e6!important}
+#hud .brand{color:#3ff0ff!important;text-shadow:0 0 8px #3ff0ff,2px 0 #ff3fa4!important;letter-spacing:3px}
+#hud .brand span{color:#ff3fa4!important;text-shadow:0 0 8px #ff3fa4!important}
+.toast{background:rgba(10,14,22,.88)!important;border-left:3px solid #3ff0ff!important}
+.room-label span{background:rgba(10,14,22,.8)!important;border:1px solid var(--accent)!important;box-shadow:0 0 10px var(--accent)!important}
