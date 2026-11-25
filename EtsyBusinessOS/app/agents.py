@@ -5,40 +5,43 @@ from __future__ import annotations
 from . import db
 
 AGENTS = [
-    {"name": "Boss", "role": "Chief of Staff", "room": "Command Deck", "color": "#f59e0b", "x": 3, "y": 0,
-     "desc": "Plans the day, watches queues, chases pending approvals, writes the daily brief.",
-     "types": ["daily_brief", "approval_reminder", "backup", "unload_ai_idle"]},
-    {"name": "Scout", "role": "Market Researcher", "room": "Research Lab", "color": "#22c55e", "x": 0, "y": 0,
-     "desc": "Keyword & competitor research through the Etsy API only (no scraping).",
-     "types": ["research_keyword", "research_competitor", "research_daily"]},
-    {"name": "Quill", "role": "SEO Writer", "room": "Writers Room", "color": "#a855f7", "x": 6, "y": 0,
+    {"name": "KAI-07", "role": "Chief of Operations", "room": "Command Deck", "room_id": "command", "color": "#22d3ee",
+     "desc": "Plans the day, watches every queue, chases pending approvals, writes the daily brief, keeps the audit trail.",
+     "types": ["daily_brief", "approval_reminder", "unload_ai_idle"]},
+    {"name": "RAZE-11", "role": "Market Researcher", "room": "Research Lab", "room_id": "lab", "color": "#4ade80",
+     "desc": "Keyword & competitor research through the official Etsy API only (no scraping).",
+     "types": ["research_keyword", "research_interpret", "research_competitor", "research_competitor_interpret", "research_daily"]},
+    {"name": "JUNO-X9", "role": "SEO Copywriter", "room": "Writers Studio", "room_id": "studio", "color": "#c084fc",
      "desc": "Writes titles, descriptions and 13 tags from real product facts.",
      "types": ["listing_generate"]},
-    {"name": "Sherlock", "role": "Quality Control", "room": "QA Desk", "color": "#06b6d4", "x": 0, "y": 3,
+    {"name": "VOLT-3", "role": "Quality Control", "room": "QA Bay", "room_id": "qa", "color": "#facc15",
      "desc": "Deterministic validators: SEO rules, files, images, pricing consistency.",
      "types": ["listing_validate"]},
-    {"name": "Etta", "role": "Etsy Shop Manager", "room": "Front Office", "color": "#f97316", "x": 3, "y": 3,
-     "desc": "Syncs shop, listings, orders, payments, ledger; publishes approved listings.",
+    {"name": "NYX-21", "role": "Etsy Shop Manager", "room": "Shop Floor", "room_id": "shop", "color": "#f472b6",
+     "desc": "Syncs shop, listings, orders and ledger; publishes listings you approved.",
      "types": ["etsy_sync", "etsy_publish", "etsy_sync_listings", "etsy_sync_receipts", "etsy_sync_ledger"]},
-    {"name": "Pixie", "role": "Social Media Manager", "room": "Growth Studio", "color": "#ec4899", "x": 6, "y": 3,
+    {"name": "HEX-04", "role": "Social Media Manager", "room": "Growth Studio", "room_id": "growth", "color": "#fb7185",
      "desc": "Plans, writes and publishes Pinterest & YouTube posts from ready assets.",
-     "types": ["social_plan", "social_copy", "social_publish", "social_metrics"]},
-    {"name": "Libby", "role": "Asset Librarian", "room": "Archive", "color": "#84cc16", "x": 0, "y": 6,
-     "desc": "Reads asset folders (read-only), hashes, extracts metadata, maps assets to products.",
+     "types": ["social_plan", "social_copy", "social_publish", "social_publish_one", "social_metrics", "social_review"]},
+    {"name": "SABLE-6", "role": "Asset Archivist", "room": "Archive", "room_id": "archive", "color": "#d6a76c",
+     "desc": "Reads asset folders read-only, hashes files, extracts metadata, maps assets to products.",
      "types": ["asset_scan"]},
-    {"name": "Nova", "role": "Business Analyst", "room": "Data Room", "color": "#3b82f6", "x": 3, "y": 6,
+    {"name": "ORIN-88", "role": "Business Analyst", "room": "Data Room", "room_id": "data", "color": "#60a5fa",
      "desc": "Explains KPIs computed by Python, finds trends and anomalies.",
      "types": ["analytics_report", "listing_snapshot"]},
-    {"name": "Judith", "role": "Finance & Bookkeeping", "room": "Finance Office", "color": "#eab308", "x": 6, "y": 6,
+    {"name": "KADE-12", "role": "Finance & Bookkeeping", "room": "Finance Vault", "room_id": "finance", "color": "#fbbf24",
      "desc": "Double-entry ledger, reconciliation, financial reports. Never moves money.",
      "types": ["accounting_post_etsy", "expense_classify", "reconcile"]},
+    {"name": "ZERO-1", "role": "Systems Engineer", "room": "Server Room", "room_id": "server", "color": "#fb923c",
+     "desc": "Keeps the machine alive: settings, connections, AI model, backups, CPU/GPU/RAM/VRAM, repairs.",
+     "types": ["backup", "ai_benchmark", "ai_pull", "npc_banter"]},
 ]
 
 _BY_TYPE = {t: a["name"] for a in AGENTS for t in a["types"]}
 
 
 def agent_for(job_type: str) -> str:
-    return _BY_TYPE.get(job_type, "Boss")
+    return _BY_TYPE.get(job_type, "KAI-07")
 
 
 def statuses() -> list[dict]:
@@ -61,7 +64,7 @@ def statuses() -> list[dict]:
             status = "queued"
         else:
             status = "idle"
-        out.append({**{k: a[k] for k in ("name", "role", "room", "color", "x", "y", "desc")}, "status": status,
+        out.append({**{k: a[k] for k in ("name", "role", "room", "room_id", "color", "desc")}, "status": status,
                     "current": running["type"] if running else None, "queued": queued, "waiting": waiting, "failed": failed,
                     "last": dict(last) if last else None})
     return out

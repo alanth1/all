@@ -171,7 +171,7 @@ class KPIInterpretation(BaseModel):
     data_gaps: list[str]
 
 
-@handler("analytics_report", lane="ai", agent="Nova", max_attempts=2)
+@handler("analytics_report", lane="ai", agent="ORIN-88", max_attempts=2)
 def job_report(payload, job):
     end = payload.get("end") or date.today().isoformat()
     start = payload.get("start") or (date.fromisoformat(end) - timedelta(days=29)).isoformat()

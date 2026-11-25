@@ -74,4 +74,5 @@ DEFAULT_SETTINGS: dict = {
         "daily_quota": 5000,
     },
     "accounting": {"base_currency": "USD"},
+    "world": {"city": "", "lat": "", "lon": "", "ai_banter": True},
 }

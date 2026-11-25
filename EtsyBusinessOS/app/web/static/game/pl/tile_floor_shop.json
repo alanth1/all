@@ -1,0 +1,45 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "488bc5e5-a6ad-40b9-aea1-ae1492c2ad52",
+ "status": "completed",
+ "created_at": "2026-11-25T10:36:21.067214+00:00",
+ "last_response": {
+  "seed": 2118973058,
+  "type": "done",
+  "image": {
+   "type": "base64",
+   "width": 32,
+   "base64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAFoElEQVR4nO1Wa0wUVxT+7szA8ljAZQEBN6iA4iNFRUtLYmop2hrFNBqNUWyjrUlptQrGiKUBaxWD1kZSjCDWH21VtG3SWHw0ilWaGi3qalFQkUWWiEJZQHYX2MfM3ubedVfQpg2tiWnCSWbmzplz73ce37lziQgJz1OE54qOIQcwVAIMkVAYakP8nzeiub5plF3/ZQ3p30x6U0yiQWIwPt24jL9rChXaBRHHHWfIYNcig/kZLfN9lforTsxNTOPvkk2AzWnGtDWxcJkCkbmtCM7gIJzt/JU8UwfeEpMpFQOQ88ECmM73oFvu8zrARPZzYdIb8aC+CjK2buY6MxFRqxj+0RHp7z6uEVKpQ6tBTk46qN0HROWE0doJ+D22SciOhWSWkZ6zGSOImuv2rt0GW6cZX5Qfpn+4unBK/p0MKgOpodOpj9mC0twst0Lltqk7YODPQLWKPw/pj0ErBeN7RzXCSRAH9h8v4/auRkxYNNI9zy4ju6AYDej+y4yQ/g5khi/gjN6QNR/EQkGDHtnbZa8jLAswSRhd+DZXhYgBODh2g7cU/bnBJCglBmNHhGLyZ5mYLqZwXX+ySp5BijCKMmAP2FPgj8a5HxehSTAjnmixc/IqNzBcHJRdzAkGHpWmg02nw9FNJfiIXkMcVNi9fBHuS72QvuyiD4gN1XIdIYliAn0vNBWpGYmcYD1WO09x5OLRqC2tRtLSFzhI0dav0SlREKUX+SWred1r9zd7ow6R/BE4QYOIqTKoIwCrcw+iUzYgnkQgd/s6OFtcqK+4zB2LignHnV8akXfmCCQGnvb+LPQYu3C9qQbpWTPQZ/eFs0Xh4GXbv0WV8ybaqQVFcR9yMFZjT8o9nRCxKBYBwT1Ym10GFl2n0obT7xSAxgYCdidUYYBWE44HZ+4hakU4xuqGo4faQTLFGdSqWJC/M9ebaZXdiU35xWgjdrRQK8pWrkJQQCSaf6p/irDMCRZ92aVyGCR3uY6s38hb0kNeVjr9oetIWjEFdpUP/EwOLN5ZCKPc6+aAWgxCyYa9CPBx91et4zZMxIVPlmYhWitArVODmu1PgTOmswydclyEXQzF7ikr+/HnMbnv/NbMwSv2HMfPrfXoIwrXu4ht4L+gRK6CXrmPCtrIazdmdAgHv1J6A3XfGTEl92X4xBAOzJ4Lt6zj877JK0VBYgbnD7uOFVUNIO+tGzeRnb8Ll1sbcVKp51ll6Reon7sEHsOzrluYKIzEUUXPdj+w3e/F8EgsLFwOw8kOXK2qgOFBG+5SIwRhGFYkpg/IiIcPce+Og8vs7qLK/T+g+P5pNNAOLEEiTogN0CGKfzMpCqR9ynkyj8RSNVVjPAkZsCDb99lksk6NS501uOAyYE3YfCxeMA/WJgsshm5O1JqKu24iJkdixMxRMLc9RGHB5zBD5hGHPNohOySCBIzi0fcoBG1oIrxQk5OGocHYjJYOBWZX92MHqC9ShDhcaK9GOWrwujSJ61kbKVPD+Ni4rwX+ESI0kcNxofIcUAlctFeiXDF57T1yTjYgGpFoggHDRQBKv/NA0rRkJGhFtIc42Cv5ETdgJN3Q0EBIopuc/lREQ4cBGXl5sNU95HuBNjwSZ89dxK6v9uBSeyu2tR7GNZvOa99PSMHsV9AnNmBJWBhe07gDkJ5ktp/FApaDbqWXJMx5iVaePIyJZMwAG0bQHcUH8NBlwszoZOx3XEUg1OhzmNHGgK1WblfrMkKnS0DjvSucEOb2VqyfNQf6y9XetQR223JFT5T4cVzRpsC7T+84UUL0tIswMjJh7dNHHJwLTIYJYTjV3o5AqkYPsfK28oV7zCJuoB3EA/4kTrnJRAZ9IGGyBIm0V5QQDAmyYuOs1ijR6IMMf0jwV6tx03rt2R5InpR4oqXd8MFsIQZ6dLDfLI/cAeugj2R/AuRWZKvWy+8aAAAAAElFTkSuQmCC",
+   "height": 32
+  },
+  "usage": {
+   "seconds": 18.26102066040039
+  },
+  "tile_id": "a92211e6-56be-447e-85ff-e4cc85d4ee06",
+  "progress": 0.6023255813953489,
+  "tile_name": "polished dark wooden floor boards with pink neon r",
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "402e26b2-c207-472a-a41d-64a8fa33c733",
+  "queue_position": 0,
+  "billing_charged": true,
+  "quantized_image": {
+   "type": "base64",
+   "width": 32,
+   "base64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAFoElEQVR4nO1Wa0wUVxT+7szA8ljAZQEBN6iA4iNFRUtLYmop2hrFNBqNUWyjrUlptQrGiKUBaxWD1kZSjCDWH21VtG3SWHw0ilWaGi3qalFQkUWWiEJZQHYX2MfM3ubedVfQpg2tiWnCSWbmzplz73ce37lziQgJz1OE54qOIQcwVAIMkVAYakP8nzeiub5plF3/ZQ3p30x6U0yiQWIwPt24jL9rChXaBRHHHWfIYNcig/kZLfN9lforTsxNTOPvkk2AzWnGtDWxcJkCkbmtCM7gIJzt/JU8UwfeEpMpFQOQ88ECmM73oFvu8zrARPZzYdIb8aC+CjK2buY6MxFRqxj+0RHp7z6uEVKpQ6tBTk46qN0HROWE0doJ+D22SciOhWSWkZ6zGSOImuv2rt0GW6cZX5Qfpn+4unBK/p0MKgOpodOpj9mC0twst0Lltqk7YODPQLWKPw/pj0ErBeN7RzXCSRAH9h8v4/auRkxYNNI9zy4ju6AYDej+y4yQ/g5khi/gjN6QNR/EQkGDHtnbZa8jLAswSRhd+DZXhYgBODh2g7cU/bnBJCglBmNHhGLyZ5mYLqZwXX+ySp5BijCKMmAP2FPgj8a5HxehSTAjnmixc/IqNzBcHJRdzAkGHpWmg02nw9FNJfiIXkMcVNi9fBHuS72QvuyiD4gN1XIdIYliAn0vNBWpGYmcYD1WO09x5OLRqC2tRtLSFzhI0dav0SlREKUX+SWred1r9zd7ow6R/BE4QYOIqTKoIwCrcw+iUzYgnkQgd/s6OFtcqK+4zB2LignHnV8akXfmCCQGnvb+LPQYu3C9qQbpWTPQZ/eFs0Xh4GXbv0WV8ybaqQVFcR9yMFZjT8o9nRCxKBYBwT1Ym10GFl2n0obT7xSAxgYCdidUYYBWE44HZ+4hakU4xuqGo4faQTLFGdSqWJC/M9ebaZXdiU35xWgjdrRQK8pWrkJQQCSaf6p/irDMCRZ92aVyGCR3uY6s38hb0kNeVjr9oetIWjEFdpUP/EwOLN5ZCKPc6+aAWgxCyYa9CPBx91et4zZMxIVPlmYhWitArVODmu1PgTOmswydclyEXQzF7ikr+/HnMbnv/NbMwSv2HMfPrfXoIwrXu4ht4L+gRK6CXrmPCtrIazdmdAgHv1J6A3XfGTEl92X4xBAOzJ4Lt6zj877JK0VBYgbnD7uOFVUNIO+tGzeRnb8Ll1sbcVKp51ll6Reon7sEHsOzrluYKIzEUUXPdj+w3e/F8EgsLFwOw8kOXK2qgOFBG+5SIwRhGFYkpg/IiIcPce+Og8vs7qLK/T+g+P5pNNAOLEEiTogN0CGKfzMpCqR9ynkyj8RSNVVjPAkZsCDb99lksk6NS501uOAyYE3YfCxeMA/WJgsshm5O1JqKu24iJkdixMxRMLc9RGHB5zBD5hGHPNohOySCBIzi0fcoBG1oIrxQk5OGocHYjJYOBWZX92MHqC9ShDhcaK9GOWrwujSJ61kbKVPD+Ni4rwX+ESI0kcNxofIcUAlctFeiXDF57T1yTjYgGpFoggHDRQBKv/NA0rRkJGhFtIc42Cv5ETdgJN3Q0EBIopuc/lREQ4cBGXl5sNU95HuBNjwSZ89dxK6v9uBSeyu2tR7GNZvOa99PSMHsV9AnNmBJWBhe07gDkJ5ktp/FApaDbqWXJMx5iVaePIyJZMwAG0bQHcUH8NBlwszoZOx3XEUg1OhzmNHGgK1WblfrMkKnS0DjvSucEOb2VqyfNQf6y9XetQR223JFT5T4cVzRpsC7T+84UUL0tIswMjJh7dNHHJwLTIYJYTjV3o5AqkYPsfK28oV7zCJuoB3EA/4kTrnJRAZ9IGGyBIm0V5QQDAmyYuOs1ijR6IMMf0jwV6tx03rt2R5InpR4oqXd8MFsIQZ6dLDfLI/cAeugj2R/AuRWZKvWy+8aAAAAAElFTkSuQmCC",
+   "height": 32
+  },
+  "tile_description": "polished dark wooden floor boards with pink neon reflection",
+  "saved_to_database": true,
+  "generation_started_at": "2026-11-25T10:36:21.367828+00:00",
+  "estimated_wait_seconds": 0,
+  "original_image_n_colors": 117,
+  "quantized_image_n_colors": 57
+ }
+}

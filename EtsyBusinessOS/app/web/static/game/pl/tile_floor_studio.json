@@ -1,0 +1,45 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "74813429-fc9d-44fe-baf4-35e1df1022e0",
+ "status": "completed",
+ "created_at": "2026-11-25T10:35:18.946614+00:00",
+ "last_response": {
+  "seed": 1082915341,
+  "type": "done",
+  "image": {
+   "type": "base64",
+   "width": 32,
+   "base64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADQUlEQVR4nO1US0hUURj+zp2rOer4TMUWComFBS2sSFoUREVFbVLDoFKEJmpR9A60XUYF2QOTNglRYYVJQuCqItrUwk3ig3IW5iut0XQe19GZufGf8dzu3LmTYy2bb3PO+f9z/+/7//PNAHHEEUcccfzvYH/z0c3ML6pZ/OxU8ZLrsaVcbsj9qMoBK/wWBUnzWVrcLyl8lYNWzCZMom5iU8x15VgubU4vVdW5YuTn5eL7qAuKfwyyZP0twBISIFCSuY1PqG/qzaJC2GKjpu6os7bZekwk9uOE1MZzzcEKJCuFIQEpbpSzk8hP34KmnxWokW5zUTQtwkXnuqg87E/E+g5p5BRrnqmGU/bgcnJICIEECkE1KTfDnkSrISmmQpj+cD37Ex+dXr3+/NhVj0O2K2F5ItGLpTtVGXWm35t5RNYTa0Hdx/oiYiUPZKprw/J6IZS3sZUR9ShPkyQ+qkNCJCO5Gbj6hSJPpy+gK9geKXDheQgv1LsRxhQi9TXpV8Wq5avq1pKD3N36tzbipbcB7oCC7QX1aB88hjQpTcsFLD545n2wZ97XRv3Adxgr/Guxw3YqqohOzzWw3RlH+AR2Lj+KopwS/HC7MDY+EfYMDxU79idd4vsOzy1Upd/geWOX2qgX4u+dzzCdOIK9tjOaMMIU68FrpZXvGQlQJQUsaIXNnwXrbC7KN9pR11XLL+QhB2Wp+9DhbuF76iiaSc3OtH/iPoVzRa1429+JMdaFcTag3WW7sipVIjdi2PsTtQXn4Zx0cnLhbKPro0E/6qSMbNwb3wNLYFnkPQAQE9BjRh3C85EmpARScXr1Hf4svDMTscaOW3x22OVHfE+mhReAJeQVARJDZ+33KLwg0OvpRjErRVaiDS55MswjZFijAN7NwoSk7G9oGarnMT2pICZ0+95xbmbshp6E1j7XABeQkDyv5ea9CchX16NywwF0OxympvNbpjEq90RMSZALYgFmehPAmuQytTBxVUScRJCo4yWNoU4cDr6+cjXCHfxm2jWh1/vBlIthEYiJmBmVxAhHm42aYtGIYxYQzSMCw8pghLkIxlFHA4vlkh76/w3C4NxnjTiWjv9ZgFHI19khfl4qscAvi/+t5PZFMqEAAAAASUVORK5CYII=",
+   "height": 32
+  },
+  "usage": {
+   "seconds": 22.155193567276
+  },
+  "tile_id": "713025a2-d391-4555-b5b8-bbada4815ad5",
+  "progress": 0.6023255813953489,
+  "tile_name": "purple carpet floor tile, soft texture, cyberpunk ",
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "addec0d8-d384-490e-80c1-ddbee70fbb5e",
+  "queue_position": 0,
+  "billing_charged": true,
+  "quantized_image": {
+   "type": "base64",
+   "width": 32,
+   "base64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADQUlEQVR4nO1US0hUURj+zp2rOer4TMUWComFBS2sSFoUREVFbVLDoFKEJmpR9A60XUYF2QOTNglRYYVJQuCqItrUwk3ig3IW5iut0XQe19GZufGf8dzu3LmTYy2bb3PO+f9z/+/7//PNAHHEEUcccfzvYH/z0c3ML6pZ/OxU8ZLrsaVcbsj9qMoBK/wWBUnzWVrcLyl8lYNWzCZMom5iU8x15VgubU4vVdW5YuTn5eL7qAuKfwyyZP0twBISIFCSuY1PqG/qzaJC2GKjpu6os7bZekwk9uOE1MZzzcEKJCuFIQEpbpSzk8hP34KmnxWokW5zUTQtwkXnuqg87E/E+g5p5BRrnqmGU/bgcnJICIEECkE1KTfDnkSrISmmQpj+cD37Ex+dXr3+/NhVj0O2K2F5ItGLpTtVGXWm35t5RNYTa0Hdx/oiYiUPZKprw/J6IZS3sZUR9ShPkyQ+qkNCJCO5Gbj6hSJPpy+gK9geKXDheQgv1LsRxhQi9TXpV8Wq5avq1pKD3N36tzbipbcB7oCC7QX1aB88hjQpTcsFLD545n2wZ97XRv3Adxgr/Guxw3YqqohOzzWw3RlH+AR2Lj+KopwS/HC7MDY+EfYMDxU79idd4vsOzy1Upd/geWOX2qgX4u+dzzCdOIK9tjOaMMIU68FrpZXvGQlQJQUsaIXNnwXrbC7KN9pR11XLL+QhB2Wp+9DhbuF76iiaSc3OtH/iPoVzRa1429+JMdaFcTag3WW7sipVIjdi2PsTtQXn4Zx0cnLhbKPro0E/6qSMbNwb3wNLYFnkPQAQE9BjRh3C85EmpARScXr1Hf4svDMTscaOW3x22OVHfE+mhReAJeQVARJDZ+33KLwg0OvpRjErRVaiDS55MswjZFijAN7NwoSk7G9oGarnMT2pICZ0+95xbmbshp6E1j7XABeQkDyv5ea9CchX16NywwF0OxympvNbpjEq90RMSZALYgFmehPAmuQytTBxVUScRJCo4yWNoU4cDr6+cjXCHfxm2jWh1/vBlIthEYiJmBmVxAhHm42aYtGIYxYQzSMCw8pghLkIxlFHA4vlkh76/w3C4NxnjTiWjv9ZgFHI19khfl4qscAvi/+t5PZFMqEAAAAASUVORK5CYII=",
+   "height": 32
+  },
+  "tile_description": "purple carpet floor tile, soft texture, cyberpunk studio",
+  "saved_to_database": true,
+  "generation_started_at": "2026-11-25T10:35:19.094151+00:00",
+  "estimated_wait_seconds": 0,
+  "original_image_n_colors": 66,
+  "quantized_image_n_colors": 25
+ }
+}

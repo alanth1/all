@@ -1,0 +1,27 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Etsy Business OS · HQ</title><link rel="stylesheet" href="/static/game/world.css"></head>
+<body>
+<div id="game"></div>
+<div id="overlay"></div>
+<div id="hud">
+  <div class="brand">NEON<span>LOOM</span> HQ <small>v{{ VERSION }}</small></div>
+  <div class="row"><span class="clock">--:--</span><span class="weather"></span><span class="mode"></span></div>
+  <div class="date"></div>
+  <div class="ai"></div>
+  <div class="sys"></div>
+  <div class="conn"></div>
+</div>
+<div id="tip"></div>
+<div id="toasts"></div>
+<div id="hint">Scroll = zoom · tarik = geser · klik ruangan atau NPC · <kbd>Esc</kbd> tutup</div>
+<div id="panel"><div class="pwin">
+  <div class="phead"><div class="ptitle"></div><button class="pclose" title="Tutup (Esc)">✕</button></div>
+  <div class="ptabs"></div>
+  <div class="pbody"><iframe title="room" src="about:blank"></iframe><div class="pbody-info"></div></div>
+</div></div>
+<script>window.ASSETS = {{ assets|tojson }}; window.AGENTS_META = {{ agents|tojson }};</script>
+<script src="/static/game/vendor/phaser.min.js"></script>
+<script src="/static/game/map.js?v={{ VERSION }}"></script>
+<script src="/static/game/art.js?v={{ VERSION }}"></script>
+<script src="/static/game/world.js?v={{ VERSION }}"></script>
+</body></html>

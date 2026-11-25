@@ -199,6 +199,6 @@ def test_ui_end_to_end(env, asset_root):
         assert "msg=" in r.headers["location"]
         r = post("/brain/save", name="05 Pricing.md", body="# Pricing\n- never below $15")
         assert "Pricing" in c.get("/brain?note=05 Pricing.md").text
-        for p in ["/", "/office", "/research", "/social", "/analytics", "/accounting", "/automation", "/audit", "/settings", "/diagnostics"]:
+        for p in ["/", "/dashboard", "/office", "/research", "/social", "/analytics", "/accounting", "/automation", "/audit", "/settings", "/diagnostics"]:
             assert c.get(p).status_code == 200, p
         assert c.get("/accounting/export.beancount").text.startswith("option")

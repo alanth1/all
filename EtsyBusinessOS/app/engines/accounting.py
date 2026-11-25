@@ -123,7 +123,7 @@ def _classify_etsy(ledger_type: str, amount: int) -> tuple[str, str] | None:
     return None
 
 
-@handler("accounting_post_etsy", lane="io", agent="Judith", max_attempts=3)
+@handler("accounting_post_etsy", lane="io", agent="KADE-12", max_attempts=3)
 def job_post_etsy(payload, job):
     rows = db.q("SELECT * FROM etsy_ledger_entries WHERE posted_journal_id IS NULL ORDER BY created_ts")
     posted, unknown, missing_fx = 0, [], []
@@ -149,7 +149,7 @@ def job_post_etsy(payload, job):
             dr, cr = cr, dr
         extra = {"orig_amount_cents": amt, "orig_currency": ccy, "fx_rate": rate} if ccy != base_ccy() else {}
         eid = create_entry(e["created_ts"], f"Etsy {e['ledger_type']}: {e['description'] or ''}"[:200], "etsy_ledger", e["etsy_entry_id"],
-                           [{"code": dr, "debit": base_amt, **extra}, {"code": cr, "credit": base_amt, **extra}], "ai:Judith")
+                           [{"code": dr, "debit": base_amt, **extra}, {"code": cr, "credit": base_amt, **extra}], "ai:KADE-12")
         db.ex("UPDATE etsy_ledger_entries SET posted_journal_id=? WHERE id=?", (eid, e["id"]))
         db.ex("INSERT OR IGNORE INTO transactions(txn_date, kind, description, amount_cents, currency, source_type, source_ref, journal_id, created_at) "
               "VALUES(?,?,?,?,?,?,?,?,?)", (e["created_ts"][:10], e["ledger_type"] or "", e["description"], int(e["amount_cents"]), ccy,
@@ -207,7 +207,7 @@ def post_expense(expense_id: int, account_code: str, actor: str, paid_from: str 
     return eid
 
 
-@handler("expense_classify", lane="ai", agent="Judith", max_attempts=2)
+@handler("expense_classify", lane="ai", agent="KADE-12", max_attempts=2)
 def job_classify(payload, job):
     x = db.q1("SELECT * FROM expenses WHERE id=?", (payload["expense_id"],))
     accounts = [dict(r) for r in db.q("SELECT code, name FROM accounts WHERE type='expense' AND active=1")]
@@ -227,7 +227,7 @@ def job_classify(payload, job):
     # Rule: AI may post only high-confidence classifications (accounting_entry = execute within rules)
     if res.confidence >= 0.85 and check("ai", "accounting_entry") == "allow":
         try:
-            post_expense(x["id"], res.account_code, "ai:Judith")
+            post_expense(x["id"], res.account_code, "ai:KADE-12")
             return {"posted": True, **res.model_dump()}
         except ValueError as e:
             return {"posted": False, "error": str(e), **res.model_dump()}
@@ -270,7 +270,7 @@ def _parse_date(s: str) -> str:
     raise ValueError(f"unrecognised date '{s}'")
 
 
-@handler("reconcile", lane="io", agent="Judith", max_attempts=2)
+@handler("reconcile", lane="io", agent="KADE-12", max_attempts=2)
 def job_reconcile(payload, job):
     return reconcile()
 

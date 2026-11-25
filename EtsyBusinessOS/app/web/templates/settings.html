@@ -1,7 +1,7 @@
 {% extends "base.html" %}{% from "_macros.html" import badge %}
 {% block heading %}<b>Settings</b> <span class="muted small">every change is saved as a new settings version</span>{% endblock %}
 {% block content %}
-<div class="tabs"><a href="#mode">Mode</a><a href="#ai">AI model</a><a href="#connections">Connections</a><a href="#assets">Asset folders</a><a href="#brain">Brain</a><a href="#seo">SEO rules</a><a href="#listing">Listing defaults</a><a href="#social">Social</a><a href="#system">System</a></div>
+<div class="tabs"><a href="#mode">Mode</a><a href="#ai">AI model</a><a href="#connections">Connections</a><a href="#assets">Asset folders</a><a href="#brain">Brain</a><a href="#seo">SEO rules</a><a href="#listing">Listing defaults</a><a href="#social">Social</a><a href="#world">World & weather</a><a href="#system">System</a></div>
 
 <div class="card" id="mode"><h3 style="margin-top:0">Mode</h3>
 <p class="small muted"><b>DEMO</b> = sample data + demo AI (safe to explore). <b>LIVE</b> = real Ollama model and real APIs. Data from demo is tagged and never mixed with live records.</p>
@@ -66,6 +66,12 @@
 <div><label>Pinterest board</label>{% if boards %}<select name="board_id">{% for b in boards %}<option value="{{ b.id }}" {% if s.social.pinterest.board_id==b.id %}selected{% endif %}>{{ b.name }}</option>{% endfor %}</select>{% else %}<input type="text" name="board_id" value="{{ s.social.pinterest.board_id }}" placeholder="board id (connect Pinterest to choose)">{% endif %}</div></div>
 <div class="row"><div><label>YouTube videos/week</label><input type="number" name="yt_per_week" value="{{ s.social.youtube.posts_per_week }}"></div><div><label>YouTube hours (UTC)</label><input type="text" name="yt_hours" value="{{ s.social.youtube.post_hours|join(',') }}"></div>
 <div><label>YouTube privacy</label><select name="yt_privacy">{% for p in ['public','unlisted','private'] %}<option {% if s.social.youtube.privacy==p %}selected{% endif %}>{{ p }}</option>{% endfor %}</select></div></div><button class="sec">Save</button></form></div>
+
+<div class="card" id="world" style="margin-top:14px"><h3 style="margin-top:0">World & weather (HQ view)</h3>
+<p class="small muted">Leave latitude/longitude empty for simulated weather. With coordinates the HQ windows show your real weather (Open-Meteo, free, no key).</p>
+<form method="post" action="/settings/world"><div class="row"><div><label>City name</label><input type="text" name="city" value="{{ s.world.city }}" placeholder="Jakarta"></div>
+<div><label>Latitude</label><input type="text" name="lat" value="{{ s.world.lat }}" placeholder="-6.2"></div><div><label>Longitude</label><input type="text" name="lon" value="{{ s.world.lon }}" placeholder="106.8"></div></div>
+<label><input type="checkbox" name="ai_banter" value="1" {% if s.world.ai_banter %}checked{% endif %}> Let the local AI write NPC small talk when the GPU is idle (LIVE mode)</label><button class="sec">Save</button></form></div>
 
 <div class="card" id="system" style="margin-top:14px"><h3 style="margin-top:0">System</h3>
 <form method="post" action="/backup" class="inline"><button class="sec">💾 Backup database now</button></form> <span class="small muted">Automatic daily backup in data/backups (14 kept).</span>

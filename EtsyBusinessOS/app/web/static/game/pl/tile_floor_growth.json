@@ -1,0 +1,45 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "b697ba6c-7bba-4c02-a724-6a9d7ac08fae",
+ "status": "completed",
+ "created_at": "2026-11-25T10:36:51.816972+00:00",
+ "last_response": {
+  "seed": 680791917,
+  "type": "done",
+  "image": {
+   "type": "base64",
+   "width": 32,
+   "base64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADwElEQVR4nO1Ua2gUVxg9d3c2M+tu3JdrY9tEqlbaH6kRNViF5IfBpEGllFbbUqsBiebREHwSUTBNldpHHhja+iIkxT7RBKo1CTFCNIUGA0rQNsKWxCquMbrZdc0+ZrO33Csz3cRsdvsAEfbAMHfu3PnOuec7d4AEEkgggQSeZtwzt9EnRnzvSZH/38I08Sy6lFLHi3qPXo2rOBPRb2+Ka60w1cvy5GJq0ATxUlM2Bsx9NLz52pTFbCO5RHGgKdiFDZYsqpElNHjbCf4Lyiy5tELMp972y3Sk+Y9xO5to+VprJi0wruRXtDWRIP9ESJ34PhUNdrz33XpIvVoIFen8e8/CH2nV7/UISBJEYsW+I1shD7lhLs7hjkQ6g+k+2G68rvISrjCthcKj5xbGI+KmZpCPyw/Uo3Z3KR8z8qoznyPJMQb9+gWT1okU4ZVcmH29gICFhYVrorXRoBRhFr/1XAbdoc/m3w709NHB+Q002nrlhLDL980d6tk4QL+ybqOEJfykqw1F9jzYal+F4c0lUV1gQkv2FgIBLXzEjy/DVXy+klTD+sCMdw9uQepMK5+L5gIjvn2mi4/3jtWDdFv20YAmxCfcbjeSV8/C0qJ8GFdm8ALhpQ4aKPHiw00VcOpC0NgtOLytBHhg4RlQeqy2xyDzDIhOH4TSLPU9czptdz6uHjyBT4InOJ9O1oB02vaMs42J8MKDnON5mPZiOsre2IxR7UP+7tvSryE/H56yx4xsQ8pyagoYUb3zM8izZ0L6fgDnL/6Es6MXMCRR7l5UAWJYAHPkXMiJVK0Jvwb7cKimBjfbemHveCZmUHnPp/tQ7T7Nvzd4huGAH53G3/CClAxfUFbXMgGP/YiUdqyl87Afp/Dps0UIzdAj9e2X4e+4j1jgAkcAX80wla94saplDTLILKQQaRy5nkoIIfj3f4BlIVKETTaiNtyJSvMqNN+9hHRjGrK2r4N/0Ziaj8kCJnr1ONd6COfHLvCj6SQuvlMFgpDE742uLl6DTCxy+pVd1NF/G4unzcEx+Rds0i3jglhr3PIjd7ILVwDLjPzEMMu1B7SQPVpc3HMKPVoHHIZhdZdKv9k4klgBiWYlS3RP0nUUC3mqAAUtpB+vkbnI/PgdGG7NQOVHZRiUXAjrHpExUoWQj5N0aHR2T8pFEAPNwgdUlEww6YTHcnLL/Sda9f2QdWFuM7srUJ5/uN8zJQdBnJiYEcWRL0KtqoDJehwLJF4BCpRj6w+Au1JHfh5HHi/xvxaggDkiihb1rxbL6mj4C6kU0hgvUzGcAAAAAElFTkSuQmCC",
+   "height": 32
+  },
+  "usage": {
+   "seconds": 20.01489281654358
+  },
+  "tile_id": "cf453180-2c6c-4108-86e7-cc0a0953202c",
+  "progress": 0.6023255813953489,
+  "tile_name": "magenta glossy floor tile with pixel pattern",
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "a8e3f611-bae2-433e-8ddd-d2a0997518f6",
+  "queue_position": 0,
+  "billing_charged": true,
+  "quantized_image": {
+   "type": "base64",
+   "width": 32,
+   "base64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADwElEQVR4nO1Ua2gUVxg9d3c2M+tu3JdrY9tEqlbaH6kRNViF5IfBpEGllFbbUqsBiebREHwSUTBNldpHHhja+iIkxT7RBKo1CTFCNIUGA0rQNsKWxCquMbrZdc0+ZrO33Csz3cRsdvsAEfbAMHfu3PnOuec7d4AEEkgggQSeZtwzt9EnRnzvSZH/38I08Sy6lFLHi3qPXo2rOBPRb2+Ka60w1cvy5GJq0ATxUlM2Bsx9NLz52pTFbCO5RHGgKdiFDZYsqpElNHjbCf4Lyiy5tELMp972y3Sk+Y9xO5to+VprJi0wruRXtDWRIP9ESJ34PhUNdrz33XpIvVoIFen8e8/CH2nV7/UISBJEYsW+I1shD7lhLs7hjkQ6g+k+2G68rvISrjCthcKj5xbGI+KmZpCPyw/Uo3Z3KR8z8qoznyPJMQb9+gWT1okU4ZVcmH29gICFhYVrorXRoBRhFr/1XAbdoc/m3w709NHB+Q002nrlhLDL980d6tk4QL+ybqOEJfykqw1F9jzYal+F4c0lUV1gQkv2FgIBLXzEjy/DVXy+klTD+sCMdw9uQepMK5+L5gIjvn2mi4/3jtWDdFv20YAmxCfcbjeSV8/C0qJ8GFdm8ALhpQ4aKPHiw00VcOpC0NgtOLytBHhg4RlQeqy2xyDzDIhOH4TSLPU9czptdz6uHjyBT4InOJ9O1oB02vaMs42J8MKDnON5mPZiOsre2IxR7UP+7tvSryE/H56yx4xsQ8pyagoYUb3zM8izZ0L6fgDnL/6Es6MXMCRR7l5UAWJYAHPkXMiJVK0Jvwb7cKimBjfbemHveCZmUHnPp/tQ7T7Nvzd4huGAH53G3/CClAxfUFbXMgGP/YiUdqyl87Afp/Dps0UIzdAj9e2X4e+4j1jgAkcAX80wla94saplDTLILKQQaRy5nkoIIfj3f4BlIVKETTaiNtyJSvMqNN+9hHRjGrK2r4N/0Ziaj8kCJnr1ONd6COfHLvCj6SQuvlMFgpDE742uLl6DTCxy+pVd1NF/G4unzcEx+Rds0i3jglhr3PIjd7ILVwDLjPzEMMu1B7SQPVpc3HMKPVoHHIZhdZdKv9k4klgBiWYlS3RP0nUUC3mqAAUtpB+vkbnI/PgdGG7NQOVHZRiUXAjrHpExUoWQj5N0aHR2T8pFEAPNwgdUlEww6YTHcnLL/Sda9f2QdWFuM7srUJ5/uN8zJQdBnJiYEcWRL0KtqoDJehwLJF4BCpRj6w+Au1JHfh5HHi/xvxaggDkiihb1rxbL6mj4C6kU0hgvUzGcAAAAAElFTkSuQmCC",
+   "height": 32
+  },
+  "tile_description": "magenta glossy floor tile with pixel pattern",
+  "saved_to_database": true,
+  "generation_started_at": "2026-11-25T10:36:51.967014+00:00",
+  "estimated_wait_seconds": 0,
+  "original_image_n_colors": 90,
+  "quantized_image_n_colors": 55
+ }
+}

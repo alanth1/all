@@ -188,7 +188,7 @@ def duplicates() -> list[dict]:
     return [dict(r) for r in rows]
 
 
-@handler("asset_scan", lane="io", agent="Libby", max_attempts=3)
+@handler("asset_scan", lane="io", agent="SABLE-6", max_attempts=3)
 def job_asset_scan(payload, job):
     results = [scan(r) for r in roots()]
     audit("system", "assets.scan", "assets", None, results)

@@ -62,12 +62,16 @@ def tick_frequent():
     except Exception:
         log.exception("scheduler tick failed")
     try:
+        _maybe_banter()
+    except Exception:  # noqa: BLE001
+        log.exception("banter scheduling failed")
+    try:
         ai_client.unload_if_idle()
     except Exception:  # noqa: BLE001
         pass
 
 
-@handler("backup", lane="io", agent="Boss", max_attempts=3)
+@handler("backup", lane="io", agent="KAI-07", max_attempts=3)
 def job_backup(payload, job):
     p = db.backup()
     ok = db.verify_backup(p)
@@ -78,7 +82,7 @@ def job_backup(payload, job):
     return {"file": str(p), "verified": ok}
 
 
-@handler("daily_brief", lane="io", agent="Boss", max_attempts=2)
+@handler("daily_brief", lane="io", agent="KAI-07", max_attempts=2)
 def job_brief(payload, job):
     pending = db.q1("SELECT COUNT(*) n FROM listings WHERE state='pending_approval'")["n"]
     failed = db.q1("SELECT COUNT(*) n FROM jobs WHERE state='FAILED' AND updated_at > strftime('%Y-%m-%dT%H:%M:%S','now','-1 day')")["n"]
@@ -86,7 +90,7 @@ def job_brief(payload, job):
     lines = [f"{pending} listing(s) waiting for approval", f"{failed} failed job(s) in the last 24h"]
     if not stats_age or stats_age < date.fromordinal(date.today().toordinal() - 7).isoformat():
         lines.append("Shop Stats not imported this week - import to get conversion rate")
-    notify("info", "Daily brief from Boss", " · ".join(lines), "/")
+    notify("info", "Daily brief from KAI-07", " · ".join(lines), "/")
     return {"lines": lines}
 
 
@@ -129,7 +133,7 @@ def stop():
         pass
 
 
-@handler("ai_benchmark", lane="ai", agent="Boss", max_attempts=1)
+@handler("ai_benchmark", lane="ai", agent="KAI-07", max_attempts=1)
 def job_benchmark(payload, job):
     from .ai import benchmark
     res = benchmark.run_and_select()
@@ -140,6 +144,40 @@ def job_benchmark(payload, job):
     return res
 
 
-@handler("ai_pull", lane="io", agent="Boss", max_attempts=2)
+@handler("ai_pull", lane="io", agent="KAI-07", max_attempts=2)
 def job_pull(payload, job):
     return ai_client.pull(payload["model"])
+
+
+@handler("npc_banter", lane="ai", agent="ZERO-1", max_attempts=1)
+def job_banter(payload, job):
+    """Fresh small talk for the HQ view, written only when the AI lane is otherwise idle."""
+    from pydantic import BaseModel, Field
+
+    from . import world
+    from .ai.runner import run_task
+
+    class Pair(BaseModel):
+        a: str = Field(max_length=90)
+        b: str = Field(max_length=90)
+
+    class Banter(BaseModel):
+        pairs: list[Pair] = Field(min_length=3, max_length=10)
+
+    ctx = {"weather": world.weather().get("kind"), "time": datetime.now().strftime("%H:%M"),
+           "recent_work": [r["type"] for r in db.q("SELECT type FROM jobs WHERE state IN ('DONE','PUBLISHED') ORDER BY id DESC LIMIT 8")]}
+    res, meta = run_task("npc_banter", "Office small-talk writer",
+                         "Write short, friendly Indonesian small-talk exchanges between two coworkers in a cyberpunk office that runs an "
+                         "Etsy shop selling digital house plans. Each line max 12 words. No numbers about sales.",
+                         ctx, Banter, demo=lambda: {"pairs": [{"a": a, "b": b} for a, b in world.BANTER[:5]]}, job_id=job["id"], use_brain=False)
+    world.add_banter([(p.a, p.b) for p in res.pairs])
+    return {"pairs": len(res.pairs), "model": meta["model"]}
+
+
+def _maybe_banter():
+    s = db.settings()
+    if s["mode"] != "live" or not s.get("world", {}).get("ai_banter", True):
+        return
+    busy = db.q1("SELECT COUNT(*) n FROM jobs WHERE lane='ai' AND state IN ('QUEUED','RUNNING','RETRYING','APPROVED')")["n"]
+    if busy == 0:
+        enqueue("npc_banter", {}, idempotency_key=_minute_bucket("npc_banter", 120), priority=9)

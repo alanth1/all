@@ -66,7 +66,7 @@ def product_link(product_id: int | None) -> str:
     return r["url"] if r else ""
 
 
-@handler("social_plan", lane="io", agent="Pixie", max_attempts=2)
+@handler("social_plan", lane="io", agent="HEX-04", max_attempts=2)
 def job_plan(payload, job):
     rows = db.q("SELECT a.* FROM social_assets a LEFT JOIN content_items c ON c.asset_id=a.id WHERE a.marketing_ready=1 AND a.missing=0 "
                 "AND a.kind IN ('image','video') AND c.id IS NULL LIMIT 50")
@@ -76,7 +76,7 @@ def job_plan(payload, job):
     return {"copy_jobs": len(rows), "scheduled": sched}
 
 
-@handler("social_copy", lane="ai", agent="Pixie", max_attempts=3)
+@handler("social_copy", lane="ai", agent="HEX-04", max_attempts=3)
 def job_copy(payload, job):
     a = db.q1("SELECT * FROM social_assets WHERE id=?", (payload["asset_id"],))
     if not a or not a["marketing_ready"]:
@@ -165,7 +165,7 @@ def schedule() -> int:
     return n
 
 
-@handler("social_publish", lane="io", agent="Pixie", max_attempts=1)
+@handler("social_publish", lane="io", agent="HEX-04", max_attempts=1)
 def job_publish_due(payload, job):
     due = db.q("SELECT id FROM publishing_calendar WHERE status='scheduled' AND scheduled_at<=?", (now(),))
     for r in due:
@@ -174,7 +174,7 @@ def job_publish_due(payload, job):
     return {"queued": len(due)}
 
 
-@handler("social_publish_one", lane="io", agent="Pixie", max_attempts=5)
+@handler("social_publish_one", lane="io", agent="HEX-04", max_attempts=5)
 def job_publish_one(payload, job):
     cal = db.q1("SELECT * FROM publishing_calendar WHERE id=?", (payload["calendar_id"],))
     v = db.q1("SELECT v.*, a.path, a.kind, a.sha256, a.marketing_ready, a.missing, a.product_id FROM content_variants v "
@@ -231,11 +231,11 @@ def job_publish_one(payload, job):
           "VALUES(?,?,?,?,?,?,?,1,?,?)", (platform, v["id"], v["sha256"], v["content_hash"], post_id, url, now(), now(), dumps({"source": providers.source_tag()})))
     db.ex("UPDATE publishing_calendar SET status='published' WHERE id=?", (cal["id"],))
     db.ex("UPDATE publishing_jobs SET status='published' WHERE calendar_id=? AND job_id=?", (cal["id"], job["id"]))
-    audit("ai:Pixie", "social.published", platform, post_id, {"url": url, "variant": v["id"]})
+    audit("ai:HEX-04", "social.published", platform, post_id, {"url": url, "variant": v["id"]})
     return {"_state": "PUBLISHED", "post_id": post_id, "url": url}
 
 
-@handler("social_metrics", lane="io", agent="Pixie", max_attempts=3)
+@handler("social_metrics", lane="io", agent="HEX-04", max_attempts=3)
 def job_metrics(payload, job):
     n = 0
     end = date.today()
@@ -264,7 +264,7 @@ class CampaignReview(BaseModel):
     next_strategy: list[str]
 
 
-@handler("social_review", lane="ai", agent="Pixie", max_attempts=2)
+@handler("social_review", lane="ai", agent="HEX-04", max_attempts=2)
 def job_review(payload, job):
     rows = [dict(r) for r in db.q("""SELECT pp.platform, v.title, m.impressions, m.views, m.saves, m.outbound_clicks, m.likes FROM published_posts pp
         JOIN content_variants v ON v.id=pp.variant_id LEFT JOIN social_metrics m ON m.id=(SELECT MAX(id) FROM social_metrics WHERE post_id=pp.id)

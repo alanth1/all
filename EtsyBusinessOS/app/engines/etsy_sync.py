@@ -13,7 +13,7 @@ STATE_MAP = {"active": "active", "draft": "draft", "expired": "expired", "inacti
              "edit": "inactive", "removed": "deactivated"}
 
 
-@handler("etsy_sync", lane="io", agent="Etta", max_attempts=5)
+@handler("etsy_sync", lane="io", agent="NYX-21", max_attempts=5)
 def job_sync(payload, job):
     client = providers.etsy()
     sid = providers.etsy_shop_id()

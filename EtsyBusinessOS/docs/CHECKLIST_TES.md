@@ -1,4 +1,4 @@
-# Checklist tes v1.0.0-rc1
+# Checklist tes v1.1.0-rc1
 
 Centang satu per satu. Kalau ada yang gagal: buka menu **Diagnostics**, lalu kirim file `logs\report.txt` (+ screenshot).
 
@@ -7,8 +7,17 @@ Centang satu per satu. Kalau ada yang gagal: buka menu **Diagnostics**, lalu kir
 - [ ] Browser terbuka di `http://127.0.0.1:8765`, Dashboard tampil dengan label DEMO MODE.
 - [ ] Tutup jendela console, jalankan START.bat lagi → terbuka cepat (tanpa setup ulang).
 
+## A2. Kantor hidup (NEONLOOM HQ)
+- [ ] Gedung isometrik tampil penuh di layar 24", tajam; scroll zoom & tarik geser lancar.
+- [ ] 10 NPC berjalan, ngopi, ngobrol (gelembung chat), main arcade, rebahan; malam hari ada yang tidur (z z).
+- [ ] Klik tiap ruangan → panel fitur terbuka (mis. Server Room = Pengaturan). Esc / klik area gelap menutup.
+- [ ] Klik NPC → kartu NPC (foto, status, pikiran, ucapan terakhir).
+- [ ] Jalankan riset di Research Lab → RAZE-11 duduk bekerja, lalu gelembung hasil + notifikasi, lalu mengantar ke JUNO-X9.
+- [ ] Server Room: bar CPU/RAM/GPU/VRAM/TEMP bergerak sesuai PC Anda (GPU butuh driver NVIDIA).
+- [ ] Atur kota + koordinat di Server Room → Pengaturan → World & weather → cuaca jendela ikut cuaca asli.
+
 ## B. Mode demo (semua fitur tanpa akun)
-- [ ] Settings → Asset folders: isi folder produk Anda (contoh `D:\Etsy\Products`, tiap produk 1 sub-folder; gambar/video promosi di sub-folder `marketing`). Simpan.
+- [ ] Server Room → Pengaturan → Asset folders: isi folder produk Anda (contoh `D:\Etsy\Products`, tiap produk 1 sub-folder; gambar/video promosi di sub-folder `marketing`). Simpan.
 - [ ] Assets → Scan now → file, ukuran, halaman PDF, durasi video tampil. **Cek file asli tidak berubah** (tanggal modifikasi sama).
 - [ ] Listings → Generate → Approval Center → listing ada, validasi ✔ (judul ≤15 kata, diakhiri "(PDF Download)", 13 tag, tanpa "prefab").
 - [ ] Edit judul → simpan → versi naik; approval sebelumnya batal.

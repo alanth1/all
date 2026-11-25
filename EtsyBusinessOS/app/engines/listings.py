@@ -160,7 +160,7 @@ def valid_approval(listing_id: int) -> dict | None:
 
 # ---------------- jobs ----------------
 
-@handler("listing_generate", lane="ai", agent="Quill", max_attempts=3)
+@handler("listing_generate", lane="ai", agent="JUNO-X9", max_attempts=3)
 def job_generate(payload, job):
     product_id = payload["product_id"]
     facts = product_facts(product_id)
@@ -193,7 +193,7 @@ def job_generate(payload, job):
         listing_id = db.ex("INSERT INTO listings(product_id, state, created_at, updated_at) VALUES(?,?,?,?)",
                            (product_id, "draft", now(), now()))
     vid = save_version(listing_id, content, f"ai:{meta['model']}")
-    audit("ai:Quill", "listing.generate", "listing", listing_id, {"version_id": vid, "model": meta["model"], "demo": meta["demo"]})
+    audit("ai:JUNO-X9", "listing.generate", "listing", listing_id, {"version_id": vid, "model": meta["model"], "demo": meta["demo"]})
     cur = current(listing_id)
     if cur["validation"]["ok"]:
         notify("info", "Listing ready for approval", cur["content"].get("title", ""), f"/approvals/{listing_id}")
@@ -218,7 +218,7 @@ def _to_content(d: seo.ListingDraft, assets: dict) -> dict:
             "taxonomy_id": db.settings()["listing_defaults"].get("taxonomy_id") or None}
 
 
-@handler("etsy_publish", lane="io", agent="Etta", max_attempts=5)
+@handler("etsy_publish", lane="io", agent="NYX-21", max_attempts=5)
 def job_publish(payload, job):
     listing_id = payload["listing_id"]
     appr = valid_approval(listing_id)
@@ -282,7 +282,7 @@ def job_publish(payload, job):
     return {"_state": "PUBLISHED", "etsy_listing_id": etsy_id, "url": url}
 
 
-@handler("approval_reminder", lane="io", agent="Boss", max_attempts=1)
+@handler("approval_reminder", lane="io", agent="KAI-07", max_attempts=1)
 def job_reminder(payload, job):
     rows = db.q("SELECT id, title, updated_at FROM listings WHERE state='pending_approval' AND updated_at < strftime('%Y-%m-%dT%H:%M:%S','now','-2 day')")
     for r in rows:

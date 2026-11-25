@@ -74,11 +74,12 @@ def enqueue(job_type: str, payload: dict | None = None, *, priority: int = 5, id
         if row:
             return row["id"]
     ts = now()
+    from .agents import agent_for
     try:
         jid = db.ex(
             "INSERT INTO jobs(type, lane, state, priority, payload, max_attempts, idempotency_key, agent, parent_id, run_after, created_at, updated_at) "
             "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
-            (job_type, h.lane, "QUEUED", priority, dumps(payload or {}), h.max_attempts, idempotency_key, h.agent,
+            (job_type, h.lane, "QUEUED", priority, dumps(payload or {}), h.max_attempts, idempotency_key, agent_for(job_type),
              parent_id, _iso_in(delay_seconds), ts, ts))
     except Exception:
         if idempotency_key:

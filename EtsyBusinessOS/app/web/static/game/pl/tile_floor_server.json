@@ -1,0 +1,45 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "a21c9fcc-f7f7-418f-993f-94a316060199",
+ "status": "completed",
+ "created_at": "2026-11-25T10:38:56.042426+00:00",
+ "last_response": {
+  "seed": 3651954847,
+  "type": "done",
+  "image": {
+   "type": "base64",
+   "width": 32,
+   "base64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAFGUlEQVR4nO1Wa0yTZxR+PvpBLVCgNsJwyNhQBOSmCKxKEBAWBMV5YejC2GS6W8ySLf7fr23ZsmT7YRYXHYtEZxje0YoywOGAoDIxMFCERQcMEbmUFj760fIt52AbyjKic/uxhCdp35z3ds55znPeFpjHPOYxj3n8n5GW8JqSGJmtPM0d4j85lBq/jZ2mZWdAnpiEXbGw3dReK/ynAWx+6X1loK8dyRkbMGay4MwP30ItqrEhtxATkhUqwZsDudpmFP7VAFIfZRxviIc8EYPy0oPw0vpg8ytvYnTYgmpjKe/bmFfAjIiqSd5f31IpPFUAiZHZil2xIH1jLv6414/S4i+nHW3fC7vd6rTziz7A2OgkThz+GqJmmpFHUGx29zkZEf8uY1keRXr2VkzKcHEsSxacO76f7S2v7nWuiyo1NuXv4dIQQwSyqTRzaUSYaWxI3qWYTD1Iz87niy6eOQp3tRsycwthGR3Dlarv2ZEhdRskaQTX641sz15Pz9oJaUJGw+UTLoFUni3BlN0DLd1XnH4F+loTnclUbczL50mikrDt9fdgHRrAufIyppZqTjV21Dxr63TNL5wtYTFS4Mr4CGouX3Su0/mZNmmmvuY0rDYrMyK888bnCmVDaG6s4jEkLInHnu5m+OtDIYo+bJvNPTz66p+Fp+iGjs5m+PgugY9Ox/OmwV4etdogl/2BAUvgofVE6416qERPRETH8fzIsAVu9zrbEWtIxEKdP08SRVOywB9yLkmjSFi3CkvDn4d5fABm8yCiV8bgmeAQQDWFoYEOhK+IQeDiIJBuxiWJ90eujHbawcuj+H5y7uWlR2j4cvZ1p6UBAtXdUQ/D+lRW8/GSL9jeXriP1V5TUQabLHEtSXQkQqp11pY9vG+2KCtOHXSWkCh31D6vaDfPH97/KZIztuJabSWEMP9YReO5ADp9EFNnGRviF264fxiNdef5QNLaHB5rq0/zmJaVB7s86bJOortWb4Ra7Y41aS/zel3tJV5PyciBWpFYS4uDItHR3sABNNSch1jw7ofcRt13f4U+QGKKGqouM/UkGkJZ8SFMwcxt6O4BlzabmTExQozNzNhb54sDn3wEQ1oOJq1Tzo4b6h+DqPKAEBuSpFBbcYYXy2CVzVB7aOGtW4TAoKWQx81cGlb7qSO8LyOngN+D6opj3B0ZWYXOUhEDju44WfINlkUb0N78E+JXp+HmjTpotF4YGbwPT89FsFpHId682yjYqqzKAo0fNu14G6bhIVQbj2Kw/zdYhgfwXGgUaow/stI379zl0qYzNeAG7V8ydoCCa21pgs0uw98/CpJ5zDkvODYREza7FUsjUuCn82bVni07wGveWl/WiEYz3Y4ORi6Vn4TdNs6aoIeIAo+IW4fWpktOkdFDZjGbkJiUhabrNQgNW4V7Xa1o67smuDzFxASNis1doUNxSeuxc/c+POwfQmV5MV+iD3jBqRECPVyU8aHPPkZCSqYzY5VKzT1PGS8Lmw6Inak8cOHn74Q5fwvaHkVmMZsUyjw45EVkbiriNcpw5GEvtH46aLV6dN26jQe9fawb2TzOe/p6OpnaoJAY7nPSEOGY8SvhiX4NuwZvCRgEKVe53SaziHJ3vIXezju42ljBQqJHhhghUI0J+oUBHCSBGJid8WwIcy3ORGRgAj9YsSvX8rOq0fhx1xCIgbAIA7o6fuEa09jx4OZj3f3Ef6FWLInjQFavyWah3v/9LjPiCOBxHTvwJ3beoGbsLz9+AAAAAElFTkSuQmCC",
+   "height": 32
+  },
+  "usage": {
+   "seconds": 21.98332142829895
+  },
+  "tile_id": "f5b0552b-11f2-4526-a52d-5787813f35ed",
+  "progress": 0.6023255813953489,
+  "tile_name": "steel grate floor tile over cables, industrial, da",
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "e018ed21-13f3-4568-a945-da3fd4ec8e36",
+  "queue_position": 0,
+  "billing_charged": true,
+  "quantized_image": {
+   "type": "base64",
+   "width": 32,
+   "base64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAFGUlEQVR4nO1Wa0yTZxR+PvpBLVCgNsJwyNhQBOSmCKxKEBAWBMV5YejC2GS6W8ySLf7fr23ZsmT7YRYXHYtEZxje0YoywOGAoDIxMFCERQcMEbmUFj760fIt52AbyjKic/uxhCdp35z3ds55znPeFpjHPOYxj3n8n5GW8JqSGJmtPM0d4j85lBq/jZ2mZWdAnpiEXbGw3dReK/ynAWx+6X1loK8dyRkbMGay4MwP30ItqrEhtxATkhUqwZsDudpmFP7VAFIfZRxviIc8EYPy0oPw0vpg8ytvYnTYgmpjKe/bmFfAjIiqSd5f31IpPFUAiZHZil2xIH1jLv6414/S4i+nHW3fC7vd6rTziz7A2OgkThz+GqJmmpFHUGx29zkZEf8uY1keRXr2VkzKcHEsSxacO76f7S2v7nWuiyo1NuXv4dIQQwSyqTRzaUSYaWxI3qWYTD1Iz87niy6eOQp3tRsycwthGR3Dlarv2ZEhdRskaQTX641sz15Pz9oJaUJGw+UTLoFUni3BlN0DLd1XnH4F+loTnclUbczL50mikrDt9fdgHRrAufIyppZqTjV21Dxr63TNL5wtYTFS4Mr4CGouX3Su0/mZNmmmvuY0rDYrMyK888bnCmVDaG6s4jEkLInHnu5m+OtDIYo+bJvNPTz66p+Fp+iGjs5m+PgugY9Ox/OmwV4etdogl/2BAUvgofVE6416qERPRETH8fzIsAVu9zrbEWtIxEKdP08SRVOywB9yLkmjSFi3CkvDn4d5fABm8yCiV8bgmeAQQDWFoYEOhK+IQeDiIJBuxiWJ90eujHbawcuj+H5y7uWlR2j4cvZ1p6UBAtXdUQ/D+lRW8/GSL9jeXriP1V5TUQabLHEtSXQkQqp11pY9vG+2KCtOHXSWkCh31D6vaDfPH97/KZIztuJabSWEMP9YReO5ADp9EFNnGRviF264fxiNdef5QNLaHB5rq0/zmJaVB7s86bJOortWb4Ra7Y41aS/zel3tJV5PyciBWpFYS4uDItHR3sABNNSch1jw7ofcRt13f4U+QGKKGqouM/UkGkJZ8SFMwcxt6O4BlzabmTExQozNzNhb54sDn3wEQ1oOJq1Tzo4b6h+DqPKAEBuSpFBbcYYXy2CVzVB7aOGtW4TAoKWQx81cGlb7qSO8LyOngN+D6opj3B0ZWYXOUhEDju44WfINlkUb0N78E+JXp+HmjTpotF4YGbwPT89FsFpHId682yjYqqzKAo0fNu14G6bhIVQbj2Kw/zdYhgfwXGgUaow/stI379zl0qYzNeAG7V8ydoCCa21pgs0uw98/CpJ5zDkvODYREza7FUsjUuCn82bVni07wGveWl/WiEYz3Y4ORi6Vn4TdNs6aoIeIAo+IW4fWpktOkdFDZjGbkJiUhabrNQgNW4V7Xa1o67smuDzFxASNis1doUNxSeuxc/c+POwfQmV5MV+iD3jBqRECPVyU8aHPPkZCSqYzY5VKzT1PGS8Lmw6Inak8cOHn74Q5fwvaHkVmMZsUyjw45EVkbiriNcpw5GEvtH46aLV6dN26jQe9fawb2TzOe/p6OpnaoJAY7nPSEOGY8SvhiX4NuwZvCRgEKVe53SaziHJ3vIXezju42ljBQqJHhhghUI0J+oUBHCSBGJid8WwIcy3ORGRgAj9YsSvX8rOq0fhx1xCIgbAIA7o6fuEa09jx4OZj3f3Ef6FWLInjQFavyWah3v/9LjPiCOBxHTvwJ3beoGbsLz9+AAAAAElFTkSuQmCC",
+   "height": 32
+  },
+  "tile_description": "steel grate floor tile over cables, industrial, dark",
+  "saved_to_database": true,
+  "generation_started_at": "2026-11-25T10:38:56.195912+00:00",
+  "estimated_wait_seconds": 0,
+  "original_image_n_colors": 45,
+  "quantized_image_n_colors": 25
+ }
+}

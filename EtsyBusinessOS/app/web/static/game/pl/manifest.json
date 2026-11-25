@@ -1,0 +1,141 @@
+{
+ "characters": {
+  "KAI-07": {
+   "id": "265b77b9-0123-44a3-a84d-c385ea3747b7",
+   "job": "9a33faed-03d0-485d-b8e3-8b1944d8d6eb",
+   "job_done": true,
+   "walk_done_dirs": [
+    "south-east",
+    "north-east"
+   ],
+   "walk_group": "ae94eea1-346e-4142-a9fd-d280446f81d3"
+  },
+  "RAZE-11": {
+   "id": "8f12effa-9327-4bae-ba24-4ac3e0ac3bee",
+   "job": "1a5544d0-a6a1-4fb3-835d-065c7dacbc6e",
+   "job_done": true,
+   "walk_done_dirs": [
+    "south-east",
+    "north-east"
+   ],
+   "walk_group": "f8846f6f-7e81-49cd-a159-be68beb78136"
+  },
+  "JUNO-X9": {
+   "id": "7ad16974-7272-4ea7-ba42-330fb4be16f9",
+   "job": "1ea1c7f5-a3c5-4f32-9b27-9fddb4989d20",
+   "job_done": true,
+   "walk_done_dirs": [
+    "south-east",
+    "north-east"
+   ],
+   "walk_group": "91f64c5b-9100-4f3e-aac3-58b7ee25c5a0"
+  },
+  "VOLT-3": {
+   "id": "5aad77ae-3eaf-4a33-8a78-6670a6b55676",
+   "job": "0d60d3a8-2c66-4dac-90c1-390c40f3787a",
+   "job_done": true,
+   "walk_done_dirs": [
+    "south-east",
+    "north-east"
+   ],
+   "walk_group": "3e141e8d-00cf-40e5-9392-b8350f4e2145"
+  },
+  "NYX-21": {
+   "id": "8f74f456-1f48-47fc-ae29-0e4bb9d62a09",
+   "job": "fabc7e83-f533-48f7-a396-d682d596fac0",
+   "job_done": true,
+   "walk_done_dirs": [
+    "south-east",
+    "north-east"
+   ],
+   "walk_group": "b26e005e-468b-4bca-a4da-394c410c5607"
+  },
+  "HEX-04": {
+   "id": "328e49aa-3592-4d1c-98ba-f60b2cdf2303",
+   "job": "14d4b685-12ee-441f-bb85-5858b15dd8bd",
+   "job_done": true,
+   "walk_done_dirs": [
+    "south-east",
+    "north-east"
+   ],
+   "walk_group": "ff351747-8ac8-4e4c-acb7-c1b40879c44a"
+  },
+  "SABLE-6": {
+   "id": "5d0ac738-de68-4a6f-af4a-6f7787a18a5f",
+   "job": "9c350190-b328-430a-9aad-53a38967e2a7",
+   "job_done": true,
+   "walk_done_dirs": [
+    "south-east",
+    "north-east"
+   ],
+   "walk_group": "3cc8417a-6da3-4032-beb9-f35f5eb23113"
+  },
+  "ORIN-88": {
+   "id": "cc7c1c02-66eb-4929-872a-927105281265",
+   "job": "d66b3570-7fab-49ab-af34-0c1661b90d9e",
+   "job_done": true
+  },
+  "KADE-12": {
+   "id": "681eb1d7-d427-4b4c-a6f1-b6593c1663ea",
+   "job": "cbc3a2c9-2a50-4174-a9ec-d5226dc2a9a7",
+   "job_done": true
+  },
+  "ZERO-1": {
+   "id": "60035e2b-4012-4f94-a42a-040dbc2d74e1",
+   "job": "3d3a758c-e5a3-4c5f-b84b-5feab2a36c90",
+   "job_done": true
+  }
+ },
+ "tiles": {
+  "floor_office": {
+   "job": "2e2b63a7-6096-4ab0-a4a6-754e71f6f16b",
+   "id": "26b00bf0-8a28-431e-9524-82695a6628d5",
+   "file": "tile_floor_office.png"
+  },
+  "floor_lab": {
+   "job": "9cb066e1-71c2-4bac-ac8c-e37849a9c74a",
+   "id": "215bee7b-1fd4-4c3d-90e1-870e1caec81c",
+   "file": "tile_floor_lab.png"
+  },
+  "floor_studio": {
+   "job": "74813429-fc9d-44fe-baf4-35e1df1022e0",
+   "id": "713025a2-d391-4555-b5b8-bbada4815ad5",
+   "file": "tile_floor_studio.png"
+  },
+  "floor_qa": {
+   "job": "98ce2dcb-6b81-4f85-8be5-e9f8d8754c6c",
+   "id": "ec49c5b6-3f08-4f89-84c7-5877a7a5711a",
+   "file": "tile_floor_qa.png"
+  },
+  "floor_shop": {
+   "job": "488bc5e5-a6ad-40b9-aea1-ae1492c2ad52",
+   "id": "a92211e6-56be-447e-85ff-e4cc85d4ee06",
+   "file": "tile_floor_shop.png"
+  },
+  "floor_growth": {
+   "job": "b697ba6c-7bba-4c02-a724-6a9d7ac08fae",
+   "id": "cf453180-2c6c-4108-86e7-cc0a0953202c",
+   "file": "tile_floor_growth.png"
+  },
+  "floor_archive": {
+   "job": "796d2c05-e4f9-4d41-b444-f0ea3415a61f",
+   "id": "d2d0a22d-bc22-489c-b4af-c5c4d1726945",
+   "file": "tile_floor_archive.png"
+  },
+  "floor_data": {
+   "job": "7cd845f9-c743-4a77-b300-dacf709c3020",
+   "id": "4313ae7d-98d6-4534-ade9-af5d7d4c5fae",
+   "file": "tile_floor_data.png"
+  },
+  "floor_finance": {
+   "job": "f4a3441d-9d64-42ec-b5dc-0f1a8abc135b",
+   "id": "f46a33b4-a4c2-42a6-8033-0379387f7d0f",
+   "file": "tile_floor_finance.png"
+  },
+  "floor_server": {
+   "job": "a21c9fcc-f7f7-418f-993f-94a316060199",
+   "id": "f5b0552b-11f2-4526-a52d-5787813f35ed",
+   "file": "tile_floor_server.png"
+  }
+ }
+}

@@ -1,9 +1,10 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{% block title %}Etsy Business OS{% endblock %}</title><link rel="stylesheet" href="/static/style.css"></head>
+<title>{% block title %}Etsy Business OS{% endblock %}</title>
+<script>if (window.top !== window.self) document.documentElement.classList.add("embedded");</script><link rel="stylesheet" href="/static/style.css"></head>
 <body><div class="layout">
 <nav class="side">
   <div class="brand">ETSY <span>BUSINESS OS</span><div class="small muted">v{{ VERSION }}</div></div>
-  {% set items = [("/", "🏠", "Dashboard"), ("/office", "🏢", "AI Office"), ("/approvals", "✅", "Approval Center"), ("/listings", "📝", "Listings"),
+  {% set items = [("/", "🏢", "HQ (game view)"), ("/dashboard", "🏠", "Dashboard"), ("/approvals", "✅", "Approval Center"), ("/listings", "📝", "Listings"),
      ("/assets", "🗂️", "Assets & Products"), ("/research", "🔍", "Research"), ("/social", "📣", "Social Media"), ("/analytics", "📊", "Analytics"),
      ("/accounting", "💰", "Accounting"), ("/automation", "⚙️", "Automation"), ("/audit", "📜", "Audit Log"), ("/brain", "🧠", "Shared Brain")] %}
   {% for href, ico, label in items %}<a href="{{ href }}" class="{{ 'on' if (path == href or (href != '/' and path.startswith(href))) }}">{{ ico }} {{ label }}</a>{% endfor %}

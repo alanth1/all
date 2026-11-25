@@ -1,0 +1,38 @@
+{
+ "id": "60035e2b-4012-4f94-a42a-040dbc2d74e1",
+ "name": "cyberpunk technician, orange work overalls, tool b...",
+ "state_name": "Idle",
+ "prompt": "cyberpunk technician, orange work overalls, tool belt, red beanie",
+ "size": {
+  "width": 68,
+  "height": 68
+ },
+ "directions": 8,
+ "created_at": "2026-11-25T10:33:27.112890+00:00",
+ "updated_at": "2026-11-25T10:34:11.744268+00:00",
+ "animation_count": 0,
+ "template_id": "mannequin",
+ "view": "high top-down",
+ "status": "completed",
+ "rotation_urls": {
+  "south": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/60035e2b-4012-4f94-a42a-040dbc2d74e1/rotations/south.png?t=1795602851",
+  "west": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/60035e2b-4012-4f94-a42a-040dbc2d74e1/rotations/west.png?t=1795602851",
+  "east": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/60035e2b-4012-4f94-a42a-040dbc2d74e1/rotations/east.png?t=1795602851",
+  "north": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/60035e2b-4012-4f94-a42a-040dbc2d74e1/rotations/north.png?t=1795602851",
+  "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/60035e2b-4012-4f94-a42a-040dbc2d74e1/rotations/south-east.png?t=1795602851",
+  "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/60035e2b-4012-4f94-a42a-040dbc2d74e1/rotations/north-east.png?t=1795602851",
+  "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/60035e2b-4012-4f94-a42a-040dbc2d74e1/rotations/north-west.png?t=1795602851",
+  "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/60035e2b-4012-4f94-a42a-040dbc2d74e1/rotations/south-west.png?t=1795602851"
+ },
+ "style_settings": {
+  "detail": "medium detail",
+  "outline": "single color black outline",
+  "shading": "medium shading"
+ },
+ "guidance": null,
+ "ai_freedom": null,
+ "tags": [],
+ "group_id": "f004dbd1-0cc5-4321-99ef-ec2ae1c5c1b6",
+ "skeletons": null,
+ "animations": []
+}

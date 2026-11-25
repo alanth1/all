@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.1.0-rc1 — 2026-11-25
+- New main UI "NEONLOOM HQ": living isometric pixel-art office (Phaser 3, served locally). Every feature lives in a room;
+  no menus or settings buttons on screen (classic UI kept at /dashboard, key `).
+- 10 NPC agents with new names (KAI-07, RAZE-11, JUNO-X9, VOLT-3, NYX-21, HEX-04, SABLE-6, ORIN-88, KADE-12, ZERO-1),
+  sprites generated with PixelLab (8 directions + walk cycle), 10 PixelLab floor tiles.
+- NPC brain: real job state -> work at desk / think / announce results / hand off to next agent; idle life -> coffee,
+  chat pairs, arcade, rest, window gazing, sleeping at night; ZERO-1 services rooms with real problems.
+- World: day/night from PC clock, simulated or real weather (Open-Meteo), city skyline with flying cars, rain/snow/storm.
+- Server Room shows real CPU/RAM/GPU/VRAM/temperature (psutil + nvidia-smi).
+- /api/world endpoint (agents, events -> speech, system metrics, issues, weather), AI-written NPC small talk when idle.
+
 ## 1.0.0-rc1 — 2026-11-25
 First release candidate covering PRD phases 01–11 (with the agreed adjustments: Windows, 8 GB RAM / 12 GB VRAM,
 SQLite WAL, APScheduler + persistent jobs table, one Python app with local web UI, START.bat bootstrap,

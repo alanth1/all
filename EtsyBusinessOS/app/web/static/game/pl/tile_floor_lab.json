@@ -1,0 +1,45 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "9cb066e1-71c2-4bac-ac8c-e37849a9c74a",
+ "status": "completed",
+ "created_at": "2026-11-25T10:34:47.584395+00:00",
+ "last_response": {
+  "seed": 3994257324,
+  "type": "done",
+  "image": {
+   "type": "base64",
+   "width": 32,
+   "base64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADSUlEQVR4nO1WbUhTURh+rpu2zeYM0ZAsgwIhTApLNMtfkvRJ0YeBklB/Kov6ZUqaVoJDKQwLQwkzEtSiKLPwoxJhWWBEKkaBtEgTv53TOZ1z8Z7bvd3NNTf7FeyB8Z5z7tl5nvd53507wAsvvPDCi/8ZWQ31Nvr8yxnypRJTPBgfxy/8nhck7eE8PYvzZHP+21ZGtDMqUlzzk/mwOGudxxNdGzwVwi0pYwmxIyZMZrxs/+C2ELmrh/uuaRnxri3RLkmlCFApmNAv+iHEJh6xqYIC8bqmnPNIQFZDvW35DLAjPhqKZX7IPHmRrd+4VyTa7SiG1vTDQ2xckVPKYmFNCft+1aEklsjNo4cXCOGc1Xjv5ig7EhqbZ2ZxN7cY/RYr8q9nsTllK9hOKLig5WNZ3oKkhB6hxC7t/1MaTsiYYnJC/N+csjso9/RV3qniTF74ict8xtWFbn2/saOLjbO3JXAcZU1d7U59BQgZZySf44lrSvC934CN61bCE1TUNUM+1DuIRvCKyHpXysl2Qt6ZHJHYWY+4OoMSrWnVwWSYxnD/KLjztY9sVrMZMoUCwWEhTkUI5GS1LECFK6W85dIeIWSnZDp9LrWeEia+r7pPbJ0jAVIyEjFlNIr9QHYLVt+pK1/MVbafmpWQrs0Q14lcV/oYo1bAND0HlVIOjdp3oQABKo0SP+6/wOCkBflVfHe72ydSxwz+KsQe2I6WynooNBpxD4kIDVGCSzubaVPH8FcrlUGKkadvsPr4bvir1Yv2iBSdPQMshodqcCrxGMJitrK5wWgRyf2N/B555S0tE0ETEuIowjgwxhqG8BwdTATZLNwB0qzJofomHZ5VN4lEAojcbDCwsfXnNyAoGO+aH3J2F1FqSjoTEpgUx4SQA8LYsTwbVq1HxNpgsSxFZbUsdrR02O216rsQHrkJY/19mBjhb8rujy2c06v4QdVt9iAVcPmOJ0faDZ3o7lOyMXV1V2Mb1sRGwGd2CvN+/mwfja0AI3ckFsC5IiJHZCvUrDQERyekPycBMpMFVpUvBnqHoZyZZFk7I3ZLgABXPfL51Xu7+dz4OEwj41jsLbikPyRpToRIBUz06Fmk5nL3TI//QhGkzUolWAqxgF8fApyYpBqpOQAAAABJRU5ErkJggg==",
+   "height": 32
+  },
+  "usage": {
+   "seconds": 17.464407920837402
+  },
+  "tile_id": "215bee7b-1fd4-4c3d-90e1-870e1caec81c",
+  "progress": 0.6023255813953489,
+  "tile_name": "white clinical lab floor tile with faint green gri",
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "b195107e-354c-47fb-92da-c72fc165afbb",
+  "queue_position": 0,
+  "billing_charged": true,
+  "quantized_image": {
+   "type": "base64",
+   "width": 32,
+   "base64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADSUlEQVR4nO1WbUhTURh+rpu2zeYM0ZAsgwIhTApLNMtfkvRJ0YeBklB/Kov6ZUqaVoJDKQwLQwkzEtSiKLPwoxJhWWBEKkaBtEgTv53TOZ1z8Z7bvd3NNTf7FeyB8Z5z7tl5nvd53507wAsvvPDCi/8ZWQ31Nvr8yxnypRJTPBgfxy/8nhck7eE8PYvzZHP+21ZGtDMqUlzzk/mwOGudxxNdGzwVwi0pYwmxIyZMZrxs/+C2ELmrh/uuaRnxri3RLkmlCFApmNAv+iHEJh6xqYIC8bqmnPNIQFZDvW35DLAjPhqKZX7IPHmRrd+4VyTa7SiG1vTDQ2xckVPKYmFNCft+1aEklsjNo4cXCOGc1Xjv5ig7EhqbZ2ZxN7cY/RYr8q9nsTllK9hOKLig5WNZ3oKkhB6hxC7t/1MaTsiYYnJC/N+csjso9/RV3qniTF74ict8xtWFbn2/saOLjbO3JXAcZU1d7U59BQgZZySf44lrSvC934CN61bCE1TUNUM+1DuIRvCKyHpXysl2Qt6ZHJHYWY+4OoMSrWnVwWSYxnD/KLjztY9sVrMZMoUCwWEhTkUI5GS1LECFK6W85dIeIWSnZDp9LrWeEia+r7pPbJ0jAVIyEjFlNIr9QHYLVt+pK1/MVbafmpWQrs0Q14lcV/oYo1bAND0HlVIOjdp3oQABKo0SP+6/wOCkBflVfHe72ydSxwz+KsQe2I6WynooNBpxD4kIDVGCSzubaVPH8FcrlUGKkadvsPr4bvir1Yv2iBSdPQMshodqcCrxGMJitrK5wWgRyf2N/B555S0tE0ETEuIowjgwxhqG8BwdTATZLNwB0qzJofomHZ5VN4lEAojcbDCwsfXnNyAoGO+aH3J2F1FqSjoTEpgUx4SQA8LYsTwbVq1HxNpgsSxFZbUsdrR02O216rsQHrkJY/19mBjhb8rujy2c06v4QdVt9iAVcPmOJ0faDZ3o7lOyMXV1V2Mb1sRGwGd2CvN+/mwfja0AI3ckFsC5IiJHZCvUrDQERyekPycBMpMFVpUvBnqHoZyZZFk7I3ZLgABXPfL51Xu7+dz4OEwj41jsLbikPyRpToRIBUz06Fmk5nL3TI//QhGkzUolWAqxgF8fApyYpBqpOQAAAABJRU5ErkJggg==",
+   "height": 32
+  },
+  "tile_description": "white clinical lab floor tile with faint green grid lines",
+  "saved_to_database": true,
+  "generation_started_at": "2026-11-25T10:34:47.742388+00:00",
+  "estimated_wait_seconds": 0,
+  "original_image_n_colors": 52,
+  "quantized_image_n_colors": 23
+ }
+}

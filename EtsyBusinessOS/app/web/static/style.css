@@ -42,3 +42,23 @@ button:disabled{opacity:.5;cursor:not-allowed}
 pre{white-space:pre-wrap;word-break:break-word;background:#0c0e12;border:1px solid var(--line);border-radius:8px;padding:10px;max-height:520px;overflow:auto}
 .chart{width:100%;height:160px}
 details>summary{cursor:pointer;color:#fdba74}
+
+html.embedded .layout{display:block}html.embedded nav.side,html.embedded header.top{display:none}
+html.embedded main{padding:14px 18px;max-width:none}html.embedded .demo-banner{padding:4px 10px;font-size:12px}
+html.embedded body{background:#0c0a1d}html.embedded .card{background:#14112b;border-color:#2a2350}
+
+@font-face{font-family:Term;src:url(/static/game/fonts/VT323.ttf)}@font-face{font-family:Pix;src:url(/static/game/fonts/Silkscreen.ttf)}
+html.embedded{--bg:#0c0a1d;--panel:#14112b;--panel2:#1b1738;--line:#2a2350;--text:#e9e7ff;--muted:#9d97d6;--accent:#22d3ee}
+html.embedded body{background:#0c0a1d;color:#e9e7ff}
+html.embedded h1,html.embedded h2,html.embedded h3{font-family:Pix,monospace;letter-spacing:.06em;color:#c4b5fd;font-weight:400}
+html.embedded h3{font-size:12px}html.embedded h2{font-size:14px}
+html.embedded .card{background:#14112b;border-color:#2a2350;box-shadow:inset 0 0 0 1px rgba(34,211,238,.04)}
+html.embedded button,html.embedded .btn{background:#22d3ee;color:#04111a;border-radius:3px;font-family:Term,monospace;font-size:19px;line-height:1;letter-spacing:.03em;padding:7px 12px}
+html.embedded button.sec,html.embedded .btn.sec{background:#1b1738;color:#c4b5fd;border:1px solid #3b2f7a}
+html.embedded button.ok{background:#4ade80;color:#052e16}html.embedded button.danger{background:#be123c;color:#fff}
+html.embedded input,html.embedded select,html.embedded textarea{background:#090716;border-color:#2a2350;color:#e9e7ff}
+html.embedded a{color:#67e8f9}html.embedded th{color:#9d97d6}html.embedded td,html.embedded th{border-color:#211c40}
+html.embedded .kpi .v{font-family:Term,monospace;font-size:34px;color:#fff;text-shadow:0 0 8px rgba(34,211,238,.35)}
+html.embedded .tabs a{border-color:#3b2f7a;color:#c4b5fd;font-family:Term,monospace;font-size:18px}
+html.embedded .demo-banner{background:#1d0b2e;border-color:#581c87}
+html.embedded pre{background:#090716;border-color:#2a2350}

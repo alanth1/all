@@ -7,7 +7,7 @@
   <div><label>Product (from asset folders)</label><select name="product_id">{% for p in prods %}<option value="{{ p.id }}">{{ p.name }} ({{ p.n }} files)</option>{% else %}<option disabled>no products - scan an asset folder first</option>{% endfor %}</select></div>
   <div><label>Research keyword (optional)</label><input type="text" name="keyword" placeholder="e.g. cabin house plan"></div>
   <div style="flex:none"><button {% if not prods %}disabled{% endif %}>✍️ Generate</button></div></div>
- <p class="small muted">Quill reads the product PDF/text, uses your latest research, writes title/description/13 tags; Sherlock validates; you approve.</p></form>
+ <p class="small muted">JUNO-X9 reads the product PDF/text, uses your latest research, writes title/description/13 tags; VOLT-3 validates; you approve.</p></form>
 </div>
 <div class="card"><h3 style="margin-top:0">Etsy shop</h3><form method="post" action="/etsy/sync"><button class="sec">🔄 Sync shop, listings, orders & ledger now</button></form>
 <p class="small muted">Runs automatically every hour.</p></div></div>

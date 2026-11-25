@@ -1,0 +1,38 @@
+{
+ "id": "cc7c1c02-66eb-4929-872a-927105281265",
+ "name": "cyberpunk data analyst man, blue shirt and tie, ne...",
+ "state_name": "Idle",
+ "prompt": "cyberpunk data analyst man, blue shirt and tie, neon blue cybernetic arm",
+ "size": {
+  "width": 68,
+  "height": 68
+ },
+ "directions": 8,
+ "created_at": "2026-11-25T10:32:24.999245+00:00",
+ "updated_at": "2026-11-25T10:32:52.752425+00:00",
+ "animation_count": 0,
+ "template_id": "mannequin",
+ "view": "high top-down",
+ "status": "completed",
+ "rotation_urls": {
+  "south": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/cc7c1c02-66eb-4929-872a-927105281265/rotations/south.png?t=1795602772",
+  "west": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/cc7c1c02-66eb-4929-872a-927105281265/rotations/west.png?t=1795602772",
+  "east": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/cc7c1c02-66eb-4929-872a-927105281265/rotations/east.png?t=1795602772",
+  "north": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/cc7c1c02-66eb-4929-872a-927105281265/rotations/north.png?t=1795602772",
+  "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/cc7c1c02-66eb-4929-872a-927105281265/rotations/south-east.png?t=1795602772",
+  "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/cc7c1c02-66eb-4929-872a-927105281265/rotations/north-east.png?t=1795602772",
+  "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/cc7c1c02-66eb-4929-872a-927105281265/rotations/north-west.png?t=1795602772",
+  "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/cc7c1c02-66eb-4929-872a-927105281265/rotations/south-west.png?t=1795602772"
+ },
+ "style_settings": {
+  "detail": "medium detail",
+  "outline": "single color black outline",
+  "shading": "medium shading"
+ },
+ "guidance": null,
+ "ai_freedom": null,
+ "tags": [],
+ "group_id": "9333b698-3d09-4c1d-bbcf-55228f75089c",
+ "skeletons": null,
+ "animations": []
+}

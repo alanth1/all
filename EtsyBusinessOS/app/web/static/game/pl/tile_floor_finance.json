@@ -1,0 +1,45 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "f4a3441d-9d64-42ec-b5dc-0f1a8abc135b",
+ "status": "completed",
+ "created_at": "2026-11-25T10:38:25.195661+00:00",
+ "last_response": {
+  "seed": 2396162774,
+  "type": "done",
+  "image": {
+   "type": "base64",
+   "width": 32,
+   "base64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACx0lEQVR4nO2WXUhTYRjH/2edNMdgOiurmS4hIsTSQjLIYsS6sxgEXQVJH/QBNUOC6q686aatyJAKKkokEII+LvogCQWNiBRZVhdtrWbYMp3Z5ldbPG++h7OT52Prsv1gnPPufc/zf57/+7xnA7JkyZIly/+OkOmDaytrk/JxX29nRrGEfxVWYs4V0f2iw3BcMR3hxK8J3XVN9VvhiY2zJPv7X+omYtJbcNi1KdnRtJsFNM1bAL0kLrY9xs2TdSiz5aGiojpJH631QjpWXz/hwvTPOA40d6kGjMVj2F+Vj/v+IZzZVYVIJAFvzyCbm2trRCPCcjzXerSmcbtxG7tW18SB8WGcffaeOSePLW9Y0aiwVOHkjOqcb8/61GTbg5K4HHkiglFhCn6qrQ/Nx5ya62iLCK1tkp8YwbFiddJqXaifwE4HYCmEdbFNtQ+oRzgjYyYc9N6FOc+sGjMa/QZh4wZnMvz5I0w5uVBL5PSWErT2foLHvY65oLUNVJVvXw279wejuPCw/681I5Ewu9qLSyGSeMEie8qE1VaIiakEWhrcbLz3XKv0sJY4n+fukCPnly/D8ZZHUsWJqUlJj7SFEnuZ1AM0QceIuHKolnXx0Ttv2ZgSYt9Rc914BSM4rAI8rlJ2FBvbuyWXeaEES2B6ZooN5os5oHuHYyXEWAR15UW45R9jc74jOzA8MJByrPQgoVxLAXsvEN6Od0yDQ1rSeZQ7wSm1mVG/fTMqy5fg6b3nuPp6VLOp5MIEt/rrlwAanKukBMiJYGCAaQvKh3ki3BVLfhGr4FJngAWk4DywmjD1EBH9PixV6l7jwIM3gwiFPwiab8LQ7AK+NeOjQwD+WMirUlaoNpZz+UmXkNavYWg2kaVFxZIjesJkNSHfZ2XFSgQYZK4e0apYTzjtBDALvTknYz/YPa+U3FE2l1Ey/kumdMRoxUp+A1RzPlN8z2pkAAAAAElFTkSuQmCC",
+   "height": 32
+  },
+  "usage": {
+   "seconds": 23.053488969802856
+  },
+  "tile_id": "f46a33b4-a4c2-42a6-8033-0379387f7d0f",
+  "progress": 0.6023255813953489,
+  "tile_name": "black marble floor tile with gold veins",
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "cbde96b1-3117-4319-ab1f-5220f8919e7c",
+  "queue_position": 0,
+  "billing_charged": true,
+  "quantized_image": {
+   "type": "base64",
+   "width": 32,
+   "base64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACx0lEQVR4nO2WXUhTYRjH/2edNMdgOiurmS4hIsTSQjLIYsS6sxgEXQVJH/QBNUOC6q686aatyJAKKkokEII+LvogCQWNiBRZVhdtrWbYMp3Z5ldbPG++h7OT52Prsv1gnPPufc/zf57/+7xnA7JkyZIly/+OkOmDaytrk/JxX29nRrGEfxVWYs4V0f2iw3BcMR3hxK8J3XVN9VvhiY2zJPv7X+omYtJbcNi1KdnRtJsFNM1bAL0kLrY9xs2TdSiz5aGiojpJH631QjpWXz/hwvTPOA40d6kGjMVj2F+Vj/v+IZzZVYVIJAFvzyCbm2trRCPCcjzXerSmcbtxG7tW18SB8WGcffaeOSePLW9Y0aiwVOHkjOqcb8/61GTbg5K4HHkiglFhCn6qrQ/Nx5ya62iLCK1tkp8YwbFiddJqXaifwE4HYCmEdbFNtQ+oRzgjYyYc9N6FOc+sGjMa/QZh4wZnMvz5I0w5uVBL5PSWErT2foLHvY65oLUNVJVvXw279wejuPCw/681I5Ewu9qLSyGSeMEie8qE1VaIiakEWhrcbLz3XKv0sJY4n+fukCPnly/D8ZZHUsWJqUlJj7SFEnuZ1AM0QceIuHKolnXx0Ttv2ZgSYt9Rc914BSM4rAI8rlJ2FBvbuyWXeaEES2B6ZooN5os5oHuHYyXEWAR15UW45R9jc74jOzA8MJByrPQgoVxLAXsvEN6Od0yDQ1rSeZQ7wSm1mVG/fTMqy5fg6b3nuPp6VLOp5MIEt/rrlwAanKukBMiJYGCAaQvKh3ki3BVLfhGr4FJngAWk4DywmjD1EBH9PixV6l7jwIM3gwiFPwiab8LQ7AK+NeOjQwD+WMirUlaoNpZz+UmXkNavYWg2kaVFxZIjesJkNSHfZ2XFSgQYZK4e0apYTzjtBDALvTknYz/YPa+U3FE2l1Ey/kumdMRoxUp+A1RzPlN8z2pkAAAAAElFTkSuQmCC",
+   "height": 32
+  },
+  "tile_description": "black marble floor tile with gold veins",
+  "saved_to_database": true,
+  "generation_started_at": "2026-11-25T10:38:25.356589+00:00",
+  "estimated_wait_seconds": 0,
+  "original_image_n_colors": 39,
+  "quantized_image_n_colors": 18
+ }
+}

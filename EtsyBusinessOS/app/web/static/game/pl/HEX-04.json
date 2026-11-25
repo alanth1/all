@@ -1,0 +1,38 @@
+{
+ "id": "328e49aa-3592-4d1c-98ba-f60b2cdf2303",
+ "name": "cyberpunk social media creator, pink hair buns, co...",
+ "state_name": "Idle",
+ "prompt": "cyberpunk social media creator, pink hair buns, colorful bomber jacket",
+ "size": {
+  "width": 68,
+  "height": 68
+ },
+ "directions": 8,
+ "created_at": "2026-11-25T10:30:53.185087+00:00",
+ "updated_at": "2026-11-25T10:31:29.439535+00:00",
+ "animation_count": 0,
+ "template_id": "mannequin",
+ "view": "high top-down",
+ "status": "completed",
+ "rotation_urls": {
+  "south": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/328e49aa-3592-4d1c-98ba-f60b2cdf2303/rotations/south.png?t=1795602689",
+  "west": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/328e49aa-3592-4d1c-98ba-f60b2cdf2303/rotations/west.png?t=1795602689",
+  "east": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/328e49aa-3592-4d1c-98ba-f60b2cdf2303/rotations/east.png?t=1795602689",
+  "north": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/328e49aa-3592-4d1c-98ba-f60b2cdf2303/rotations/north.png?t=1795602689",
+  "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/328e49aa-3592-4d1c-98ba-f60b2cdf2303/rotations/south-east.png?t=1795602689",
+  "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/328e49aa-3592-4d1c-98ba-f60b2cdf2303/rotations/north-east.png?t=1795602689",
+  "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/328e49aa-3592-4d1c-98ba-f60b2cdf2303/rotations/north-west.png?t=1795602689",
+  "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/328e49aa-3592-4d1c-98ba-f60b2cdf2303/rotations/south-west.png?t=1795602689"
+ },
+ "style_settings": {
+  "detail": "medium detail",
+  "outline": "single color black outline",
+  "shading": "medium shading"
+ },
+ "guidance": null,
+ "ai_freedom": null,
+ "tags": [],
+ "group_id": "7aabe1e9-0411-44d1-8079-1080ee972327",
+ "skeletons": null,
+ "animations": []
+}

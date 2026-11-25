@@ -1,4 +1,4 @@
-# Etsy Business OS — v1.0.0-rc1
+# Etsy Business OS — v1.1.0-rc1
 
 Software lokal untuk mengelola toko Etsy dengan satu AI lokal (Gemma 12B via Ollama).
 **AI berpikir · Python mengeksekusi · Database mengingat · Automasi mengatur · Anda yang memutuskan.**
@@ -13,11 +13,35 @@ Software lokal untuk mengelola toko Etsy dengan satu AI lokal (Gemma 12B via Oll
 
 Untuk mode LIVE ikuti menu **Setup API guide** di aplikasi: instal Ollama → unduh model → Benchmark → hubungkan Etsy, Pinterest, YouTube → ubah Mode ke LIVE.
 
-## Isi aplikasi
+## Tampilan utama: NEONLOOM HQ (kantor hidup)
+Saat dibuka, aplikasi menampilkan gedung kantor isometrik bergaya pixel-art cyberpunk. **Tidak ada menu atau tombol pengaturan** — setiap fungsi punya ruangan dan NPC sendiri:
+
+| Ruangan | NPC | Isi (klik ruangan / NPC) |
+|---|---|---|
+| Command Deck | KAI-07 | Ringkasan, Automation, Audit log, Notifikasi |
+| Research Lab | RAZE-11 | Riset keyword & kompetitor |
+| Writers Studio | JUNO-X9 | Buat listing, Shared Brain |
+| QA Bay | VOLT-3 | Approval & validasi |
+| Shop Floor | NYX-21 | Approval Center, listing & toko |
+| Growth Studio | HEX-04 | Social media (Pinterest, YouTube) |
+| Archive | SABLE-6 | Aset & produk |
+| Data Room | ORIN-88 | Analytics & impor Shop Stats |
+| Finance Vault | KADE-12 | Akuntansi |
+| Server Room | ZERO-1 | Pengaturan, panduan API, diagnostik, CPU/GPU/RAM/VRAM asli |
+| Lounge · Pantry | semua | Ngopi, ngobrol, arcade, bean bag, ping-pong |
+
+- NPC **bekerja di mejanya saat ada job nyata** (monitor menyala, gelembung pikiran), lalu **mengumumkan hasilnya** lewat gelembung bicara + notifikasi, dan kadang **mengantar hasil** ke rekan berikutnya (riset → penulis → QA → toko).
+- Saat tidak ada tugas mereka **hidup**: jalan-jalan, ngopi, ngobrol berdua, main arcade, rebahan, melihat jendela, tidur di malam hari.
+- **Siang/malam** mengikuti jam PC; **cuaca** di jendela simulasi atau cuaca asli kota Anda (Server Room → Pengaturan → World & weather, gratis via Open-Meteo).
+- **Ruangan yang bermasalah** (job gagal, koneksi API putus, GPU panas, RAM penuh, approval menunggu) menyalakan lampu alarm; ZERO-1 datang memeriksa.
+- Di LIVE mode, saat GPU sedang kosong, AI lokal menulis obrolan santai baru untuk NPC (bisa dimatikan).
+- Kontrol: scroll = zoom, tarik = geser, klik ruangan/NPC, `Esc` = tutup panel, tombol `` ` `` = tampilan klasik (/dashboard).
+- Grafik: NPC dan tile lantai dibuat dengan **PixelLab**; furnitur, efek, cuaca digambar oleh kode. Font Silkscreen & VT323 (lisensi OFL). Engine: Phaser 3.90 (MIT), disimpan lokal.
+
+## Isi aplikasi (tampilan klasik /dashboard)
 | Menu | Fungsi |
 |---|---|
 | Dashboard | KPI, status engine, tindakan yang perlu Anda lakukan, tim AI |
-| AI Office | Tampilan kantor isometrik; agen bergerak sesuai status job |
 | Approval Center | Review, edit, Approve / Reject / Request Revision listing. Tidak ada publish tanpa approval |
 | Listings | Generate listing dari produk, sinkron Etsy |
 | Assets & Products | Folder aset (read-only), metadata, duplikat, kompatibilitas platform |
@@ -31,8 +55,8 @@ Untuk mode LIVE ikuti menu **Setup API guide** di aplikasi: instal Ollama → un
 | Diagnostics | Laporan untuk support: `logs\report.txt` (tanpa password/token) |
 
 ## Tim AI (peran, dijalankan satu per satu oleh satu model)
-Boss (Chief of Staff) · Scout (riset) · Quill (penulis SEO) · Sherlock (validator) · Etta (toko Etsy) ·
-Pixie (social media) · Libby (aset) · Nova (analis) · Judith (keuangan).
+KAI-07 (operasional) · RAZE-11 (riset) · JUNO-X9 (penulis SEO) · VOLT-3 (QA) · NYX-21 (toko Etsy) ·
+HEX-04 (social media) · SABLE-6 (aset) · ORIN-88 (analis) · KADE-12 (keuangan) · ZERO-1 (sistem & server).
 
 ## Arsitektur singkat
 - Satu aplikasi Python: FastAPI + Jinja2 (UI lokal), SQLite WAL, APScheduler + tabel `jobs` persisten.

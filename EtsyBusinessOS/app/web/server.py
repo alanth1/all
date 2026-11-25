@@ -14,7 +14,7 @@ from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse, Red
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from .. import agents, brain, config, db, diagnostics, jobs, orchestrator, vault
+from .. import agents, brain, config, db, diagnostics, jobs, orchestrator, vault, world
 from ..ai import client as ai_client
 from ..audit import audit
 from ..engines import accounting, analytics, assets, listings, research, seo
@@ -115,6 +115,50 @@ def period(request: Request) -> tuple[str, str]:
 # ---------------- dashboard & office ----------------
 
 @app.get("/", response_class=HTMLResponse)
+def world_view(request: Request):
+    """The living office (game view). Every feature is reached through its room."""
+    return templates.TemplateResponse(request, "world.html", {"assets": game_assets(), "agents": agents.statuses()})
+
+
+def game_assets() -> dict:
+    root = HERE / "static" / "game" / "pl"
+    out = {"npc": {}, "tiles": {}}
+    if not root.exists():
+        return out
+    for d in sorted(p for p in root.iterdir() if p.is_dir()):
+        rot = {f.stem[4:]: f"/static/game/pl/{quote(d.name)}/{f.name}" for f in d.glob("rot_*.png")}
+        walk: dict = {}
+        for f in sorted(d.glob("walk_*.png"), key=lambda f: (f.stem.rsplit("_", 1)[0], int(f.stem.rsplit("_", 1)[1]))):
+            direction = f.stem[5:].rsplit("_", 1)[0]
+            walk.setdefault(direction, []).append(f"/static/game/pl/{quote(d.name)}/{f.name}")
+        out["npc"][d.name] = {"rot": rot, "walk": walk}
+    for f in root.glob("tile_*.png"):
+        out["tiles"][f.stem[5:]] = f"/static/game/pl/{f.name}"
+    return out
+
+
+@app.get("/api/world")
+def api_world(since: int = 0):
+    return JSONResponse(world.snapshot(since))
+
+
+@app.get("/api/world/banter")
+def api_banter():
+    return JSONResponse(list(world.banter()))
+
+
+@app.post("/settings/world")
+def settings_world(city: str = Form(""), lat: str = Form(""), lon: str = Form(""), ai_banter: str = Form("")):
+    def num(v):
+        try:
+            return str(float(v)) if v.strip() else ""
+        except ValueError:
+            return ""
+    db.update_settings({"world": {"city": city.strip(), "lat": num(lat), "lon": num(lon), "ai_banter": bool(ai_banter)}}, "human")
+    return back("/settings#world", "World settings saved")
+
+
+@app.get("/dashboard", response_class=HTMLResponse)
 def dashboard(request: Request):
     start, end = period(request)
     k = analytics.kpis(start, end)
@@ -139,9 +183,9 @@ def dashboard(request: Request):
                 agents=agents.statuses(), ollama=ai_client.ollama_status(), series=analytics.daily_revenue(start, end))
 
 
-@app.get("/office", response_class=HTMLResponse)
-def office(request: Request):
-    return page(request, "office.html")
+@app.get("/office")
+def office():
+    return RedirectResponse("/", status_code=307)
 
 
 @app.get("/api/agents")
@@ -215,7 +259,7 @@ def listings_page(request: Request):
 def listings_generate(product_id: int = Form(...), keyword: str = Form("")):
     jid = jobs.enqueue("listing_generate", {"product_id": product_id, "keyword": keyword.strip()}, actor="human")
     audit("human", "listing.generate_request", "product", product_id, {"job": jid})
-    return back("/listings", f"Quill is writing the listing (job #{jid}). It will appear in Approvals.")
+    return back("/listings", f"JUNO-X9 is writing the listing (job #{jid}). It will appear in Approvals.")
 
 
 @app.post("/etsy/sync")
@@ -244,7 +288,7 @@ def assets_scan():
     if not assets.roots():
         return back("/assets", err="Add an asset folder first (Settings > Asset folders)")
     jid = jobs.enqueue("asset_scan", {}, priority=1, actor="human")
-    return back("/assets", f"Libby is scanning (job #{jid})")
+    return back("/assets", f"SABLE-6 is scanning (job #{jid})")
 
 
 @app.post("/assets/{aid}/ready")
@@ -284,7 +328,7 @@ def research_keyword(keyword: str = Form(...), track: str = Form("")):
     if track:
         research.track_keyword(kw)
     jid = jobs.enqueue("research_keyword", {"keyword": kw, "pages": 2}, priority=2, actor="human")
-    return back("/research", f"Scout is researching '{kw}' via the Etsy API (job #{jid})")
+    return back("/research", f"RAZE-11 is researching '{kw}' via the Etsy API (job #{jid})")
 
 
 @app.post("/research/competitor")
@@ -326,7 +370,7 @@ def social_page(request: Request):
 @app.post("/social/plan")
 def social_plan():
     jid = jobs.enqueue("social_plan", {}, priority=2, actor="human")
-    return back("/social", f"Pixie is planning content (job #{jid})")
+    return back("/social", f"HEX-04 is planning content (job #{jid})")
 
 
 @app.post("/social/variant/{vid}/disable")
@@ -368,7 +412,7 @@ async def analytics_import(request: Request):
 @app.post("/analytics/report")
 def analytics_report():
     jid = jobs.enqueue("analytics_report", {}, priority=3, actor="human")
-    return back("/analytics", f"Nova is writing the report (job #{jid})")
+    return back("/analytics", f"ORIN-88 is writing the report (job #{jid})")
 
 
 # ---------------- accounting ----------------
@@ -394,7 +438,7 @@ def accounting_expense(expense_date: str = Form(...), vendor: str = Form(""), de
                        currency: str = Form("USD"), account_code: str = Form("")):
     try:
         accounting.add_expense(expense_date, vendor, description, amount, currency, "human", account_code or None)
-        return back("/accounting#expenses", "Expense added" + ("" if account_code else " - Judith will suggest an account"))
+        return back("/accounting#expenses", "Expense added" + ("" if account_code else " - KADE-12 will suggest an account"))
     except Exception as e:  # noqa: BLE001
         return back("/accounting#expenses", err=str(e))
 

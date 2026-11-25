@@ -1,0 +1,38 @@
+{
+ "id": "681eb1d7-d427-4b4c-a6f1-b6593c1663ea",
+ "name": "cyberpunk accountant woman, white blazer, dark ski...",
+ "state_name": "Idle",
+ "prompt": "cyberpunk accountant woman, white blazer, dark skin, neat hair bun",
+ "size": {
+  "width": 68,
+  "height": 68
+ },
+ "directions": 8,
+ "created_at": "2026-11-25T10:32:56.257846+00:00",
+ "updated_at": "2026-11-25T10:33:25.043275+00:00",
+ "animation_count": 0,
+ "template_id": "mannequin",
+ "view": "high top-down",
+ "status": "completed",
+ "rotation_urls": {
+  "south": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/681eb1d7-d427-4b4c-a6f1-b6593c1663ea/rotations/south.png?t=1795602805",
+  "west": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/681eb1d7-d427-4b4c-a6f1-b6593c1663ea/rotations/west.png?t=1795602805",
+  "east": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/681eb1d7-d427-4b4c-a6f1-b6593c1663ea/rotations/east.png?t=1795602805",
+  "north": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/681eb1d7-d427-4b4c-a6f1-b6593c1663ea/rotations/north.png?t=1795602805",
+  "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/681eb1d7-d427-4b4c-a6f1-b6593c1663ea/rotations/south-east.png?t=1795602805",
+  "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/681eb1d7-d427-4b4c-a6f1-b6593c1663ea/rotations/north-east.png?t=1795602805",
+  "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/681eb1d7-d427-4b4c-a6f1-b6593c1663ea/rotations/north-west.png?t=1795602805",
+  "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/681eb1d7-d427-4b4c-a6f1-b6593c1663ea/rotations/south-west.png?t=1795602805"
+ },
+ "style_settings": {
+  "detail": "medium detail",
+  "outline": "single color black outline",
+  "shading": "medium shading"
+ },
+ "guidance": null,
+ "ai_freedom": null,
+ "tags": [],
+ "group_id": "de09513e-d84c-4fb2-8f76-7b7974a729b1",
+ "skeletons": null,
+ "animations": []
+}

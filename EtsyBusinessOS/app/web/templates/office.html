@@ -1,7 +1,0 @@
-{% extends "base.html" %}
-{% block heading %}<b>AI Office</b> <span class="muted small">live view of the agent team (one local model works on one task at a time)</span>{% endblock %}
-{% block content %}
-<div class="card" style="padding:0;overflow:hidden"><canvas id="office" width="1200" height="640" style="width:100%;display:block;background:#0b0d12"></canvas></div>
-<div class="agents" id="cards" style="margin-top:14px"></div>
-{% endblock %}
-{% block scripts %}<script src="/static/office.js"></script>{% endblock %}

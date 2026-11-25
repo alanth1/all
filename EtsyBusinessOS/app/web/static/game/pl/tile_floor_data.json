@@ -1,0 +1,45 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "7cd845f9-c743-4a77-b300-dacf709c3020",
+ "status": "completed",
+ "created_at": "2026-11-25T10:37:53.949881+00:00",
+ "last_response": {
+  "seed": 2097732019,
+  "type": "done",
+  "image": {
+   "type": "base64",
+   "width": 32,
+   "base64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAEZElEQVR4nO1WXUxcRRT+5t67/Oxi+Sm2RAq0aysK/UEeChoVBRFNQ6pxXaqpttQXG39iEx9IfFLri2l8qL6oSWmpiZGgxphqtFl9UGMKpg8ibVJTWi0ESAgFumy7sHuPOWd6r8v+QGlDmpieZO6dmXPunO9858zMBW7JLfm/i9r6PHHLpLeW1XnJQ6Qil2GfPpnRxlhWABGCHTEByr05AMirgPN/LWhjLCcAjjx49ncoyrtJAABMjcdBam6ZAORsJWmLSVbmWreuy7GnkVRsBogCZPkAo5ZkYA+oZNPZnEsLLmUtybHjCEDbqd9g5/yn6qnZBlAR2dM/p4BQUQW6IQBGNZkF90AV3gZ7fBSUY89znpcDKNMHb8frmOn6RPuyStBw9G2YU3O6BhZPVKoYKx4ka3M7qaYOwr73ac+ITY/+MkZG/hMEfxuZRQFq6Zsja91+0b0xHRdbbjwOnrNJqTqC6V+ie9NPnGcG8Ej/BKnyVnHGizpNis+o1s3TKHMCZmdIgOTu75V5AcA2S3LubyNP3Tu047R2xm8GwyB4nueYBY6QdQyGx2bJy+Kc9c73wsLqFg04DRNGomNeAJ5itHz+KWIjvbgYjiMyqdXNoR+xa6Bb+p1122Ff+kf6Ugtz4zDvvh+V772FoWGFrgdeROOHHfAWAN1NzwLqMqo+/haqtBrMplW4KQGIoSlkhUOvg5oNjb3HZMy14OglaqOaCus+kkgT01PVNS7R8jdGzSuid1gR5vYeIzz+AhkbA8S7SvHD2rgFsXAEe379zMXFkTMDocdqYZdWIvCNjr58JWFiRuFQ6SaJjKWqsxf1zUUIXwG+uO9VxCf7gDvWQcUiaD/xtdiwjneLMLh9l+70ndF7m9EwA9zyAgc0Up5r6pAoOBqXlZ0hzYCnUYrOYYP7Tn2wLb85pfw9r8V21p3t0ncaF6jiB6mwAFK3r4G6YgBlPpA3F21HjggL+cWm6L+s3QLbXgPDGEJsykbwbL+c9d/XV8KqbhAWgyHNohPt8FAcP7Q26UFWPqggBvw5Bj7Q+JKSFGitPuGAbGDtBqjICFBeATWbj8BXB9HTGsTu4zoNLIcrG6Cs1bAvXgAHwGB6nnrN1e/+7qC8jz75LmJ/H9fOhwaBLB8wG3PtlN6j2fO2hiKPPr3WboClvIj5RpF3VxNeOrRP8s/57F6/HqCCq7Zh7Bjol6ov8hEO1DwHVZwFKlLAmSjUufPu2sk3o0q5YJKM2AHKVoGGB2D4SmU7MqVWRTOePvym2HTXNUB5N+OZnz5Ad/020PQEjMIyxCcHkVHsk+JbJc/rmki+v6NujaBiFWh81s21k+/Oex+WlGF0UlOdItmaLToxz6fKBDAVCIPIhlHlBy7MwF65AlaeVwdj+ECjf2izsWiaH5D0V/WCAFzhw+JqTbi14agYDAM4NZiiS6Y6Y6C4RpFLxa0PzYbUR7rCSkP1DQNAAhB9biTuHL2nBcw1Or5uAK6454cGkCnHi8m/i3hmtZlrQ6AAAAAASUVORK5CYII=",
+   "height": 32
+  },
+  "usage": {
+   "seconds": 28.956095695495605
+  },
+  "tile_id": "4313ae7d-98d6-4534-ade9-af5d7d4c5fae",
+  "progress": 0.6023255813953489,
+  "tile_name": "dark navy floor tile with glowing blue circuit lin",
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "1d80a930-75f4-49b4-b3f8-15f444e30b9f",
+  "queue_position": 0,
+  "billing_charged": true,
+  "quantized_image": {
+   "type": "base64",
+   "width": 32,
+   "base64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAEZElEQVR4nO1WXUxcRRT+5t67/Oxi+Sm2RAq0aysK/UEeChoVBRFNQ6pxXaqpttQXG39iEx9IfFLri2l8qL6oSWmpiZGgxphqtFl9UGMKpg8ibVJTWi0ESAgFumy7sHuPOWd6r8v+QGlDmpieZO6dmXPunO9858zMBW7JLfm/i9r6PHHLpLeW1XnJQ6Qil2GfPpnRxlhWABGCHTEByr05AMirgPN/LWhjLCcAjjx49ncoyrtJAABMjcdBam6ZAORsJWmLSVbmWreuy7GnkVRsBogCZPkAo5ZkYA+oZNPZnEsLLmUtybHjCEDbqd9g5/yn6qnZBlAR2dM/p4BQUQW6IQBGNZkF90AV3gZ7fBSUY89znpcDKNMHb8frmOn6RPuyStBw9G2YU3O6BhZPVKoYKx4ka3M7qaYOwr73ac+ITY/+MkZG/hMEfxuZRQFq6Zsja91+0b0xHRdbbjwOnrNJqTqC6V+ie9NPnGcG8Ej/BKnyVnHGizpNis+o1s3TKHMCZmdIgOTu75V5AcA2S3LubyNP3Tu047R2xm8GwyB4nueYBY6QdQyGx2bJy+Kc9c73wsLqFg04DRNGomNeAJ5itHz+KWIjvbgYjiMyqdXNoR+xa6Bb+p1122Ff+kf6Ugtz4zDvvh+V772FoWGFrgdeROOHHfAWAN1NzwLqMqo+/haqtBrMplW4KQGIoSlkhUOvg5oNjb3HZMy14OglaqOaCus+kkgT01PVNS7R8jdGzSuid1gR5vYeIzz+AhkbA8S7SvHD2rgFsXAEe379zMXFkTMDocdqYZdWIvCNjr58JWFiRuFQ6SaJjKWqsxf1zUUIXwG+uO9VxCf7gDvWQcUiaD/xtdiwjneLMLh9l+70ndF7m9EwA9zyAgc0Up5r6pAoOBqXlZ0hzYCnUYrOYYP7Tn2wLb85pfw9r8V21p3t0ncaF6jiB6mwAFK3r4G6YgBlPpA3F21HjggL+cWm6L+s3QLbXgPDGEJsykbwbL+c9d/XV8KqbhAWgyHNohPt8FAcP7Q26UFWPqggBvw5Bj7Q+JKSFGitPuGAbGDtBqjICFBeATWbj8BXB9HTGsTu4zoNLIcrG6Cs1bAvXgAHwGB6nnrN1e/+7qC8jz75LmJ/H9fOhwaBLB8wG3PtlN6j2fO2hiKPPr3WboClvIj5RpF3VxNeOrRP8s/57F6/HqCCq7Zh7Bjol6ov8hEO1DwHVZwFKlLAmSjUufPu2sk3o0q5YJKM2AHKVoGGB2D4SmU7MqVWRTOePvym2HTXNUB5N+OZnz5Ad/020PQEjMIyxCcHkVHsk+JbJc/rmki+v6NujaBiFWh81s21k+/Oex+WlGF0UlOdItmaLToxz6fKBDAVCIPIhlHlBy7MwF65AlaeVwdj+ECjf2izsWiaH5D0V/WCAFzhw+JqTbi14agYDAM4NZiiS6Y6Y6C4RpFLxa0PzYbUR7rCSkP1DQNAAhB9biTuHL2nBcw1Or5uAK6454cGkCnHi8m/i3hmtZlrQ6AAAAAASUVORK5CYII=",
+   "height": 32
+  },
+  "tile_description": "dark navy floor tile with glowing blue circuit lines",
+  "saved_to_database": true,
+  "generation_started_at": "2026-11-25T10:37:54.100688+00:00",
+  "estimated_wait_seconds": 0,
+  "original_image_n_colors": 74,
+  "quantized_image_n_colors": 40
+ }
+}

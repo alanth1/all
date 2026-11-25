@@ -1,0 +1,45 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "796d2c05-e4f9-4d41-b444-f0ea3415a61f",
+ "status": "completed",
+ "created_at": "2026-11-25T10:37:23.136700+00:00",
+ "last_response": {
+  "seed": 3720192466,
+  "type": "done",
+  "image": {
+   "type": "base64",
+   "width": 32,
+   "base64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADaUlEQVR4nO1WW0hUURRdV2Yc39ZoKGWpGVqNQWhUkpWUSohU0IsCofoJCyz6KoM+Ci0ogoSSkB4kJKWUSYilRKk9fNFHmlmZWpaKM+Pke1RmYu8403UezZj9BLPgznncc85ee+199h3ADTfccMON/xk7o5PNifM05tmcIf3NpvPpe9ho4wcdVkUHYdBg5Pnc2tIZn6eYqcc/RgcQHRfK48XLg6DwUnJ/anwSiW0as7fKC5XdTS4TkVxZlBIWzx5nHkx06dAnZc3Qjkoo+VAlzUqBlLB4c6DPXGQdXo+zF8tcNr5v/wbu9+b0MPHa/haHRCR7k9mJ28364SF4qbx5/OJTG1QenjiemeyUwLkr5dzSekLsglCo/fwRMEeFE4/u2tiTrJPLYDRhdcJ89mRTagyME4BpdAoFD15Y1tkjIgwTsjJSoPIETl8rx5lDaZb5C9crER4UPi00Ev3silxjNkxO2cSYEosgT7SCO3UwjA1iR0IcJ2P+jVoeu6JQsFqNrs4+3C6psySqRMb3ZqyFqxgZnER4RAjyrtagd6AHRtMETh5J4/m8wkruO8Kl/CrkntrN/ZdV79DZrYVHvCaCvaCXwmPhrXws5igc2Tn3EOxjhnZiBPELF7H8rY3fWRVnuF/UgIqSN9xv1xqgoCLydUiHLUtjUVzcBLkaQnqBvJvPLf11STH8UKwTDFG/c6Su2W4oyEEiHDrPF7dq6hDs6QuqGdKxNelmkekpyzQYnZzCuHGMN6VujeU2+/JD+CuUHOesAxttyJEyNKZWkBShKSp8jaBAP56j21DZ2mLZR+d5WDxaEsMtMXzW0c5P/avvLC+xpcwmxtZKyMlQS96LONPet/o+JKyOQvO33mnGBSShAMFHqWAFBCreN3Obe3QbZ7BWr4czND7tYkOb41byuLS+gdWzB1LAch/lRAQoFJQoVA3D5nrZhMbasMlbCUO/nqWubvvIYbBnVF4dJXtVUK6CXI2kyCg0ff2CiAA16PZQHah+3P6LwOcOrnq6H8MsuyOvG3Qfp9mU7K5yoAihe2CcryDVe7rLvf0jrAzlzAp1CDoH9TYekxLWhp0ScEaEbg0pQd6SMkTAnteODAtIcBHWREQ+UEisPZ7JfwLJVQJyIsI4fS1JCbnxP316/wkBORFqBQFnUjvCT+tnljf6FZo5AAAAAElFTkSuQmCC",
+   "height": 32
+  },
+  "usage": {
+   "seconds": 13.276294946670532
+  },
+  "tile_id": "d2d0a22d-bc22-489c-b4af-c5c4d1726945",
+  "progress": 0.6023255813953489,
+  "tile_name": "old brown parquet floor tile, worn",
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "e5b248d8-95c2-476d-9b93-9879246d6be1",
+  "queue_position": 0,
+  "billing_charged": true,
+  "quantized_image": {
+   "type": "base64",
+   "width": 32,
+   "base64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADaUlEQVR4nO1WW0hUURRdV2Yc39ZoKGWpGVqNQWhUkpWUSohU0IsCofoJCyz6KoM+Ci0ogoSSkB4kJKWUSYilRKk9fNFHmlmZWpaKM+Pke1RmYu8403UezZj9BLPgznncc85ee+199h3ADTfccMON/xk7o5PNifM05tmcIf3NpvPpe9ho4wcdVkUHYdBg5Pnc2tIZn6eYqcc/RgcQHRfK48XLg6DwUnJ/anwSiW0as7fKC5XdTS4TkVxZlBIWzx5nHkx06dAnZc3Qjkoo+VAlzUqBlLB4c6DPXGQdXo+zF8tcNr5v/wbu9+b0MPHa/haHRCR7k9mJ28364SF4qbx5/OJTG1QenjiemeyUwLkr5dzSekLsglCo/fwRMEeFE4/u2tiTrJPLYDRhdcJ89mRTagyME4BpdAoFD15Y1tkjIgwTsjJSoPIETl8rx5lDaZb5C9crER4UPi00Ev3silxjNkxO2cSYEosgT7SCO3UwjA1iR0IcJ2P+jVoeu6JQsFqNrs4+3C6psySqRMb3ZqyFqxgZnER4RAjyrtagd6AHRtMETh5J4/m8wkruO8Kl/CrkntrN/ZdV79DZrYVHvCaCvaCXwmPhrXws5igc2Tn3EOxjhnZiBPELF7H8rY3fWRVnuF/UgIqSN9xv1xqgoCLydUiHLUtjUVzcBLkaQnqBvJvPLf11STH8UKwTDFG/c6Su2W4oyEEiHDrPF7dq6hDs6QuqGdKxNelmkekpyzQYnZzCuHGMN6VujeU2+/JD+CuUHOesAxttyJEyNKZWkBShKSp8jaBAP56j21DZ2mLZR+d5WDxaEsMtMXzW0c5P/avvLC+xpcwmxtZKyMlQS96LONPet/o+JKyOQvO33mnGBSShAMFHqWAFBCreN3Obe3QbZ7BWr4czND7tYkOb41byuLS+gdWzB1LAch/lRAQoFJQoVA3D5nrZhMbasMlbCUO/nqWubvvIYbBnVF4dJXtVUK6CXI2kyCg0ff2CiAA16PZQHah+3P6LwOcOrnq6H8MsuyOvG3Qfp9mU7K5yoAihe2CcryDVe7rLvf0jrAzlzAp1CDoH9TYekxLWhp0ScEaEbg0pQd6SMkTAnteODAtIcBHWREQ+UEisPZ7JfwLJVQJyIsI4fS1JCbnxP316/wkBORFqBQFnUjvCT+tnljf6FZo5AAAAAElFTkSuQmCC",
+   "height": 32
+  },
+  "tile_description": "old brown parquet floor tile, worn",
+  "saved_to_database": true,
+  "generation_started_at": "2026-11-25T10:37:23.29+00:00",
+  "estimated_wait_seconds": 0,
+  "original_image_n_colors": 40,
+  "quantized_image_n_colors": 16
+ }
+}

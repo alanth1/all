@@ -1,0 +1,45 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "2e2b63a7-6096-4ab0-a4a6-754e71f6f16b",
+ "status": "completed",
+ "created_at": "2026-11-25T10:34:16.773864+00:00",
+ "last_response": {
+  "seed": 1685513856,
+  "type": "done",
+  "image": {
+   "type": "base64",
+   "width": 32,
+   "base64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAEFUlEQVR4nO1Wa0ybVRh+TmlpC4y1AraClopo2UYnoiOYODWOZO6PISFGRjYNI1PCpsxMzeY1mlEnRgVvYVuAxC2TRBOciZ1ZNrb9WDQh07DGy9zGelnTjnbY0Za2fF97zDmsTVlbMgZ/TPokbfK95/I853nf834fkEUWWWSRxf8Zqwy1lP0Ws4fkdhbdVbue6vVGGuw9iACk0P/8B312S9ttCSELmfzkU89Q78N1EJoaEWneiDyVBlMeGx+T9v8A2tWFGnUQR348QpbUgVU3rLa+8SEiRSVQNjWAypUo1RRBZ1gDqUwBWfsmRMdHYWt5BeWGOrrpiwN00QLWVNTSFcYWbnUwIqDysw9Qcuw0fP0nkK8shMt6Ab7JicT8u+vXQTz7C3IjAsbMIzCaT9KaMu28Qki6YH1TO3WfPQPV3h74VFqIbY38lJWGlXzc57oMp1SN4j27oNi+EzJ9FY87nRcRDfwLpawA5YYHeMzb+iKihRJUfX8I3w30p/CR5IeH6hvo8rw8uEwmxE6dwX1mM7w+F0IREXdodJAr5Ym5kVAErj9/Q8GXg5ygbG8PLtntCeJkiEIILH2l3V0ITU/g91+PJ3gJ+3tkdR1lJ5KbPgXtbMX9+nsTiy+++i4e/OkUImPHICoVKZszN0hAxNThb5A76YH2o32gilTXbef/QUgI8GJd1ruHxyxHvyXEuGEj9Xe+DbQ3QyV44MUyVFXXzlnsXm2E0PIodDsOIEzDc5xgFrM0qdrWYaakGrrC/LRCGaaFHNjPj0JbpIZ//wCkLzwPiSYWQ8GJYaBvCGLLdlQaVqQs1J6zcPJzTzdhontWPYPj/XcgvPc6t7a4+gkEQ1Nw7tqB+cDqw9s9yFMsXg+DNKx/jsbzSV57C0LNY7za06nPj8ZQWarGSOc2KK1XUTy4Py0Jc4UL//rzhBvxOmBOi0KYx1hhk7WPN/KE5UhjPBgVJfB3vMxtrTK9iShR8pw6xizIHfgKfsmdPJ7J5jjZ8gKCsQ4TSjo2QzB9zOO+NO4QJiBOHhcQB7ObFdbMlm2IKeTQ6sqRD5qWnJGytWyvsLoU3tNm+Hd+AoV5GMRhySiWxFvszeT8WZoHz/hfkAwd5EI0vX3znpqtD1+xIzQyDOfWPmjdNvgnR7nV6WC1WsicPhBPRzLcdhvKKu6BVKZMNBV21YI5Elx3/o2Z1pd4d8wRp7ljER+Bvns3rOOXM4plxHMcuBnJQhz2S9BXzPYFdkIFUcDesxXh5t285dLANYiHjvJx9j4QIOJWiOMgGWff6Iwehy1xNZNTFJgJQBjqh+D2I9a8ebbJzGN1Jg6CW0CmGmG4NhXAtO9qSpxdtSvOC2RJvwfWpqkRlqKFnHhRApBGSLKAhRAvCVbWNPBPs8Xs8R8PYM3RYHZdYQAAAABJRU5ErkJggg==",
+   "height": 32
+  },
+  "usage": {
+   "seconds": 19.362035274505615
+  },
+  "tile_id": "26b00bf0-8a28-431e-9524-82695a6628d5",
+  "progress": 0.6023255813953489,
+  "tile_name": "dark blue-grey office floor panel with subtle cyan",
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "61b96167-2684-48be-98ed-8f50f732cfeb",
+  "queue_position": 0,
+  "billing_charged": true,
+  "quantized_image": {
+   "type": "base64",
+   "width": 32,
+   "base64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAEFUlEQVR4nO1Wa0ybVRh+TmlpC4y1AraClopo2UYnoiOYODWOZO6PISFGRjYNI1PCpsxMzeY1mlEnRgVvYVuAxC2TRBOciZ1ZNrb9WDQh07DGy9zGelnTjnbY0Za2fF97zDmsTVlbMgZ/TPokbfK95/I853nf834fkEUWWWSRxf8Zqwy1lP0Ws4fkdhbdVbue6vVGGuw9iACk0P/8B312S9ttCSELmfzkU89Q78N1EJoaEWneiDyVBlMeGx+T9v8A2tWFGnUQR348QpbUgVU3rLa+8SEiRSVQNjWAypUo1RRBZ1gDqUwBWfsmRMdHYWt5BeWGOrrpiwN00QLWVNTSFcYWbnUwIqDysw9Qcuw0fP0nkK8shMt6Ab7JicT8u+vXQTz7C3IjAsbMIzCaT9KaMu28Qki6YH1TO3WfPQPV3h74VFqIbY38lJWGlXzc57oMp1SN4j27oNi+EzJ9FY87nRcRDfwLpawA5YYHeMzb+iKihRJUfX8I3w30p/CR5IeH6hvo8rw8uEwmxE6dwX1mM7w+F0IREXdodJAr5Ym5kVAErj9/Q8GXg5ygbG8PLtntCeJkiEIILH2l3V0ITU/g91+PJ3gJ+3tkdR1lJ5KbPgXtbMX9+nsTiy+++i4e/OkUImPHICoVKZszN0hAxNThb5A76YH2o32gilTXbef/QUgI8GJd1ruHxyxHvyXEuGEj9Xe+DbQ3QyV44MUyVFXXzlnsXm2E0PIodDsOIEzDc5xgFrM0qdrWYaakGrrC/LRCGaaFHNjPj0JbpIZ//wCkLzwPiSYWQ8GJYaBvCGLLdlQaVqQs1J6zcPJzTzdhontWPYPj/XcgvPc6t7a4+gkEQ1Nw7tqB+cDqw9s9yFMsXg+DNKx/jsbzSV57C0LNY7za06nPj8ZQWarGSOc2KK1XUTy4Py0Jc4UL//rzhBvxOmBOi0KYx1hhk7WPN/KE5UhjPBgVJfB3vMxtrTK9iShR8pw6xizIHfgKfsmdPJ7J5jjZ8gKCsQ4TSjo2QzB9zOO+NO4QJiBOHhcQB7ObFdbMlm2IKeTQ6sqRD5qWnJGytWyvsLoU3tNm+Hd+AoV5GMRhySiWxFvszeT8WZoHz/hfkAwd5EI0vX3znpqtD1+xIzQyDOfWPmjdNvgnR7nV6WC1WsicPhBPRzLcdhvKKu6BVKZMNBV21YI5Elx3/o2Z1pd4d8wRp7ljER+Bvns3rOOXM4plxHMcuBnJQhz2S9BXzPYFdkIFUcDesxXh5t285dLANYiHjvJx9j4QIOJWiOMgGWff6Iwehy1xNZNTFJgJQBjqh+D2I9a8ebbJzGN1Jg6CW0CmGmG4NhXAtO9qSpxdtSvOC2RJvwfWpqkRlqKFnHhRApBGSLKAhRAvCVbWNPBPs8Xs8R8PYM3RYHZdYQAAAABJRU5ErkJggg==",
+   "height": 32
+  },
+  "tile_description": "dark blue-grey office floor panel with subtle cyan seams, cyberpunk",
+  "saved_to_database": true,
+  "generation_started_at": "2026-11-25T10:34:16.939912+00:00",
+  "estimated_wait_seconds": 0,
+  "original_image_n_colors": 85,
+  "quantized_image_n_colors": 38
+ }
+}

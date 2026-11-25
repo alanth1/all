@@ -1,0 +1,38 @@
+{
+ "id": "8f12effa-9327-4bae-ba24-4ac3e0ac3bee",
+ "name": "cyberpunk data researcher, green hoodie, headset, ...",
+ "state_name": "Idle",
+ "prompt": "cyberpunk data researcher, green hoodie, headset, holding a glowing tablet",
+ "size": {
+  "width": 68,
+  "height": 68
+ },
+ "directions": 8,
+ "created_at": "2026-11-25T10:27:47.315832+00:00",
+ "updated_at": "2026-11-25T10:28:14.506711+00:00",
+ "animation_count": 0,
+ "template_id": "mannequin",
+ "view": "high top-down",
+ "status": "completed",
+ "rotation_urls": {
+  "south": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/8f12effa-9327-4bae-ba24-4ac3e0ac3bee/rotations/south.png?t=1795602494",
+  "west": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/8f12effa-9327-4bae-ba24-4ac3e0ac3bee/rotations/west.png?t=1795602494",
+  "east": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/8f12effa-9327-4bae-ba24-4ac3e0ac3bee/rotations/east.png?t=1795602494",
+  "north": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/8f12effa-9327-4bae-ba24-4ac3e0ac3bee/rotations/north.png?t=1795602494",
+  "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/8f12effa-9327-4bae-ba24-4ac3e0ac3bee/rotations/south-east.png?t=1795602494",
+  "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/8f12effa-9327-4bae-ba24-4ac3e0ac3bee/rotations/north-east.png?t=1795602494",
+  "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/8f12effa-9327-4bae-ba24-4ac3e0ac3bee/rotations/north-west.png?t=1795602494",
+  "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/e776c8a5-10ac-4d43-b2e1-782bd885e4db/8f12effa-9327-4bae-ba24-4ac3e0ac3bee/rotations/south-west.png?t=1795602494"
+ },
+ "style_settings": {
+  "detail": "medium detail",
+  "outline": "single color black outline",
+  "shading": "medium shading"
+ },
+ "guidance": null,
+ "ai_freedom": null,
+ "tags": [],
+ "group_id": "4ad25dc2-39c4-40b5-9e35-dc7d27fae00e",
+ "skeletons": null,
+ "animations": []
+}

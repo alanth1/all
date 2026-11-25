@@ -26,7 +26,7 @@
 <div><label>What is it?</label><select name="kind"><option value="daily">Daily visits (columns: date, visits[, views, orders, revenue])</option><option value="traffic_sources">Traffic sources (source, visits[, date])</option><option value="search_terms">Search terms (search term, visits)</option></select></div>
 <div><label>CSV file</label><input type="file" name="file" accept=".csv,.txt"></div></div>
 <label>…or paste the table (comma or tab separated, first row = headers)</label><textarea name="text" placeholder="date,visits&#10;2026-11-01,120"></textarea><button>Import</button></form></div>
-<h2>AI analysis</h2><form method="post" action="/analytics/report"><button class="sec">🧠 Ask Nova to explain the last 30 days</button></form>
+<h2>AI analysis</h2><form method="post" action="/analytics/report"><button class="sec">🧠 Ask ORIN-88 to explain the last 30 days</button></form>
 {% for r in reports %}{% set i = loads(r.interpretation, {}) %}<div class="card" style="margin-top:10px"><b>{{ i.headline }}</b> <span class="small muted">{{ r.period_start }}→{{ r.period_end }} · {{ i.model }}</span> {{ badge('ai_interpretation') }}
 <div class="grid g2 small">{% for key in ['what_changed','likely_reasons','product_insights','recommendations','data_gaps'] %}<div><b>{{ key.replace('_',' ') }}</b><ul>{% for x in i[key] or [] %}<li>{{ x }}</li>{% endfor %}</ul></div>{% endfor %}</div></div>{% endfor %}
 {% endblock %}

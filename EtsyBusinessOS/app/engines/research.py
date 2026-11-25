@@ -113,7 +113,7 @@ def _demo_interp(stats: dict) -> dict:
             "risks": ["DEMO: crowded niche"], "hypotheses": ["DEMO: video listing may lift conversion"]}
 
 
-@handler("research_keyword", lane="io", agent="Scout", max_attempts=4)
+@handler("research_keyword", lane="io", agent="RAZE-11", max_attempts=4)
 def job_keyword(payload, job):
     query = payload["keyword"].strip()
     src = require_permission("Etsy API: findAllListingsActive")
@@ -159,7 +159,7 @@ def _keyword_id(kw: str, kind: str) -> int:
     return db.ex("INSERT INTO keywords(keyword, kind, created_at) VALUES(?,?,?)", (kw, kind, now()))
 
 
-@handler("research_interpret", lane="ai", agent="Scout", max_attempts=3)
+@handler("research_interpret", lane="ai", agent="RAZE-11", max_attempts=3)
 def job_interpret(payload, job):
     rj = payload["research_job_id"]
     rjob = db.q1("SELECT * FROM research_jobs WHERE id=?", (rj,))
@@ -198,7 +198,7 @@ class CompetitorAnalysis(BaseModel):
     hypotheses: list[str] = Field(default_factory=list)
 
 
-@handler("research_competitor", lane="io", agent="Scout", max_attempts=4)
+@handler("research_competitor", lane="io", agent="RAZE-11", max_attempts=4)
 def job_competitor(payload, job):
     url = payload["url"].strip()
     m = LISTING_ID_RE.search(url)
@@ -236,7 +236,7 @@ def add_manual_competitor(url: str, title: str, price: str, tags: str, notes: st
     return rj
 
 
-@handler("research_competitor_interpret", lane="ai", agent="Scout", max_attempts=3)
+@handler("research_competitor_interpret", lane="ai", agent="RAZE-11", max_attempts=3)
 def job_competitor_interpret(payload, job):
     rj = payload["research_job_id"]
     rjob = db.q1("SELECT * FROM research_jobs WHERE id=?", (rj,))
@@ -255,7 +255,7 @@ def job_competitor_interpret(payload, job):
     return {"report_id": rid}
 
 
-@handler("research_daily", lane="io", agent="Scout", max_attempts=2)
+@handler("research_daily", lane="io", agent="RAZE-11", max_attempts=2)
 def job_daily(payload, job):
     tracked = [r["keyword"] for r in db.q("SELECT keyword FROM keywords WHERE kind='tracked'")]
     for kw in tracked:
