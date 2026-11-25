@@ -159,6 +159,69 @@ def api_world(since: int = 0):
     return JSONResponse(world.snapshot(since))
 
 
+@app.get("/api/world/showcase")
+def api_showcase():
+    """Real business data per agent, used by the HQ view (boards, NPC reports, cards)."""
+    def q(sql, *a):
+        try:
+            return [dict(r) for r in db.q(sql, *a)]
+        except Exception:
+            return []
+    def one(sql, *a):
+        r = q(sql, *a)
+        return (r[0] if r else {}) or {}
+    money = lambda c, cur="USD": f"{'$' if cur == 'USD' else cur + ' '}{(c or 0) / 100:,.2f}"
+    shop = one("SELECT name, currency FROM shops LIMIT 1")
+    cur = shop.get("currency") or "USD"
+    listings = q("SELECT title, state, price_cents, views, num_favorers FROM listings ORDER BY views DESC LIMIT 6")
+    by_state = q("SELECT state, COUNT(*) n FROM listings GROUP BY state")
+    orders = q("SELECT r.grandtotal_cents g, r.buyer_country c, r.status s, (SELECT title FROM receipt_items i WHERE i.receipt_id=r.id LIMIT 1) t FROM receipts r ORDER BY created_ts DESC LIMIT 6")
+    rev = one("SELECT COUNT(*) n, SUM(grandtotal_cents) g FROM receipts")
+    fees = one("SELECT SUM(amount_cents) f FROM etsy_ledger_entries WHERE amount_cents < 0")
+    payouts = q("SELECT payout_date d, amount_cents a FROM payouts ORDER BY payout_date DESC LIMIT 3")
+    recon = q("SELECT status, COUNT(*) n FROM reconciliation_records GROUP BY status")
+    journals = one("SELECT COUNT(*) n FROM journal_entries")
+    socials = q("SELECT platform, status, reason FROM social_accounts")
+    sources = q("SELECT name, access_method, permission_status FROM research_sources")
+    kw = q("SELECT keyword FROM keywords ORDER BY id DESC LIMIT 5")
+    reports = q("SELECT title FROM market_reports ORDER BY id DESC LIMIT 3")
+    pend = one("SELECT COUNT(*) n FROM listings WHERE state IN ('pending_approval','draft','awaiting_approval')")
+    jobstat = q("SELECT state, COUNT(*) n FROM jobs GROUP BY state")
+    lastjobs = q("SELECT type, state, agent FROM jobs ORDER BY id DESC LIMIT 6")
+    notes = q("SELECT title FROM notifications ORDER BY id DESC LIMIT 3")
+    assets = one("SELECT COUNT(*) n, SUM(size_bytes) b FROM social_assets WHERE missing=0")
+    audits = one("SELECT COUNT(*) n FROM audit_logs")
+    top = listings[0] if listings else {}
+    L = lambda rows, f: [f(r) for r in rows]
+    data = {
+        "shop": shop.get("name") or "NEONLOOM",
+        "agents": {
+            "KAI-07": {"title": "Ringkasan hari ini", "lines": [f"{rev.get('n', 0)} order · {money(rev.get('g'), cur)}", f"{pend.get('n', 0)} listing menunggu approval", *L(jobstat, lambda r: f"job {r['state']}: {r['n']}"), *L(notes, lambda r: f"🔔 {r['title']}")],
+                       "say": [f"Brief: {rev.get('n', 0)} order total, omzet {money(rev.get('g'), cur)}.", f"Ada {pend.get('n', 0)} listing nunggu approval owner.", "Semua antrian aku pantau."]},
+            "RAZE-11": {"title": "Riset pasar (Etsy API)", "lines": [*L(sources, lambda r: f"{r['name']} · {r['access_method']} · {r['permission_status']}"), *L(kw, lambda r: f"🔎 {r['keyword']}"), *L(reports, lambda r: f"📄 {r['title']}")] or ["Belum ada riset — klik ruangan untuk mulai"],
+                        "say": [f"Sumber riset: {', '.join(r['name'] for r in sources[:2]) or 'Etsy API'} — tanpa scraping.", *(f"Keyword dipantau: {r['keyword']}" for r in kw[:2])] or ["Siap riset keyword."]},
+            "JUNO-X9": {"title": "Listing (tulisan)", "lines": L(listings, lambda r: f"✍ {(r['title'] or '')[:34]}") or ["Belum ada listing"],
+                        "say": [f"Listing terbaik: \"{(top.get('title') or '')[:40]}\"", "Judul & tag aku tulis, Python yang validasi."]},
+            "VOLT-3": {"title": "QA & validasi", "lines": [*L(by_state, lambda r: f"{r['state']}: {r['n']} listing"), f"{journals.get('n', 0)} jurnal lolos cek seimbang"],
+                       "say": ["Semua output AI aku cek dulu sebelum ke owner.", *(f"{r['n']} listing status {r['state']}." for r in by_state[:2])]},
+            "NYX-21": {"title": "Order terbaru", "lines": L(orders, lambda r: f"📦 {money(r['g'], cur)} · {r['c'] or '-'} · {(r['t'] or '')[:22]}") or ["Belum ada order"],
+                       "say": [*(f"Order {money(r['g'], cur)} dari {r['c'] or '?'}: {(r['t'] or '')[:30]}" for r in orders[:3])] or ["Belum ada order baru."]},
+            "KADE-12": {"title": "Keuangan", "lines": [f"Omzet: {money(rev.get('g'), cur)}", f"Keluar (fee+payout): {money(-(fees.get('f') or 0), cur)}", *L(payouts, lambda r: f"💸 payout {r['d']}: {money(r['a'], cur)}"), *L(recon, lambda r: f"rekonsiliasi {r['status']}: {r['n']}")],
+                        "say": [f"Total keluar (fee + payout) {money(-(fees.get('f') or 0), cur)}.", *(f"Payout {r['d']}: {money(r['a'], cur)}" for r in payouts[:1]), "Debit = kredit, buku seimbang ✓"]},
+            "SABLE-6": {"title": "Arsip aset", "lines": [f"{assets.get('n') or 0} file aset", f"{round((assets.get('b') or 0) / 1e6, 1)} MB", f"{audits.get('n', 0)} catatan audit"],
+                        "say": [f"Arsip: {assets.get('n') or 0} file aset tersimpan.", f"{audits.get('n', 0)} jejak audit tercatat."]},
+            "HEX-04": {"title": "Sosial media", "lines": [*L(socials, lambda r: f"{r['platform']}: {r['status']}"), "Instagram/Facebook: belum tersedia"],
+                       "say": [*(f"{r['platform']} statusnya {r['status']}." for r in socials[:2]), "Instagram & Facebook belum tersedia."]},
+            "ORIN-88": {"title": "Analitik listing", "lines": L(listings, lambda r: f"👁 {r['views'] or 0}  ♥ {r['num_favorers'] or 0}  {(r['title'] or '')[:20]}") or ["Import CSV Shop Stats dulu"],
+                        "say": [f"Top listing: {top.get('views') or 0} views, {top.get('num_favorers') or 0} favorit.", "Shop Stats dari CSV, bukan API."]},
+            "ZERO-1": {"title": "Server & job", "lines": L(lastjobs, lambda r: f"{r['state']:<8} {r['type']} ({r['agent'] or '-'})"),
+                       "say": [*(f"Job {r['type']} → {r['state']}" for r in lastjobs[:2]), "Backup harian aman."]},
+        },
+        "ticker": [f"{shop.get('name') or 'NEONLOOM'}", f"{rev.get('n', 0)} ORDER · {money(rev.get('g'), cur)}", *L(listings[:3], lambda r: f"{(r['title'] or '')[:30]} {money(r['price_cents'], cur)}"), f"{pend.get('n', 0)} MENUNGGU APPROVAL"],
+    }
+    return JSONResponse(data)
+
+
 @app.get("/api/world/banter")
 def api_banter():
     return JSONResponse(list(world.banter()))

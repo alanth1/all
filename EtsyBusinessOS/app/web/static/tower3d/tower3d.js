@@ -55,6 +55,7 @@ function extrude(pts, depth, mat, parent = CUR, z = 0, bev = .1, off = [0, 0]) {
 function smoothPts(pts, n = 5) { const c = new THREE.SplineCurve(pts.map(q => new THREE.Vector2(...q))); return c.getPoints(pts.length * n).map(v => [v.x, v.y]); }
 function neonOutline(pts, col, parent, r = .05, z = 0) { const c = new THREE.CatmullRomCurve3(pts.map(([x, y]) => new THREE.Vector3(x, y, z)), true); const m = new THREE.Mesh(new THREE.TubeGeometry(c, pts.length * 3, r, 5, true), new THREE.MeshBasicMaterial({ color: new THREE.Color(col).multiplyScalar(2.2), toneMapped: false })); parent.add(m); return m; }
 function neonFill(pts, col, parent, o = .18, z = 0) { const m = new THREE.Mesh(new THREE.ShapeGeometry(new THREE.Shape(pts.map(q => new THREE.Vector2(...q)))), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: o, depthWrite: false, side: THREE.DoubleSide })); m.position.z = z; parent.add(m); return m; }
+const SHOW = { agents: {}, ticker: [] };
 const anim = { screens: [], blink: [], neon: [], spin: [], holo: [], steam: [], lamps: [], tubes: [], scan: [] };
 
 // ====================================================================== world layout
@@ -91,7 +92,10 @@ function drawScreen(s, t) { const c = s.t.userData.c.getContext('2d'), w = s.t.u
   else if (s.type === 'radar') { c.fillStyle = 'rgba(6,16,28,.45)'; c.fillRect(0, 0, w, h); c.strokeStyle = s.col; const a = t * 3 + s.ph, r = Math.min(w, h) / 2 - 1; c.beginPath(); c.arc(w / 2, h / 2, r, 0, 7); c.stroke(); c.beginPath(); c.moveTo(w / 2, h / 2); c.lineTo(w / 2 + Math.cos(a) * r, h / 2 + Math.sin(a) * r); c.stroke(); }
   else if (s.type === 'bars') { c.fillStyle = '#06101c'; c.fillRect(0, 0, w, h); c.fillStyle = s.col; for (let x = 1; x < w - 1; x += 3) { const v = Math.abs(Math.sin(t * 2 + x * .7 + s.ph)) * (h - 3) + 1; c.fillRect(x, h - v, 2, v); } }
   else if (s.type === 'game') { c.fillStyle = '#06101c'; c.fillRect(0, 0, w, h); c.fillStyle = '#ffb347'; c.fillRect((t * 14 + s.ph * 5) % w, h - 4, 3, 3); c.fillStyle = s.col; c.fillRect(w / 2 + Math.sin(t * 3) * 6, 2 + (t * 8 % (h - 4)), 2, 2); }
-  else if (s.type === 'ticker') { c.fillStyle = '#0b0d12'; c.fillRect(0, 0, w, h); c.font = 'bold 17px monospace'; c.fillStyle = s.col; c.shadowColor = s.col; c.shadowBlur = 4; const msg = '  ▶ NEONLOOM · DIGITAL HOUSE PLANS · NEW: CYBER CABIN · TINY HOUSE SALE -30% · PINTEREST +18% · '; const off = (t * 60) % (msg.length * 10.2); c.fillText(msg + msg, -off, 17); c.shadowBlur = 0; }
+  else if (s.type === 'board') { const d = SHOW.agents[s.agent]; c.fillStyle = '#060c16'; c.fillRect(0, 0, w, h); c.fillStyle = s.col; c.fillRect(0, 0, w, 3); c.font = 'bold 13px monospace'; c.shadowColor = s.col; c.shadowBlur = 6; c.fillText((d ? d.title : s.agent).toUpperCase(), 8, 20); c.shadowBlur = 0;
+    c.font = '11px monospace'; const lines = d ? d.lines : ['menghubungkan data…']; const off = Math.floor(t / 4) % Math.max(1, lines.length - 4); lines.slice(off, off + 6).forEach((ln, i) => { c.fillStyle = i % 2 ? '#c9d6f0' : '#ffffff'; c.fillText(String(ln).slice(0, 34), 8, 40 + i * 15); });
+    c.fillStyle = s.col; c.fillRect(8, h - 6, (w - 16) * ((t * .2) % 1), 2); }
+  else if (s.type === 'ticker') { c.fillStyle = '#0b0d12'; c.fillRect(0, 0, w, h); c.font = 'bold 17px monospace'; c.fillStyle = s.col; c.shadowColor = s.col; c.shadowBlur = 4; const msg = '  ▶ ' + (SHOW.ticker.length ? SHOW.ticker.join(' · ') : 'NEONLOOM · DIGITAL HOUSE PLANS') + ' · '; const off = (t * 60) % (msg.length * 10.2); c.fillText(msg + msg, -off, 17); c.shadowBlur = 0; }
   else if (s.type === 'vad') { const ph = Math.floor(t / 5) % 3; c.fillStyle = ['#1a0b1e', '#081a22', '#1f1408'][ph]; c.fillRect(0, 0, w, h); c.textAlign = 'center'; c.font = 'bold 12px monospace'; c.fillStyle = ['#ff3fa4', '#3ff0ff', '#ffb347'][ph]; c.shadowColor = c.fillStyle; c.shadowBlur = 6;
     [...['ネオン', 'PLANS', '新作'][ph]].forEach((ch, i) => c.fillText(ch, w / 2, 22 + i * 18)); c.shadowBlur = 0; for (let y = (t * 30) % 6; y < h; y += 6) { c.fillStyle = 'rgba(255,255,255,.05)'; c.fillRect(0, y, w, 1); } c.textAlign = 'left'; }
   else if (s.type === 'billboard') { c.fillStyle = '#0d1424'; c.fillRect(0, 0, w, h); for (let i = 0; i < 160; i++) { c.fillStyle = `rgba(${130 + Math.random() * 100 | 0},140,180,.25)`; c.fillRect(Math.random() * w, Math.random() * h, 1, 1); }
@@ -259,6 +263,9 @@ const R7 = rng(7);
     const y = FL[f].y + 1.8; box(.3, 1.6, .9, M(0x0b0d12), x, y - .8, D + .6); neonSign(txt, col, x + .16, y, D + .6, .32, Math.PI / 2, true); neonSign(txt, col, x - .16, y, D + .6, .32, -Math.PI / 2, true); box(.7, .06, .06, mats.metal, x, y + .7, D + .3); }
   for (const x of [13, 21, 29]) { const l = new THREE.Mesh(new THREE.CylinderGeometry(.22, .22, .5, 10), E(0xff5a4a, 2)); l.position.set(x, FH - .9, D + 1.5); scene.add(l); box(.01, .3, .01, mats.dark, x, FH - .6, D + 1.5); }
 }
+// ====================================================================== live data boards in every room
+for (const r of ROOMS) { if (!r.agent) continue; const y = FL[r.f].y, cx = (r.x0 + r.x1) / 2 + (r.f === 5 ? -2.6 : 0); const t = ctex(256, 128, () => {}); anim.screens.push({ t, type: 'board', agent: r.agent, col: hex(r.c), ph: 0, hist: [] });
+  box(2.9, 1.5, .08, mats.dark, cx, y + 1.45, .3); plane(2.8, 1.4, new THREE.MeshBasicMaterial({ map: t, toneMapped: false }), cx, y + 2.15, .35); box(2.9, .04, .04, E(r.c, 2), cx, y + 2.9, .36); }
 // ====================================================================== the street
 { CUR = scene;
   box(140, .2, 2.2, mats.walk, 10, -.2, 7); box(140, .2, 6, mats.road, 10, -.35, 11.1); box(220, .2, 3, mats.walk, 10, -.2, 15.5); box(220, .3, 80, M(0x1a202c, { roughness: .3, metalness: .5 }), 10, -.5, 57); box(220, .3, 30, M(0x1a202c, { roughness: .3, metalness: .5 }), 10, -.5, -10); box(140, .12, .2, M(0x4a5468), 10, -.12, 8.1);
@@ -570,6 +577,7 @@ class NPC {
   pop(e) { if (['error', 'waiting'].includes(this.server.status)) return; this.icon.className = 'npc-icon pop'; this.icon.textContent = e; clearTimeout(this._p); this._p = setTimeout(() => { if (this.icon.textContent === e) { this.icon.className = 'npc-icon'; this.icon.textContent = ''; } }, 2200); }
   life() {
     if (this.sitting && !isWork(this) && Math.random() < .06) { this.sitMood = pick([null, null, 'tired', 'think', 'stretch', 'phone', 'sleep']); if (this.sitMood === 'sleep') this.pop('💤'); if (this.sitMood === 'tired') this.pop('😮‍💨'); } if (isWork(this)) this.sitMood = null;
+    { const d = SHOW.agents[this.name]; if (d && d.say && d.say.length && !this.moving() && Math.random() < .012 && now() - (this._rep || 0) > 25000) { this._rep = now(); this.say(pick(d.say), 6000, 'say'); this.pop('📊'); } }
     if (this.sitting && Math.random() < .035) this.pop(isWork(this) ? pick(['⌨️', '🧠', '📊', '⚡', '💾', '🔍']) : pick(['💡', '☕', '🎧', '💭', '😴', '📈', '🎵', '😎']));
     if (this.busy() || now() < this.next || Phase.cur) return; this.next = now() + rnd(9000, 20000);
     const r = Math.random(), others = Object.values(npcs).filter(n => n !== this && !n.busy());
@@ -836,7 +844,7 @@ function openRoom(room) { const p = document.getElementById('panel'); p.classNam
   const f = p.querySelector('iframe'), info = p.querySelector('.pbody-info');
   if (room.url) { f.style.display = ''; info.style.display = 'none'; f.src = room.url; } else { f.style.display = 'none'; info.style.display = ''; info.innerHTML = `<h3>Status agen</h3><ul class="hist">${Object.values(npcs).map(n => `<li><b>${n.name}</b> — ${n.sitting ? 'di mejanya' : n.inChat ? 'ngobrol' : Phase.cur && n.mode === 'busy' ? Phase.cur : 'jalan-jalan'}</li>`).join('')}</ul><p class="muted">E = kejadian langit · R = acara kantor · V = VTOL · O = listrik padam · M = suara · 1–6 = zoom lantai · Home = semua.</p>`; } }
 function openNPC(n) { const p = document.getElementById('panel'); p.className = 'open'; p.style.setProperty('--accent', n.meta.color); p.querySelector('.ptitle').innerHTML = `<b>${n.name}</b><span>${esc(n.meta.role)}</span>`; p.querySelector('.ptabs').innerHTML = ''; p.querySelector('iframe').style.display = 'none'; const i = p.querySelector('.pbody-info'); i.style.display = '';
-  i.innerHTML = `<div class="npc-card"><div style="width:64px;height:64px;border-radius:10px;background:${n.meta.color};box-shadow:0 0 18px ${n.meta.color}"></div><div><p>${esc(n.meta.desc)}</p><p>Status: <b class="st ${n.server.status}">${n.server.status}</b> ${n.server.current ? '· ' + esc(n.server.current) : ''}</p></div></div><h3>Ucapan terakhir</h3><ul class="hist">${n.history.map(h => `<li>${esc(h)}</li>`).join('') || '<li class="muted">belum ada</li>'}</ul>`; }
+  i.innerHTML = `<div class="npc-card"><div style="width:64px;height:64px;border-radius:10px;background:${n.meta.color};box-shadow:0 0 18px ${n.meta.color}"></div><div><p>${esc(n.meta.desc)}</p><p>Status: <b class="st ${n.server.status}">${n.server.status}</b> ${n.server.current ? '· ' + esc(n.server.current) : ''}</p></div></div>${SHOW.agents[n.name] ? `<h3>${esc(SHOW.agents[n.name].title)}</h3><ul class="hist">${SHOW.agents[n.name].lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}<h3>Ucapan terakhir</h3><ul class="hist">${n.history.map(h => `<li>${esc(h)}</li>`).join('') || '<li class="muted">belum ada</li>'}</ul>`; }
 function closePanel() { const p = document.getElementById('panel'); p.className = ''; p.querySelector('iframe').src = 'about:blank'; }
 document.querySelector('#panel .pclose').onclick = closePanel; document.getElementById('panel').addEventListener('click', e => { if (e.target.id === 'panel') closePanel(); });
 const labels = ROOMS.map(r => { const d = el('room-label', `<span>${r.name}</span>`); d.style.setProperty('--accent', hex(r.c)); d.onclick = () => openRoom(r); return { d, v: new THREE.Vector3((r.x0 + r.x1) / 2, FL[r.f].y + FH - .1, D) }; });
@@ -844,6 +852,8 @@ const labels = ROOMS.map(r => { const d = el('room-label', `<span>${r.name}</spa
 // ====================================================================== boot + main loop
 for (const name of Object.keys(SEATS)) { npcs[name] = new NPC(name); npcMeshes.push(...npcs[name].b.meshes); }
 window.tower = { npcs, Phase, SkyEvents, Surprises, Vtol, camState, cam, THREE };
+async function loadShow() { try { const d = await (await fetch('/api/world/showcase')).json(); SHOW.agents = d.agents || {}; SHOW.ticker = d.ticker || []; } catch (e) {} }
+loadShow(); setInterval(loadShow, 20000);
 poll(); setInterval(poll, 3000); setInterval(() => { Object.values(npcs).forEach(n => n.life()); Phase.tick(); }, 1000);
 for (let i = 0; i < 6; i++) spawnCar(i % 2);
 const clock = new THREE.Clock(); let ft = 0;
