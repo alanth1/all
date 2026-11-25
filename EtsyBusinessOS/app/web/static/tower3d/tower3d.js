@@ -288,48 +288,56 @@ scene.add(new THREE.Points(splGeo, new THREE.PointsMaterial({ color: 0xc8d6f5, s
 
 // ====================================================================== MECH-KAIJU (permanent, left foreground), holo shark, holo koi, face posters, roof gear, street life
 const MK = (() => { const g = new THREE.Group(); scene.add(g);
-  const steel = M(0x283040, { metalness: .85, roughness: .32, emissive: 0x0a1424 }), plate = M(0x3a4660, { metalness: .75, roughness: .38, emissive: 0x101c30 }), dark = M(0x0e121b, { metalness: .6, roughness: .5 }), cy = E(C.cyan, 1.5), mg = E(C.mag, 1.4), tooth = M(0xd0d8e6, { metalness: .9, roughness: .2, emissive: 0x202630 });
-  const cyl = (r, h, m, x, y, z, rz = 0, p = g, rx = 0) => { const o = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 14), m); o.position.set(x, y, z); o.rotation.set(rx, 0, rz); p.add(o); return o; };
-  const cone = (r, h, m, x, y, z, rz = 0, p = g, rx = 0) => { const o = new THREE.Mesh(new THREE.ConeGeometry(r, h, 6), m); o.position.set(x, y, z); o.rotation.set(rx, 0, rz); p.add(o); return o; };
-  const joint = (r, x, y, z, p = g) => { cyl(r, .5, steel, x, y, z, 0, p, Math.PI / 2); const ring = new THREE.Mesh(new THREE.TorusGeometry(r * .7, .06, 6, 20), cy); ring.position.set(x, y, z + .27 * Math.sign(z || 1)); p.add(ring); };
-  // legs (digitigrade)
-  const legs = []; for (const z of [-1.6, 1.6]) { const p = new THREE.Group(); p.position.set(0, 8.4, z); g.add(p); rbox(2.4, 3.6, 2, .4, plate, .3, -3.6, 0, p); box(.1, 2.2, .7, cy, 1.52, -2.6, 0, p); cyl(.22, 3, steel, -.9, -2.4, z > 0 ? .9 : -.9, .3, p); joint(.7, .2, -3.9, z > 0 ? 1 : -1, p);
-    const kn = new THREE.Group(); kn.position.set(.4, -3.9, 0); p.add(kn); rbox(1.2, 3, 1.3, .3, steel, -.6, -2.8, 0, kn); kn.rotation.z = -.45; const an = new THREE.Group(); an.position.set(-.6, -2.8, 0); kn.add(an); an.rotation.z = .45;
-    rbox(.9, 1.8, 1, .25, plate, 0, -1.7, 0, an); rbox(2.6, .6, 1.8, .2, dark, .8, -2.1, 0, an); for (const dz of [-.6, 0, .6]) cone(.17, .8, tooth, 2.3, -1.85, dz, -Math.PI / 2, an); legs.push(p); }
-  // pelvis, spine, chest
-  rbox(3, 2.2, 2.8, .5, plate, 0, 7.6, 0); for (let i = 0; i < 4; i++) rbox(1.2, 1.4 - i * .1, 2.4, .3, i % 2 ? steel : plate, 1 + i * 1, 8.6 + i * .7, 0);
-  const chest = new THREE.Group(); chest.position.set(3.6, 11, 0); chest.rotation.z = -.35; g.add(chest); rbox(4.4, 3.8, 3.2, .7, plate, 0, -1.9, 0, chest);
-  for (const z of [-1.62, 1.62]) { box(2.2, 1.6, .06, dark, -.3, -.6, z, chest); for (let k = 0; k < 4; k++) box(1.8, .12, .07, cy, -.3, -.3 + k * .35, z * 1.01, chest); joint(.9, 1.4, .6, z * 1.05, chest); }
-  for (let k = 0; k < 5; k++) { const r = rbox(.35, 2.4, 3, .1, steel, -1.6 + k * .6, -3.2, 0, chest); r.rotation.z = .15; } cyl(.6, .8, cy, -.2, -2.2, 1.65, 0, chest, Math.PI / 2);
-  const core = pLight(C.cyan, 14, 10, 3, 10, 3, g);
-  // neck with pistons
-  for (let i = 0; i < 4; i++) { const n = rbox(1.2, 1.2, 1.8, .3, i % 2 ? steel : plate, 5.2 + i * .65, 12.2 + i * .55, 0); n.rotation.z = -.5; } for (const z of [-.7, .7]) cyl(.12, 3, steel, 6, 13.2, z, -1.2);
-  // head + jaw
-  const head = new THREE.Group(); head.position.set(8, 14.6, 0); g.add(head); rbox(3.2, 1.5, 1.9, .4, plate, .4, -.3, 0, head); rbox(2.4, 1, 1.6, .3, steel, 2.4, -.25, 0, head); box(3.6, .3, 1.5, dark, 1, .9, 0, head);
-  for (const z of [-.98, .98]) { box(.7, .45, .1, cy, .5, .55, z, head);  } for (let i = 0; i < 6; i++) cone(.22, .9 + (i % 2) * .4, plate, -.6 + i * .6, 1.25, 0, .5, head);
-  for (let k = 0; k < 9; k++) cone(.09, .5, tooth, .4 + k * .4, -.75, (k % 2 ? .55 : -.55), Math.PI, head);
-  const jaw = new THREE.Group(); jaw.position.set(-.2, -.75, 0); head.add(jaw); rbox(3.8, .6, 1.5, .2, steel, 1.8, -.35, 0, jaw); for (let k = 0; k < 9; k++) cone(.09, .5, tooth, .7 + k * .4, .1, (k % 2 ? .5 : -.5), 0, jaw); const mouth = box(3.2, .06, 1, cy, 1.8, .02, 0, jaw);
-  const mouthLight = pLight(C.cyan, 0, 10, 2.5, -.6, 0, head);
-  // arms
-  for (const z of [-2, 2]) { const a = new THREE.Group(); a.position.set(4.6, 10.2, z); g.add(a); rbox(.8, 2.2, .8, .2, steel, 0, -2, 0, a); joint(.45, 0, -2, z > 0 ? .5 : -.5, a); const f = new THREE.Group(); f.position.set(0, -2, 0); a.add(f); rbox(.7, 1.8, .7, .2, plate, .5, -1.4, 0, f); a.rotation.z = -.6; f.rotation.z = 1.4;
-    for (const dz of [-.25, 0, .25]) cone(.09, .6, tooth, 1.3, -1.5, dz, -Math.PI / 2 - .3, f); }
-  // dorsal spikes and tail
-  for (let i = 0; i < 9; i++) { const k = i / 8, h = 1.2 + Math.sin(k * Math.PI) * 1.6; cone(.35 + h * .1, h, plate, -1 + k * 6.4, 9.5 + k * 3.2 + h / 2, 0, .4); box(.12, .12, .12, i % 2 ? cy : mg, -1 + k * 6.4 + .3, 9.6 + k * 3.2 + h, 0); }
-  const tail = []; let par = g; for (let i = 0; i < 9; i++) { const t = new THREE.Group(); t.position.set(i ? -1.75 : -1.4, i ? -.2 : 7.8, 0); par.add(t); const sz = 1 - i * .09; rbox(1.9, 1.5 * sz, 1.8 * sz, .3 * sz, i % 2 ? steel : plate, -.9, 0, 0, t); box(1.2, .08, .06, cy, -.9, .1, .92 * sz, t); cone(.22 * sz, .9 * sz, plate, -.9, .9 * sz, 0, .5, t); tail.push(t); par = t; }
-  g.position.set(-16.5, 0, -5); g.scale.setScalar(1.12);
-  pLight(C.mag, 260, 46, -2, 22, 10, scene); pLight(0x6a8cff, 160, 40, -30, 14, 8, scene);
+  const plate = M(0x3c4864, { metalness: .7, roughness: .34, emissive: 0x16213a }), plate2 = M(0x56638a, { metalness: .65, roughness: .3, emissive: 0x1c2a48 }), dark = M(0x0c1018, { metalness: .6, roughness: .5 }),
+    cy = E(C.cyan, 1.7), mg = E(C.mag, 1.5), tooth = M(0xd6deea, { metalness: .9, roughness: .2, emissive: 0x262c36 });
+  // extrude a hand-drawn side silhouette (world coords) into a bevelled armour piece
+  const ext = (pts, depth, mat, parent = g, z = 0, bev = .22, off = [0, 0]) => { pts = pts.filter((q, i, a) => { const n = a[(i + 1) % a.length]; return Math.hypot(q[0] - n[0], q[1] - n[1]) > .02; }); const sh = new THREE.Shape(pts.map(([x, y]) => new THREE.Vector2(x - off[0], y - off[1])));
+    const geo = new THREE.ExtrudeGeometry(sh, { depth, bevelEnabled: bev > 0, bevelThickness: bev, bevelSize: bev, bevelSegments: 3, curveSegments: 6 }); geo.translate(0, 0, -depth / 2); const m = new THREE.Mesh(geo, mat); m.position.z = z; parent.add(m); return m; };
+  const smooth = (pts, n = 6) => { const c = new THREE.SplineCurve(pts.map(p => new THREE.Vector2(...p))); c.closed = true; return c.getPoints(pts.length * n).map(v => [v.x, v.y]); };
+  const ring = (r, x, y, z, p = g, col = cy) => { const o = new THREE.Mesh(new THREE.TorusGeometry(r, .07, 8, 28), col); o.position.set(x, y, z); p.add(o); const d = new THREE.Mesh(new THREE.CylinderGeometry(r * .8, r * .8, .3, 20), plate2); d.rotation.x = Math.PI / 2; d.position.set(x, y, z - .1 * Math.sign(z)); p.add(d); };
+  const spikesAlong = (pts, sizes, p = g, z = 0) => pts.forEach(([x, y, a], i) => { const h = sizes[i]; ext([[x - h * .35, y], [x + h * .25, y + h], [x + h * .35, y]], .35, plate2, p, z, .06); box(.12, .12, .12, i % 3 ? cy : mg, x + .05, y + h * .9, z + .2, p); });
+  // ---- torso, belly ribs, chest panel
+  const torso = smooth([[-3, 7.4], [-2.2, 9.6], [0, 10.9], [2.6, 12.1], [4.3, 12.4], [5.1, 11.5], [4.7, 9.7], [3.6, 8.2], [2, 6.9], [0, 6.3], [-2, 6.5]]);
+  ext(torso, 3.4, plate); ext(smooth([[-1.6, 7.6], [0, 9.6], [2.4, 11], [4, 11.4], [4.5, 10.3], [3.5, 8.5], [1.8, 7.2], [0, 6.8]]), 3.9, plate2);
+  for (let k = 0; k < 6; k++) ext([[.4 + k * .6, 6.6 + k * .25], [.75 + k * .6, 6.6 + k * .25], [1.4 + k * .6, 8.6 + k * .4], [1.05 + k * .6, 8.6 + k * .4]], 4.1, dark, g, 0, .04);
+  for (const z of [2.15, -2.15]) { for (let k = 0; k < 4; k++) box(1.7, .1, .06, cy, 2.4, 9.3 + k * .38, z); box(2, 1.8, .05, dark, 2.4, 9.1, z * .99); ring(.75, 3.6, 10.8, z * 1.03); ring(.85, .4, 8.4, z * 1.03); }
+  // ---- neck with pistons
+  ext(smooth([[3.9, 11.3], [5.2, 13.3], [6.5, 14.5], [7.4, 14], [6.5, 12.4], [5.3, 10.6]]), 2.2, plate); for (let k = 0; k < 4; k++) ext([[4.6 + k * .6, 11 + k * .75], [5.1 + k * .6, 11.4 + k * .75], [5.6 + k * .6, 10.9 + k * .75], [5.1 + k * .6, 10.5 + k * .75]], 2.5, plate2, g, 0, .05);
+  for (const z of [-.9, .9]) { const pi = new THREE.Mesh(new THREE.CylinderGeometry(.1, .1, 3.2, 8), mats.metal); pi.position.set(5.6, 12.3, z); pi.rotation.z = -.85; g.add(pi); }
+  // ---- head (skull + crest + jaw) on a pivot
+  const head = new THREE.Group(); head.position.set(7.2, 13.6, 0); g.add(head); const o = [7.2, 13.6];
+  ext(smooth([[6.8, 14.2], [7.6, 15.4], [9.2, 15.9], [11.6, 15.3], [12.7, 14.6], [12.4, 14.05], [10, 13.95], [8, 13.55]], 5), 1.9, plate, head, 0, .2, o);
+  ext([[7.6, 15.3], [8.6, 16.6], [9.4, 15.9]], .5, plate2, head, 0, .08, o); ext([[8.9, 15.8], [10.2, 16.9], [10.6, 15.7]], .5, plate2, head, 0, .08, o); ext([[10.2, 15.6], [11.2, 16.2], [11.5, 15.4]], .5, plate2, head, 0, .08, o);
+  for (const z of [.98, -.98]) { ext([[9, 14.85], [9.7, 15.1], [10.1, 14.8], [9.5, 14.6]], .1, cy, head, z, .02, o); box(1.6, .06, .05, cy, 3, 1.05, z * 1.02, head); }
+  for (let k = 0; k < 10; k++) { const x = 8.2 + k * .44; ext([[x, 14.05], [x + .18, 13.45], [x + .36, 14.05]], 1.5, tooth, head, 0, .02, o); }
+  const jaw = new THREE.Group(); jaw.position.set(.3, -.15, 0); head.add(jaw); const oj = [7.5, 13.45];
+  ext(smooth([[7.4, 13.5], [9, 13.55], [12, 13.25], [12.3, 12.85], [9.5, 12.5], [7.6, 12.8]], 5), 1.6, plate, jaw, 0, .15, oj); for (let k = 0; k < 9; k++) { const x = 8.4 + k * .42; ext([[x, 13.3], [x + .17, 13.9], [x + .34, 13.3]], 1.3, tooth, jaw, 0, .02, oj); }
+  const mouth = box(4.2, .06, 1.2, cy, 2.4, -.05, 0, jaw); const mouthLight = pLight(C.cyan, 0, 10, 3, -.3, 0, head);
+  // ---- legs (thigh pivot -> shin/foot), arms, tail, spikes
+  const legs = []; for (const z of [-1.8, 1.8]) { const p = new THREE.Group(); p.position.set(.4, 9, z); g.add(p); const oh = [.4, 9];
+    ext(smooth([[-.8, 9.2], [1.6, 9.6], [2.4, 7.4], [1.5, 4.9], [-.4, 5.1], [-1.3, 7.2]]), 1.9, plate, p, 0, .22, oh); ext(smooth([[-.2, 8.6], [1.4, 8.8], [1.8, 7.2], [1.1, 5.8], [-.2, 6.2]]), 2.2, plate2, p, 0, .1, oh); ring(.6, .9, -2, z > 0 ? 1.15 : -1.15, p);
+    ext(smooth([[.2, 5.5], [1.4, 5.2], [.3, 2], [-.8, 1.1], [-1.5, 1.8]]), 1.4, plate, p, 0, .15, oh); ext([[-1.6, 1.5], [-.3, 1.75], [2.6, .65], [2.9, 0], [-1.7, 0]], 1.6, plate2, p, 0, .15, oh);
+    for (const dz of [-.55, 0, .55]) ext([[2.6, .55], [3.5, .05], [2.6, .05]], .25, tooth, p, dz, .03, oh); const pi = new THREE.Mesh(new THREE.CylinderGeometry(.09, .09, 3, 8), mats.metal); pi.position.set(-.2, -2.6, z > 0 ? .9 : -.9); pi.rotation.z = .5; p.add(pi); legs.push(p); }
+  for (const z of [-2.1, 2.1]) { ext([[3.6, 10], [4.5, 10.4], [5.3, 8.4], [4.6, 8.2]], .7, plate, g, z, .1); ext([[4.6, 8.5], [5.3, 8.7], [6.8, 7.8], [6.5, 7.4]], .6, plate2, g, z, .08); for (const dy of [0, .25, .5]) ext([[6.5, 7.4 + dy * .4], [7.2, 7.1 + dy * .4], [6.7, 7.6 + dy * .4]], .15, tooth, g, z, .02); }
+  const tail = new THREE.Group(); tail.position.set(-2.4, 8.4, 0); g.add(tail); const ot = [-2.4, 8.4];
+  ext(smooth([[-2.4, 9.6], [-6, 9.1], [-10, 8.1], [-14, 6.5], [-17.4, 4.9], [-14, 5.7], [-10, 6.6], [-6, 7.3], [-2.4, 7]], 5), 2.1, plate, tail, 0, .2, ot);
+  for (let k = 0; k < 9; k++) { const x = -3.4 - k * 1.55, top = 9.3 - k * .5, bot = 7.1 - k * .25; ext([[x, bot], [x + .35, bot], [x + .35, top], [x, top]], 2.4 - k * .14, plate2, tail, 0, .04, ot); box(.6, .07, .05, cy, x + .17 - ot[0], (top + bot) / 2 - ot[1], 1.22 - k * .07, tail); }
+  spikesAlong([[-2, 9.7], [-.8, 10.5], [.6, 11.1], [1.9, 11.8], [3.1, 12.4], [4.4, 12.6], [5.6, 13.7], [6.5, 14.4]], [1.1, 1.6, 2, 2.2, 2.1, 1.7, 1.3, 1]);
+  spikesAlong([[-4, 9.3 - 8.4 + 8.4], [-6, 8.9], [-8, 8.4], [-10, 7.8], [-12, 7], [-14, 6.2]].map(([x, y]) => [x + 2.4, y - 8.4]), [1.2, 1.1, 1, .85, .7, .55], tail);
+  pLight(C.mag, 320, 46, -2, 22, 10, scene); pLight(0x6a8cff, 220, 40, -30, 14, 8, scene); pLight(C.cyan, 200, 30, -10, 8, 8, scene); const core = pLight(C.cyan, 12, 10, 2.4, 9, 3.5, g);
+  g.position.set(-16.5, 0, -5); g.scale.setScalar(1.05);
   let nextRoar = now() + rnd(9000, 14000), roarT = -1;
-  return { g, update(dt, t) { const br = Math.sin(t * 1.3); chest.scale.set(1 + br * .012, 1 + br * .02, 1); head.rotation.z = Math.sin(t * .7) * .05 + (roarT >= 0 ? .25 : 0); tail.forEach((s2, i) => { s2.rotation.y = Math.sin(t * 1.2 - i * .45) * .12; s2.rotation.z = Math.sin(t * .9 - i * .3) * .04; });
-      legs[0].rotation.z = Math.sin(t * .5) * .06; legs[1].rotation.z = -Math.sin(t * .5) * .06; g.position.x = -16.5 + Math.sin(t * .1) * .8;
+  return { g, update(dt, t) { const br = Math.sin(t * 1.3); head.rotation.z = Math.sin(t * .7) * .04 + (roarT >= 0 ? .2 : 0); tail.rotation.y = Math.sin(t * .8) * .08; tail.rotation.z = Math.sin(t * .6) * .03;
+      legs[0].rotation.z = Math.sin(t * .5) * .05; legs[1].rotation.z = -Math.sin(t * .5) * .05; g.position.x = -16.5 + Math.sin(t * .1) * .8; g.position.y = br * .04;
       if (now() > nextRoar && !Q.has('noevents')) { nextRoar = now() + rnd(16000, 26000); roarT = 0; Sound.roar(); shake = .4; }
-      if (roarT >= 0) { roarT += dt; const o = Math.min(1, roarT * 3) * (roarT > 2.4 ? Math.max(0, 1 - (roarT - 2.4) * 3) : 1); jaw.rotation.z = -.7 * o; mouthLight.intensity = 30 * o; mouth.visible = o > .2; if (roarT > 2.8) roarT = -1; } else { jaw.rotation.z = -.05 - Math.max(0, Math.sin(t * .6)) * .08; mouthLight.intensity = 0; mouth.visible = false; }
-      core.intensity = 12 + Math.sin(t * 3) * 4; } };
+      if (roarT >= 0) { roarT += dt; const op = Math.min(1, roarT * 3) * (roarT > 2.4 ? Math.max(0, 1 - (roarT - 2.4) * 3) : 1); jaw.rotation.z = -.55 * op; mouthLight.intensity = 30 * op; mouth.visible = op > .2; if (roarT > 2.8) roarT = -1; }
+      else { jaw.rotation.z = -.04 - Math.max(0, Math.sin(t * .6)) * .07; mouthLight.intensity = 0; mouth.visible = false; } core.intensity = 12 + Math.sin(t * 3) * 4; } };
 })();
 // holographic shark (bites over the street) + koi swimming in the sky + face posters + left billboard
 const holoMat = (c, o = .55) => new THREE.MeshBasicMaterial({ color: new THREE.Color(c).multiplyScalar(1.6), transparent: true, opacity: o, wireframe: true, toneMapped: false, depthWrite: false });
 const shark = new THREE.Group(); scene.add(shark); { const m = holoMat(C.cyan, .5), body = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 12), m); body.scale.set(4.6, 1.6, 1.5); shark.add(body); const fin = new THREE.Mesh(new THREE.ConeGeometry(.9, 2, 4), m); fin.position.set(-.4, 1.9, 0); shark.add(fin); const tl = new THREE.Mesh(new THREE.ConeGeometry(1.4, 2.6, 4), m); tl.rotation.z = Math.PI / 2; tl.position.x = -5.4; shark.add(tl);
   for (let k = 0; k < 10; k++) { const tt = new THREE.Mesh(new THREE.ConeGeometry(.15, .6, 4), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xdffcff).multiplyScalar(2.4), toneMapped: false })); tt.position.set(2.6 + (k % 5) * .38, k < 5 ? .2 : -.45, .5 * (k % 2 ? 1 : -1)); tt.rotation.z = k < 5 ? Math.PI : 0; shark.add(tt); }
-  const glowS = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 10), new THREE.MeshBasicMaterial({ color: C.cyan, transparent: true, opacity: .12, depthWrite: false })); glowS.scale.set(4.4, 1.5, 1.4); shark.add(glowS); shark.position.set(-8, 8.5, -7); shark.rotation.z = .25; shark.scale.setScalar(1.15); }
+  const glowS = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 10), new THREE.MeshBasicMaterial({ color: C.cyan, transparent: true, opacity: .12, depthWrite: false })); glowS.scale.set(4.4, 1.5, 1.4); shark.add(glowS); shark.position.set(-1, 7.5, -6); shark.rotation.z = .25; shark.scale.setScalar(1.15); }
 function koiTex() { return ctex(128, 64, c => { const gr = c.createLinearGradient(0, 0, 128, 0); gr.addColorStop(0, '#3ff0ff'); gr.addColorStop(.5, '#ff6aa8'); gr.addColorStop(1, '#ff9a5a'); c.fillStyle = gr; c.fillRect(0, 0, 128, 64); c.strokeStyle = 'rgba(255,255,255,.5)'; for (let x = 0; x < 128; x += 8) for (let y = 0; y < 64; y += 8) { c.beginPath(); c.arc(x + (y % 16 ? 4 : 0), y, 4, 0, Math.PI); c.stroke(); } }); }
 const koi = new THREE.Group(); scene.add(koi); { const tx = koiTex(), mat = new THREE.MeshBasicMaterial({ map: tx, transparent: true, opacity: .55, toneMapped: false, depthWrite: false, side: THREE.DoubleSide }); const body = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 14), mat); body.scale.set(3, 1.3, 1); koi.add(body); { const wf = new THREE.Mesh(new THREE.SphereGeometry(1.02, 16, 10), holoMat(C.cyan, .35)); wf.scale.set(3, 1.3, 1); koi.add(wf); }
   const finM = new THREE.MeshBasicMaterial({ color: new THREE.Color(0xff6aa8).multiplyScalar(1.8), transparent: true, opacity: .55, side: THREE.DoubleSide, toneMapped: false, depthWrite: false, blending: THREE.AdditiveBlending });
@@ -794,7 +802,7 @@ renderer.setAnimationLoop(() => {
   if (Math.random() < dt * .7) { spawnCar(Math.random() < .5 ? 0 : 1); if (Math.random() < .3) Sound.car(); }
   for (let i = traffic.length - 1; i >= 0; i--) { const c = traffic[i]; c.x += c.v * dt; c.g.position.set(c.x, .35 + Math.sin(t * 3 + c.ph) * .06, c.z); if (c.x < -70 || c.x > 85) { scene.remove(c.g); traffic.splice(i, 1); } }
   for (const c of skyTraffic) { c.x += c.v * dt; if (c.x > 170) c.x = -150; if (c.x < -150) c.x = 170; c.g.position.set(c.x, c.y + Math.sin(t + c.x) * .3, c.z); }
-  MK.update(dt, t); shark.position.y = 8.5 + Math.sin(t * .8) * .4; shark.rotation.y = Math.sin(t * .3) * .1; shark.visible = Math.random() > .02;
+  MK.update(dt, t); shark.position.y = 7.5 + Math.sin(t * .8) * .4; shark.rotation.y = Math.sin(t * .3) * .1; shark.visible = Math.random() > .02;
   koi.position.set(1 + Math.sin(t * .12) * 6, 19.5 + Math.sin(t * .37) * 1.2, -6 + Math.cos(t * .12) * 2); koi.rotation.y = Math.cos(t * .12) > 0 ? 0 : Math.PI; koi.rotation.z = Math.sin(t * .37) * .15; koi.userData.tail.rotation.y = Math.sin(t * 4) * .5;
   for (const f of faces) f.material.opacity = Math.random() < .03 ? .4 : 1;
   for (const p of patrol) { p.g.position.set(p.x + Math.sin(t * .3 + p.ph) * 6, 25 + Math.sin(t + p.ph) * .5, 3 + Math.cos(t * .25 + p.ph) * 2); p.sp.rotation.z = Math.sin(t * .6 + p.ph) * .25; }
