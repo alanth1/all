@@ -117,7 +117,7 @@ def period(request: Request) -> tuple[str, str]:
 @app.get("/", response_class=HTMLResponse)
 def world_view(request: Request):
     """The living office (game view). Every feature is reached through its room."""
-    return templates.TemplateResponse(request, "world3d.html", {"agents": agents.statuses(), "assets": game_assets()})
+    return templates.TemplateResponse(request, "tower3d.html", {"agents": agents.statuses(), "assets": game_assets()})
 
 
 @app.get("/hq2d", response_class=HTMLResponse)

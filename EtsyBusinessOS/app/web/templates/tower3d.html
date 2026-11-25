@@ -1,0 +1,12 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Etsy Business OS · HQ 3D</title><link rel="stylesheet" href="/static/game/world.css"></head>
+<body>
+<div id="game"></div><div id="overlay"></div>
+<div id="hud"><div class="brand">NEONLOOM<span>HQ</span> <small> v{{ VERSION }}</small></div><div class="sys"></div><div class="ai"></div>
+<div class="date">Scroll = zoom · tarik = geser · klik ruangan/NPC · P = pixel · M = suara · 1–6 = zoom lantai · Home = semua · E = langit · R = acara · V = VTOL</div></div><div id="toasts"></div>
+<div id="panel"><div class="pwin"><div class="phead"><div class="ptitle"></div><button class="pclose">✕</button></div><div class="ptabs"></div>
+<div class="pbody"><iframe title="room" src="about:blank"></iframe><div class="pbody-info"></div></div></div></div>
+<script>window.AGENTS_META = {{ agents|tojson }}; window.ASSETS = {{ assets|tojson }};</script>
+<script type="importmap">{"imports":{"three":"/static/game3d/vendor/build/three.module.min.js","three/addons/":"/static/game3d/vendor/jsm/"}}</script>
+<script type="module" src="/static/tower3d/tower3d.js?v={{ VERSION }}"></script>
+</body></html>
