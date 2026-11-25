@@ -117,6 +117,12 @@ def period(request: Request) -> tuple[str, str]:
 @app.get("/", response_class=HTMLResponse)
 def world_view(request: Request):
     """The living office (game view). Every feature is reached through its room."""
+    return templates.TemplateResponse(request, "world3d.html", {"agents": agents.statuses(), "assets": game_assets()})
+
+
+@app.get("/hq2d", response_class=HTMLResponse)
+def world2d(request: Request):
+    """Older 2D office view."""
     return templates.TemplateResponse(request, "world.html", {"assets": game_assets(), "agents": agents.statuses()})
 
 
@@ -130,7 +136,7 @@ def game_assets() -> dict:
         rot = {f.stem[4:]: f"/static/game/pl/{quote(d.name)}/{f.name}" for f in d.glob("rot_*.png")}
         anims: dict = {}
         for f in d.glob("*.png"):
-            m = _re.fullmatch(r"(walk|typing|idle|coffee|sleep)_([a-z-]+)_(\d+)", f.stem)
+            m = _re.fullmatch(r"(walk|typing|idle|coffee|sleep|talk|celebrate|frustrated|yawn)_([a-z-]+)_(\d+)", f.stem)
             if m:
                 anims.setdefault(m.group(1), {}).setdefault(m.group(2), []).append((int(m.group(3)), f"/static/game/pl/{quote(d.name)}/{f.name}"))
         anims = {k: {dk: [u for _, u in sorted(v)] for dk, v in dv.items()} for k, dv in anims.items()}
@@ -144,7 +150,7 @@ def game_assets() -> dict:
 
 @app.get("/hq3d", response_class=HTMLResponse)
 def world3d(request: Request):
-    """3D prototype of the HQ (one tower)."""
+    """HD-2D city view: 3 towers."""
     return templates.TemplateResponse(request, "world3d.html", {"agents": agents.statuses(), "assets": game_assets()})
 
 
