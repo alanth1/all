@@ -73,17 +73,32 @@
   "ORIN-88": {
    "id": "cc7c1c02-66eb-4929-872a-927105281265",
    "job": "d66b3570-7fab-49ab-af34-0c1661b90d9e",
-   "job_done": true
+   "job_done": true,
+   "walk_done_dirs": [
+    "south-east",
+    "north-east"
+   ],
+   "walk_group": "839eaa11-1640-417c-abc1-010d7d766c3d"
   },
   "KADE-12": {
    "id": "681eb1d7-d427-4b4c-a6f1-b6593c1663ea",
    "job": "cbc3a2c9-2a50-4174-a9ec-d5226dc2a9a7",
-   "job_done": true
+   "job_done": true,
+   "walk_done_dirs": [
+    "south-east",
+    "north-east"
+   ],
+   "walk_group": "c4463b50-2b3b-4d0d-8f71-5699342b12bd"
   },
   "ZERO-1": {
    "id": "60035e2b-4012-4f94-a42a-040dbc2d74e1",
    "job": "3d3a758c-e5a3-4c5f-b84b-5feab2a36c90",
-   "job_done": true
+   "job_done": true,
+   "walk_done_dirs": [
+    "south-east",
+    "north-east"
+   ],
+   "walk_group": "94f93ec3-7b95-4f87-9457-c1209b313a40"
   }
  },
  "tiles": {
