@@ -95,6 +95,26 @@
   "VOLT-3:coffee": {
    "status": "completed",
    "frames": 9
+  },
+  "NYX-21:coffee": {
+   "status": "completed",
+   "frames": 9
+  },
+  "HEX-04:coffee": {
+   "status": "completed",
+   "frames": 9
+  },
+  "SABLE-6:coffee": {
+   "status": "completed",
+   "frames": 9
+  },
+  "ORIN-88:coffee": {
+   "status": "completed",
+   "frames": 9
+  },
+  "KADE-12:coffee": {
+   "status": "completed",
+   "frames": 9
   }
  },
  "cat": {},
