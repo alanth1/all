@@ -404,7 +404,7 @@
         const poses = {};
         for (const [anim, dirs] of Object.entries(a.anims || {})) for (const [dir, urls] of Object.entries(dirs)) {
           const k = `${meta.name}_${anim}_${dir}`; const idx = urls.map((_, i) => i).slice(urls.length > 4 ? 1 : 0); // frame 0 = input pose
-          const rate = { typing: 9, idle: 5, coffee: 6, sleep: 3 }[anim] || 6;
+          const rate = { typing: 9, idle: 5, coffee: 6, sleep: 3, celebrate: 9, frustrated: 8, talk: 8, yawn: 6 }[anim] || 6;
           if (!this.anims.exists(k)) this.anims.create({ key: k, frames: idx.map(i => ({ key: `${meta.name}_${anim}_${dir}_${i}` })), frameRate: rate, repeat: -1, repeatDelay: anim === 'coffee' ? 1200 : 0 });
           (poses[anim] = poses[anim] || {})[dir] = k;
         }
@@ -524,8 +524,9 @@
       if (ev.kind === 'running') { n.thought = ev.text; n.think(ev.text); return; }
       if (ev.kind === 'done' || ev.kind === 'published') {
         n.thought = null; n.say(ev.text, 7000, 'say'); UI.toast(ev, 'ok');
+        if (!n.sitting) n.emote('celebrate'); else if (n.mode !== 'work') { n.standUp(); n.face('south-east'); n.emote('celebrate'); }
         if (ev.handoff && this.npcs[ev.handoff] && ev.handoff !== ev.agent) n.deliver(this.npcs[ev.handoff]);
-      } else if (ev.kind === 'failed') { n.say(ev.text, 9000, 'alert'); UI.toast(ev, 'err'); }
+      } else if (ev.kind === 'failed') { n.say(ev.text, 9000, 'alert'); UI.toast(ev, 'err'); if (n.sitting && n.mode !== 'work') { n.standUp(); n.face('south-east'); } n.emote('frustrated', 4200); }
       else if (ev.kind === 'waiting_approval') { n.say(ev.text, 8000, 'alert'); UI.toast(ev, 'warn'); }
       else if (ev.kind === 'retrying') n.think(ev.text);
       n.log(ev.text);
@@ -585,7 +586,7 @@
       const seq = [[conv.a, lines[0]], [conv.b, lines[1]]];
       if (conv.ping) seq.push([conv.a, 'Servis keras! 🏓'], [conv.b, 'Hampir!']);
       let t = 0;
-      for (const [who, text] of seq) { this.time.delayedCall(t, () => who.inChat && who.say(text, 3800, 'chat')); t += 4200; }
+      for (const [who, text] of seq) { this.time.delayedCall(t, () => { if (who.inChat) { who.say(text, 3800, 'chat'); who.emote('talk', 3600); } }); t += 4200; }
       this.time.delayedCall(t + 600, () => { conv.a.endChat(); conv.b.endChat(); });
     }
 
@@ -672,6 +673,13 @@
       if (!k) return false;
       this.sprite.setFlipX(flip); this.sprite.play(k, true); this.posing = anim; return true;
     }
+    emote(anim, ms = 3200) {
+      if (this.path.length || this.sitting) return false;
+      const dir = this.facing && this.facing.startsWith('south') ? this.facing : 'south-east';
+      if (!this.pose(anim, dir)) return false;
+      clearTimeout(this._emo); this._emo = setTimeout(() => { if (this.posing === anim) { this.endPose(); if (this.facing.startsWith('south')) this.pose('idle', this.facing); } }, ms);
+      return true;
+    }
     endPose() { if (this.posing) { this.posing = null; this.sprite.anims.stop(); this.face(this.facing); } if (this.chair && this.chair.sprite) this.chair.sprite.setVisible(true); }
     standUp() { this.endPose(); if (this.sitting) { this.sitting = false; this.sprite.y += this.seatShift || 0; this.seatShift = 0; } }
     sitDown() {
@@ -705,6 +713,7 @@
       if (this.mode === 'work' && this.sitting && Math.random() < .08) this.think(this.thought || pick(['Fokus…', 'Hampir selesai…', 'Cek ulang datanya…', 'Validasi dulu biar aman.']));
       if (this.server.status === 'waiting' && Math.random() < .03) this.say('Butuh approval kamu 👀', 4000, 'alert');
       if (this.server.status === 'error' && Math.random() < .03) this.say('Ada yang error di pekerjaanku, cek ruanganku ya.', 5000, 'alert');
+      if (this.mode === 'free' && !this.path.length && !this.inChat && !this.sitting && !this.posing && Math.random() < (this.scene.dayPhase() === 'night' ? .04 : .01)) { if (this.emote('yawn', 3500)) this.say(pick(['Hoaam… ngantuk.', 'Peregangan dulu~', 'Butuh kopi…']), 3000, 'chat'); }
       if (this.mode === 'free' && !this.path.length && !this.inChat && Math.random() < .015) this.think(pick(['Hmm…', 'Ide konten baru…', 'Kopi lagi?', 'Data hari ini menarik.', '…']));
     }
     goDesk(reason) {
@@ -762,7 +771,7 @@
       this.mode = 'busy'; this.carry.classList.remove('hidden');
       const t = target.cell; const near = [[1, 0], [0, 1], [-1, 0], [0, -1]].map(([dx, dy]) => ({ x: t.x + dx, y: t.y + dy })).find(c => W.walkable(c.x, c.y)) || t;
       this.goTo(near.x, near.y, null, () => {
-        this.say(`${target.name}, ini hasilnya. Tolong lanjutkan!`, 4000, 'say');
+        this.say(`${target.name}, ini hasilnya. Tolong lanjutkan!`, 4000, 'say'); this.emote('talk', 3800);
         this.scene.time.delayedCall(2500, () => target.say(pick(['Siap, aku proses!', 'Oke, langsung aku cek.', 'Mantap, terima kasih!']), 3500, 'say'));
         this.scene.time.delayedCall(4500, () => { this.carry.classList.add('hidden'); this.mode = 'free'; this.goDesk('back'); });
       });
@@ -795,6 +804,8 @@
       this.sprite.setScale(Math.min(1, 26 / this.sprite.height));
       this.walk = {};
       for (const [dir, urls] of Object.entries(a.walk || {})) { const k = `${name}_walk_${dir}`; if (!scene.anims.exists(k)) scene.anims.create({ key: k, frames: urls.map((_, i) => ({ key: `${name}_walk_${dir}_${i}` })), frameRate: 9, repeat: -1 }); this.walk[dir] = k; }
+      const ga = (a.anims || {}).idle || {}; const gd = Object.keys(ga)[0];
+      if (gd) { this.groomKey = `${name}_idle_${gd}`; if (!scene.anims.exists(this.groomKey)) scene.anims.create({ key: this.groomKey, frames: ga[gd].map((_, i) => ({ key: `${name}_idle_${gd}_${i}` })).slice(1), frameRate: 6, repeat: -1 }); }
       const sl = (a.anims || {}).sleep || {}; const sd = Object.keys(sl)[0];
       if (sd) { this.sleepKey = `${name}_sleep_${sd}`; if (!scene.anims.exists(this.sleepKey)) scene.anims.create({ key: this.sleepKey, frames: sl[sd].map((_, i) => ({ key: `${name}_sleep_${sd}_${i}` })).slice(1), frameRate: 3, repeat: -1 }); }
       this.bubble = el('bubble hidden', ''); this.sprite.setInteractive({ useHandCursor: true });
@@ -804,7 +815,9 @@
     update(dt) {
       if (!this.path.length && nowMs() > this.next) {
         this.sprite.anims.stop();
-        if (Math.random() < .35 && this.sleepKey) { this.sprite.setFlipX(false).play(this.sleepKey); this.next = nowMs() + rnd(15000, 40000); }
+        const r = Math.random();
+        if (r < .3 && this.sleepKey) { this.sprite.play(this.sleepKey); this.next = nowMs() + rnd(15000, 40000); }
+        else if (r < .5 && this.groomKey) { this.sprite.play(this.groomKey); this.next = nowMs() + rnd(5000, 10000); }
         else {
           const room = Math.random() < .7 ? W.roomById.lounge : pick(W.ROOMS);
           const c = W.randomCellIn(room); const path = W.findPath(this.cell.x, this.cell.y, c.x, c.y);
@@ -815,10 +828,10 @@
         const [nx, ny] = this.path[0]; const t = iso(nx + .5, ny + .5);
         const dx = t.x - this.sprite.x, dy = t.y - this.sprite.y, dist = Math.hypot(dx, dy);
         const dir = DIRS[`${nx - this.cell.x},${ny - this.cell.y}`] || 'south-east';
-        const base = dir.startsWith('north') ? 'north-east' : 'south-east', k = this.walk[base];
+        const base = dir.startsWith('north') ? 'north-east' : 'south-east', k = this.walk[base] || this.walk['south-east'];
         if (k) { this.sprite.setFlipX(dir.endsWith('west')); if (this.sprite.anims.currentAnim?.key !== k || !this.sprite.anims.isPlaying) this.sprite.play(k); }
         const step = this.speed * dt / 1000;
-        if (dist <= step) { this.sprite.setPosition(t.x, t.y); this.cell = { x: nx, y: ny }; this.path.shift(); if (!this.path.length) { this.sprite.anims.stop(); this.sprite.setTexture(`${this.name}_rot_${dir}`).setFlipX(false); } }
+        if (dist <= step) { this.sprite.setPosition(t.x, t.y); this.cell = { x: nx, y: ny }; this.path.shift(); if (!this.path.length) { this.sprite.anims.stop(); this.sprite.setTexture(`${this.name}_rot_south-east`).setFlipX(dir.endsWith('west')); } }
         else this.sprite.setPosition(this.sprite.x + dx / dist * step, this.sprite.y + dy / dist * step);
       }
       this.sprite.setDepth(this.sprite.y + 1);
