@@ -265,7 +265,7 @@ const R7 = rng(7);
 }
 // ====================================================================== live data boards in every room
 for (const r of ROOMS) { if (!r.agent) continue; const y = FL[r.f].y, cx = (r.x0 + r.x1) / 2 + (r.f === 5 ? -2.6 : 0); const t = ctex(256, 128, () => {}); anim.screens.push({ t, type: 'board', agent: r.agent, col: hex(r.c), ph: 0, hist: [] });
-  box(2.9, 1.5, .08, mats.dark, cx, y + 1.45, .3); plane(2.8, 1.4, new THREE.MeshBasicMaterial({ map: t, toneMapped: false }), cx, y + 2.15, .35); box(2.9, .04, .04, E(r.c, 2), cx, y + 2.9, .36); }
+  box(2.9, 1.5, .08, mats.dark, cx, y + 1.15, .3); plane(2.8, 1.4, new THREE.MeshBasicMaterial({ map: t, toneMapped: false }), cx, y + 1.85, .35); box(2.9, .04, .04, E(r.c, 2), cx, y + 2.6, .36); }
 // ====================================================================== the street
 { CUR = scene;
   box(140, .2, 2.2, mats.walk, 10, -.2, 7); box(140, .2, 6, mats.road, 10, -.35, 11.1); box(220, .2, 3, mats.walk, 10, -.2, 15.5); box(220, .3, 80, M(0x1a202c, { roughness: .3, metalness: .5 }), 10, -.5, 57); box(220, .3, 30, M(0x1a202c, { roughness: .3, metalness: .5 }), 10, -.5, -10); box(140, .12, .2, M(0x4a5468), 10, -.12, 8.1);
@@ -536,6 +536,7 @@ class NPC {
     if (this.act === 'walk' || this.act === 'run') { b.cig.visible = false; b.phone.visible = false; b.cup.visible = false; } if (this.sitting && !(this.sitMood === 'phone' && !isWork(this))) b.phone.visible = false;
     // turn smoothly
     let da = this.faceT - this.face; da = Math.atan2(Math.sin(da), Math.cos(da)); this.face += da * Math.min(1, dt * 10);
+    if (!this.sitting && !this.lift) for (const o of Object.values(npcs)) { if (o === this || o.f !== this.f || o.lift) continue; const dx = this.x - o.x, dz = this.z - o.z, d = Math.hypot(dx, dz); if (d < .55 && d > 1e-4) { const push = (.55 - d) * Math.min(1, dt * 6); this.x += dx / d * push * .7; this.z = clamp(this.z + (dz / d || (this.name < o.name ? 1 : -1)) * push, .9, D - .4); } else if (d <= 1e-4) this.z = clamp(this.z + .3, .9, D - .4); }
     b.root.position.set(this.x, this.y, this.z); b.root.rotation.y = this.face; this.pose(dt);
     if (this.sitting && isWork(this) && Math.random() < .03) Sound.type();
   }
@@ -705,7 +706,7 @@ function confetti() { for (let i = 0; i < 160; i++) { const m = new THREE.Mesh(n
 // rain
 const RAIN_N = 4200, rainGeo = new THREE.BufferGeometry(), rainPos = new Float32Array(RAIN_N * 6), rainV = new Float32Array(RAIN_N);
 for (let i = 0; i < RAIN_N; i++) { const x = rnd(-40, 60), y = rnd(-1, 40), z = rnd(-10, 20); rainPos.set([x, y, z, x - .08, y - .7, z], i * 6); rainV[i] = rnd(16, 24); }
-rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPos, 3)); scene.add(new THREE.LineSegments(rainGeo, new THREE.LineBasicMaterial({ color: 0xb4c6ea, transparent: true, opacity: .3, fog: true })));
+rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPos, 3)); const rainMesh = scene.add(new THREE.LineSegments(rainGeo, new THREE.LineBasicMaterial({ color: 0xb4c6ea, transparent: true, opacity: .3, fog: true })));
 let flash = 0, dark = 0, glitchUntil = 0, shake = 0, nextBolt = now() + rnd(15000, 30000); const glitchFor = s => { glitchUntil = now() + s * 1000; };
 const Surprises = {
   outage() { Sound.power(); dark = 1; toast('⚡ Listrik padam di HQ!'); const z = npcs['ZERO-1'];
@@ -855,11 +856,19 @@ const labels = ROOMS.map(r => { const d = el('room-label', `<span>${r.name}</spa
 
 // ====================================================================== boot + main loop
 for (const name of Object.keys(SEATS)) { npcs[name] = new NPC(name); npcMeshes.push(...npcs[name].b.meshes); }
-window.tower = { npcs, Phase, SkyEvents, Surprises, Vtol, camState, cam, THREE };
-async function loadShow() { try { const d = await (await fetch('/api/world/showcase')).json(); SHOW.agents = d.agents || {}; SHOW.ticker = d.ticker || []; } catch (e) {} }
+window.tower = { perf: null, npcs, Phase, SkyEvents, Surprises, Vtol, camState, cam, THREE };
+let lastPending = 0;
+async function loadShow() { try { const d = await (await fetch('/api/world/showcase')).json(); SHOW.agents = d.agents || {}; SHOW.ticker = d.ticker || []; const pn = d.pending || 0;
+  if (pn > lastPending) { toast(`📝 ${pn} listing menunggu approval — klik COMMAND DECK → tab Approval`); Sound.chime(); const k = npcs['KAI-07']; if (k) { k.say(`Owner, ada ${pn} listing nunggu approval!`, 7000, 'alert'); k.pop('📝'); } }
+  lastPending = pn; approvalBadge.style.display = pn ? '' : 'none'; approvalBadge.textContent = `📝 ${pn} menunggu approval`; } catch (e) {} }
+const approvalBadge = el('approval-badge', ''); approvalBadge.style.cssText = 'position:fixed;left:50%;top:14px;transform:translateX(-50%);display:none;cursor:pointer;z-index:20;padding:8px 14px;border:1px solid #ff3fa4;background:rgba(10,14,22,.9);color:#ffd0e8;font:14px monospace;box-shadow:0 0 14px #ff3fa4;animation:blink 1.2s infinite;pointer-events:auto';
+approvalBadge.onclick = () => { const r = ROOMS.find(q => q.name === 'COMMAND DECK'); openRoom(r); const b = [...document.querySelectorAll('.ptabs button')].find(x => x.textContent === 'Approval'); b && b.click(); };
 loadShow(); setInterval(loadShow, 20000);
 poll(); setInterval(poll, 3000); setInterval(() => { Object.values(npcs).forEach(n => n.life()); Phase.tick(); }, 1000);
 for (let i = 0; i < 6; i++) spawnCar(i % 2);
+const perf = { frames: 0, t0: performance.now(), level: Q.has('lq') ? 2 : 0, fps: 0 }; const tn2 = () => performance.now(); window.tower && (window.tower.perf = perf);
+if (Q.has('lq')) { setTimeout(() => { bloom.enabled = false; renderer.setPixelRatio(.8); resize(); }, 0); }
+const RAIN_VIS = v => { scene.children.forEach(c => { if (c.isLineSegments) c.visible = v; }); };
 const clock = new THREE.Clock(); let ft = 0;
 renderer.setAnimationLoop(() => {
   const dt = Math.min(.1, clock.getDelta()), t = now() / 1000; ft += dt;
@@ -899,10 +908,13 @@ renderer.setAnimationLoop(() => {
   flash = Math.max(0, flash - dt * 3) * (Math.random() < .15 ? .3 : 1); hemi.intensity = (dark ? .35 : .95) + flash * 3;
   fx.uniforms.time.value = t; fx.uniforms.glitch.value = now() < glitchUntil ? .6 + Math.random() * .4 : (Math.random() < .002 ? .35 : 0); fx.uniforms.flash.value = flash; fx.uniforms.dark.value = dark; fx.uniforms.alarm.value = Object.values(npcs).some(n => n.server.status === 'error') ? .25 : 0;
   composer.render();
+  perf.frames++; if (tn2() - perf.t0 > 3000) { const fps = perf.frames * 1000 / (tn2() - perf.t0); perf.frames = 0; perf.t0 = tn2(); perf.fps = fps;
+    if (fps < 28 && perf.level < 3 && !Q.has('hq')) { perf.level++; if (perf.level === 1) renderer.setPixelRatio(1); if (perf.level === 2) { bloom.enabled = false; renderer.setPixelRatio(.8); } if (perf.level === 3) { renderer.setPixelRatio(.65); RAIN_VIS(false); } resize(); console.info('quality ->', perf.level, fps.toFixed(1)); } }
   // DOM overlays
   const k = clamp(camState.zoom * .85, .8, 1.6);
+  const placed = [];
   for (const n of Object.values(npcs)) { const top = n.b.root.position.clone(); top.y += n.sitting ? 1.55 : 2.05; const [x, y] = project(top), [, fy] = project(n.b.root.position);
-    n.tag.style.transform = `translate(${x}px, ${fy + 2}px) translate(-50%,0) scale(${k})`; n.bubble.style.transform = `translate(${x}px, ${y}px) translate(-50%,-100%) scale(${k})`;
+    let ty2 = fy + 2; for (const [px2, py2] of placed) if (Math.abs(px2 - x) < 70 * k && Math.abs(py2 - ty2) < 16 * k) ty2 = py2 + 17 * k; placed.push([x, ty2]); n.tag.style.transform = `translate(${x}px, ${ty2}px) translate(-50%,0) scale(${k})`; n.bubble.style.transform = `translate(${x}px, ${y}px) translate(-50%,-100%) scale(${k})`;
     n.icon.style.transform = `translate(${x}px, ${y - 4}px) translate(-50%,-100%)`; n.carry.style.transform = `translate(${x + 10}px, ${y + 14}px)`; }
   if (cat) { const [x, y] = project(new THREE.Vector3(cat.x, .8, cat.z)); cat.bubble.style.transform = `translate(${x}px, ${y}px) translate(-50%,-100%)`; }
   for (const l of labels) { const [x, y] = project(l.v); l.d.style.transform = `translate(${x}px, ${y}px) translate(-50%,-100%) scale(${k * .9})`; }

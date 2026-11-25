@@ -33,6 +33,12 @@ templates.env.globals.update(money=fmt_money, loads=loads, VERSION=config.VERSIO
 
 @asynccontextmanager
 async def lifespan(_app):
+    try:
+        from .. import demo
+        if demo.ensure_demo_assets():
+            jobs.enqueue("asset_scan", {}, priority=1, actor="system")
+    except Exception as e:  # demo seed must never block start-up
+        print("demo assets:", e)
     orchestrator.start()
     yield
     orchestrator.stop()
@@ -217,6 +223,7 @@ def api_showcase():
             "ZERO-1": {"title": "Server & job", "lines": L(lastjobs, lambda r: f"{r['state']:<8} {r['type']} ({r['agent'] or '-'})"),
                        "say": [*(f"Job {r['type']} → {r['state']}" for r in lastjobs[:2]), "Backup harian aman."]},
         },
+        "pending": pend.get("n", 0),
         "ticker": [f"{shop.get('name') or 'NEONLOOM'}", f"{rev.get('n', 0)} ORDER · {money(rev.get('g'), cur)}", *L(listings[:3], lambda r: f"{(r['title'] or '')[:30]} {money(r['price_cents'], cur)}"), f"{pend.get('n', 0)} MENUNGGU APPROVAL"],
     }
     return JSONResponse(data)

@@ -36,3 +36,8 @@ Pinterest + YouTube first, Instagram/Facebook unavailable).
 - Demo mode for testing without accounts
 - 44 automated tests (validators, approval invalidation, publish blocking, journal balance & immutability,
   reconciliation, restart recovery, duplicate prevention, read-only assets, live adapters against fake servers, UI flow)
+
+## 2.10.0-rc1
+- Demo mode seeds 3 sample products (PNG + PDF) so the full flow works: generate -> QA -> approval -> publish -> audit.
+- Fix: demo listing titles repeated "House" for names containing it.
+- HQ: approval badge + KAI-07 alert, room tabs (approvals/audit/...), live data boards, NPC separation, label de-overlap, adaptive quality (?lq / ?hq).

@@ -125,8 +125,10 @@ def validate_listing(content: dict, facts: dict | None = None, assets: dict | No
 def demo_draft(product_name: str, facts_text: str, research: dict) -> dict:
     """Demo-mode generator (deterministic). Produces a rule-compliant sample so the workflow is testable."""
     base = product_name.replace("-", " ").replace("_", " ").strip().title() or "Modern Cabin"
-    focus = f"{base} House Plan"
-    title = f"{focus} Small Home Blueprint Digital Floor Design (PDF Download)"
+    focus = f"{base} Plan" if "house" in base.lower() else f"{base} House Plan"
+    used = {w.lower() for w in focus.split()}
+    tail = [w for w in ["Small", "Home", "Blueprint", "Digital", "Floor", "Design"] if w.lower() not in used]
+    title = f"{focus} {' '.join(tail)} (PDF Download)"
     pool = [focus.lower()[:20], "house plan", "floor plan", "small home plan", "cabin blueprint", "tiny house design",
             "diy home plan", "pdf house plan", "digital download", "home blueprint", "building plan", "cottage plan",
             "modern home design", "guest house plan", "lake house plan"]

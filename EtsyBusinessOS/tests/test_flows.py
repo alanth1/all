@@ -277,3 +277,20 @@ def test_meta_unavailable(env):
     from app.integrations import providers
     ok, why = providers.platform_available("instagram")
     assert not ok and "Review" in why
+
+
+def test_demo_drafts_pass_validation_for_house_names():
+    """Regression: product names that already contain 'House' must not produce a repeated word."""
+    from app.engines.seo import demo_draft, _words
+    for name in ["Tiny House Loft", "Modern Farmhouse 3 Bed", "Cyber Cabin 1 Bed", "Home Studio"]:
+        words = [w.lower() for w in _words(demo_draft(name, "", {})["title"])]
+        long = [w for w in words if len(w) > 2]
+        assert len(long) == len(set(long)), (name, words)
+
+
+def test_demo_seed_assets(env, monkeypatch, tmp_path):
+    from app import demo, db
+    monkeypatch.setattr(demo, "demo_root", lambda: tmp_path / "demo_assets")
+    assert demo.ensure_demo_assets() is True
+    assert len(list((tmp_path / "demo_assets").rglob("*.pdf"))) == 3
+    assert str(tmp_path / "demo_assets") in db.settings()["assets"]["folders"]
