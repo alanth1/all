@@ -6,7 +6,7 @@
 <div class="date">Scroll = zoom · tarik = geser · klik ruangan/NPC · P = pixel on/off</div></div>
 <div id="panel"><div class="pwin"><div class="phead"><div class="ptitle"></div><button class="pclose">✕</button></div><div class="ptabs"></div>
 <div class="pbody"><iframe title="room" src="about:blank"></iframe><div class="pbody-info"></div></div></div></div>
-<script>window.AGENTS_META = {{ agents|tojson }};</script>
+<script>window.AGENTS_META = {{ agents|tojson }}; window.ASSETS = {{ assets|tojson }};</script>
 <script type="importmap">{"imports":{"three":"/static/game3d/vendor/build/three.module.min.js"}}</script>
 <script type="module" src="/static/game3d/hq3d.js?v={{ VERSION }}"></script>
 </body></html>

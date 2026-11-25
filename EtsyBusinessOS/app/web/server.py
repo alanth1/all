@@ -145,7 +145,7 @@ def game_assets() -> dict:
 @app.get("/hq3d", response_class=HTMLResponse)
 def world3d(request: Request):
     """3D prototype of the HQ (one tower)."""
-    return templates.TemplateResponse(request, "world3d.html", {"agents": agents.statuses()})
+    return templates.TemplateResponse(request, "world3d.html", {"agents": agents.statuses(), "assets": game_assets()})
 
 
 @app.get("/api/world")
