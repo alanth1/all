@@ -23,6 +23,78 @@
   "HEX-04:typing": {
    "status": "completed",
    "frames": 9
+  },
+  "SABLE-6:typing": {
+   "status": "completed",
+   "frames": 9
+  },
+  "ORIN-88:typing": {
+   "status": "completed",
+   "frames": 9
+  },
+  "KADE-12:typing": {
+   "status": "completed",
+   "frames": 9
+  },
+  "ZERO-1:typing": {
+   "status": "completed",
+   "frames": 9
+  },
+  "KAI-07:idle": {
+   "status": "completed",
+   "frames": 9
+  },
+  "RAZE-11:idle": {
+   "status": "completed",
+   "frames": 9
+  },
+  "JUNO-X9:idle": {
+   "status": "completed",
+   "frames": 9
+  },
+  "VOLT-3:idle": {
+   "status": "completed",
+   "frames": 9
+  },
+  "NYX-21:idle": {
+   "status": "completed",
+   "frames": 9
+  },
+  "HEX-04:idle": {
+   "status": "completed",
+   "frames": 9
+  },
+  "SABLE-6:idle": {
+   "status": "completed",
+   "frames": 9
+  },
+  "ORIN-88:idle": {
+   "status": "completed",
+   "frames": 9
+  },
+  "KADE-12:idle": {
+   "status": "completed",
+   "frames": 9
+  },
+  "ZERO-1:idle": {
+   "status": "completed",
+   "frames": 9
+  },
+  "KAI-07:coffee": {
+   "status": "completed",
+   "frames": 9
+  },
+  "RAZE-11:coffee": {
+   "status": "completed",
+   "frames": 9
+  },
+  "JUNO-X9:coffee": {
+   "status": "completed",
+   "frames": 9
+  },
+  "VOLT-3:coffee": {
+   "status": "completed",
+   "frames": 9
   }
  },
  "cat": {},
