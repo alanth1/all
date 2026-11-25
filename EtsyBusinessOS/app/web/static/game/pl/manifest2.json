@@ -115,8 +115,18 @@
   "KADE-12:coffee": {
    "status": "completed",
    "frames": 9
+  },
+  "ZERO-1:coffee": {
+   "status": "completed",
+   "frames": 9
   }
  },
  "cat": {},
- "cars": {}
+ "cars": {
+  "car_pink": "ok",
+  "car_cyan": "ok",
+  "car_taxi": "ok",
+  "car_van": "ok",
+  "car_bike": "ok"
+ }
 }
