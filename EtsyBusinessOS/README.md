@@ -1,4 +1,4 @@
-# Etsy Business OS — v1.2.0-rc1
+# Etsy Business OS — v1.3.0-rc1
 
 Software lokal untuk mengelola toko Etsy dengan satu AI lokal (Gemma 12B via Ollama).
 **AI berpikir · Python mengeksekusi · Database mengingat · Automasi mengatur · Anda yang memutuskan.**
@@ -36,7 +36,7 @@ Saat dibuka, aplikasi menampilkan **tiga menara kantor bertingkat** (pixel-art c
 - **Ruangan yang bermasalah** (job gagal, koneksi API putus, GPU panas, RAM penuh, approval menunggu) menyalakan lampu alarm; ZERO-1 datang memeriksa.
 - Di LIVE mode, saat GPU sedang kosong, AI lokal menulis obrolan santai baru untuk NPC (bisa dimatikan).
 - Kontrol: scroll = zoom, tarik = geser, klik ruangan/NPC, `Esc` = tutup panel, tombol `` ` `` = tampilan klasik (/dashboard).
-- Grafik: menara & furnitur = gambar Gemini milik Anda (`app/web/static/game/towers/`); NPC, animasi, kucing, mobil terbang = **PixelLab**; layar, lampu, cuaca, efek = kode. Tombol `Home` = kembali ke tampilan penuh. Font Silkscreen & VT323 (lisensi OFL). Engine: Phaser 3.90 (MIT), disimpan lokal.
+- Grafik: cangkang menara & 39 furnitur terpisah = gambar Gemini milik Anda (`app/web/static/game/kit/`), NPC berjalan memutari furnitur, naik lift, menyeberang jembatan; NPC, animasi, kucing, mobil terbang = **PixelLab**; layar, lampu, cuaca, efek = kode. Tombol `Home` = kembali ke tampilan penuh. Font Silkscreen & VT323 (lisensi OFL). Engine: Phaser 3.90 (MIT), disimpan lokal.
 
 ## Isi aplikasi (tampilan klasik /dashboard)
 | Menu | Fungsi |
