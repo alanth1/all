@@ -1,6 +1,50 @@
 {% extends "base.html" %}{% from "_macros.html" import badge %}
-{% block heading %}<b>Settings</b> <span class="muted small">every change is saved as a new settings version</span>{% endblock %}
+{% block heading %}<b>Pengaturan</b> <span class="muted small">setiap perubahan disimpan sebagai versi baru</span></details>
+{% endblock %}
 {% block content %}
+<style>
+.easy{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:18px}
+.step{border:1px solid var(--line,#2a3550);border-radius:10px;padding:16px 18px;background:var(--panel,#0e1422)}
+.step h3{margin:0 0 4px;font-size:18px}.step .n{display:inline-block;width:26px;height:26px;border-radius:50%;background:#3ff0ff;color:#06101c;text-align:center;font-weight:700;margin-right:8px}
+.step p{margin:6px 0 10px;line-height:1.45}.ok{color:#9fffcf;font-weight:600}.no{color:#ffb347;font-weight:600}
+.step input[type=text],.step input[type=password]{width:100%;margin:4px 0 8px}.big{font-size:16px;padding:10px 16px}
+.adv>summary{cursor:pointer;font-size:16px;padding:10px 0;color:#9fb2d8}
+</style>
+<h2 style="margin-top:0">Pengaturan mudah</h2>
+<p class="muted">Ikuti langkah 1 sampai 5. Semua yang lain boleh dibiarkan bawaan.</p>
+<div class="easy">
+<div class="step"><h3><span class="n">1</span>Mode kerja</h3>
+<p>Sekarang: {% if s.mode=='demo' %}<span class="no">DEMO</span> — data contoh, aman untuk mencoba. Tidak ada yang dikirim ke Etsy.{% else %}<span class="ok">LIVE</span> — terhubung ke toko asli.{% endif %}</p>
+<form method="post" action="/settings/mode" class="row"><input type="hidden" name="mode" value="{{ 'live' if s.mode=='demo' else 'demo' }}"><button class="big">{{ 'Pindah ke LIVE' if s.mode=='demo' else 'Kembali ke DEMO' }}</button></form>
+<p class="small muted">Pindah ke LIVE setelah langkah 2 dan 3 selesai.</p></div>
+
+<div class="step"><h3><span class="n">2</span>Otak AI (Gemma)</h3>
+<p>Ollama: {% if ollama.ok %}<span class="ok">✔ berjalan</span>{% else %}<span class="no">✖ belum berjalan</span> — pasang dari <b>ollama.com/download</b> lalu buka aplikasinya.{% endif %}</p>
+<p>Model utama: <b class="mono">{{ s.ai.primary_model }}</b>{% if ollama.ok %} — {% if s.ai.primary_model in (ollama.models or []) %}<span class="ok">sudah terpasang</span>{% else %}<span class="no">belum diunduh</span>{% endif %}{% endif %}</p>
+<div class="row"><form method="post" action="/settings/ai/pull"><input type="hidden" name="model" value="{{ s.ai.primary_model }}"><button class="big">⬇ Unduh Gemma</button></form>
+<form method="post" action="/settings/ai/benchmark"><button class="big sec">⏱ Tes kecepatan</button></form></div></div>
+
+<div class="step"><h3><span class="n">3</span>Hubungkan Etsy</h3>
+<p>Status: {% if conns.etsy.status=='connected' %}<span class="ok">✔ terhubung {{ conns.etsy.account_name or '' }}</span>{% else %}<span class="no">belum terhubung</span>{% endif %}</p>
+<form method="post" action="/settings/keys/etsy"><label>Keystring (API key) dari etsy.com/developers</label><input type="password" name="key" placeholder="{{ 'sudah tersimpan ••••' if keys.etsy else 'tempel di sini' }}">
+<label>Shared secret</label><input type="password" name="secret"><button class="sec">Simpan kunci</button></form>
+<p><a class="btn big" href="/connect/etsy">🔗 Hubungkan akun Etsy</a> <a class="small" href="/setup">cara mendapatkan kunci</a></p></div>
+
+<div class="step"><h3><span class="n">4</span>Folder produk</h3>
+<p>Folder berisi denah rumah Anda (satu sub-folder per produk). Lebih dari satu folder? Pisahkan dengan titik koma (;). Aplikasi hanya membaca, tidak pernah mengubah.</p>
+<form method="post" action="/settings/assets"><input type="text" name="folders" value="{{ s.assets.folders|join('; ') }}" placeholder="contoh: D:\Etsy\Produk"><input type="hidden" name="scan_minutes" value="{{ s.assets.scan_minutes }}"><input type="hidden" name="marketing_ready_dirname" value="{{ s.assets.marketing_ready_dirname }}"><button class="sec">Simpan folder</button></form></div>
+
+<div class="step"><h3><span class="n">5</span>Pinterest & YouTube (opsional)</h3>
+<p>Pinterest: {% if conns.pinterest.status=='connected' %}<span class="ok">✔ terhubung</span>{% else %}<span class="no">belum</span>{% endif %} · YouTube: {% if conns.youtube.status=='connected' %}<span class="ok">✔ terhubung</span>{% else %}<span class="no">belum</span>{% endif %}</p>
+<p class="small muted">Instagram & Facebook belum tersedia (menunggu izin Meta).</p>
+<p><a class="btn sec" href="#connections" onclick="document.querySelector('.adv').open=true">Atur kunci Pinterest / YouTube</a></p></div>
+
+<div class="step"><h3><span class="n">★</span>Suara NPC</h3>
+<p id="voiceSt">Memeriksa…</p><p class="small muted">Suara memakai Piper (bahasa Indonesia), berjalan di PC ini. Tombol <b>N</b> di tampilan kantor untuk menyalakan/mematikan.</p></div>
+</div>
+<script>fetch('/api/tts/status').then(r=>r.json()).then(d=>{document.getElementById('voiceSt').innerHTML=d.model_ready&&d.library?'<span class="ok">✔ siap</span>':(d.library?'<span class="no">mengunduh model suara…</span> '+(d.state||''):'<span class="no">pustaka Piper belum terpasang</span>');}).catch(()=>{});</script>
+
+<details class="adv"><summary>⚙ Pengaturan lanjutan (untuk pengguna mahir)</summary>
 <div class="tabs"><a href="#mode">Mode</a><a href="#ai">AI model</a><a href="#connections">Connections</a><a href="#assets">Asset folders</a><a href="#brain">Brain</a><a href="#seo">SEO rules</a><a href="#listing">Listing defaults</a><a href="#social">Social</a><a href="#world">World & weather</a><a href="#system">System</a></div>
 
 <div class="card" id="mode"><h3 style="margin-top:0">Mode</h3>
@@ -76,4 +120,5 @@
 <div class="card" id="system" style="margin-top:14px"><h3 style="margin-top:0">System</h3>
 <form method="post" action="/backup" class="inline"><button class="sec">💾 Backup database now</button></form> <span class="small muted">Automatic daily backup in data/backups (14 kept).</span>
 <h3>Settings history</h3><table class="small">{% for v in versions %}<tr><td>v{{ v.version }}</td><td>{{ v.changed_by }}</td><td>{{ v.created_at }}</td></tr>{% endfor %}</table></div>
+</details>
 {% endblock %}

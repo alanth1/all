@@ -758,7 +758,7 @@ def settings_listing(who_made: str = Form(...), when_made: str = Form(...), taxo
 
 @app.post("/settings/assets")
 def settings_assets(folders: str = Form(""), scan_minutes: int = Form(30), marketing_ready_dirname: str = Form("marketing")):
-    paths = [p.strip().strip('"') for p in folders.splitlines() if p.strip()]
+    paths = [p.strip().strip('"') for p in re.split(r"[\n;]", folders) if p.strip()]
     bad = [p for p in paths if not Path(p).is_dir()]
     if bad:
         return back("/settings#assets", err=f"folder not found: {bad[0]}")
