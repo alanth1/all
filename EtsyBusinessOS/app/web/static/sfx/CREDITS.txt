@@ -9,3 +9,4 @@ All sound effects in this folder are CC0 (public domain) from OpenGameArt.org:
 - "100 CC0 SFX #2" (thunder, traffic_loop, metal_hit*, whoosh)  https://opengameart.org/content/100-cc0-sfx-2
 - "100 CC0 SFX" (slam, servo)               https://opengameart.org/content/100-cc0-sfx
 Converted to mono OGG. No attribution required (CC0); listed for transparency.
+- foot*, lift_motor, key3: "100 CC0 SFX #2"; door_*, key1, key2, coffee: "100 CC0 SFX"; arcade*, saber_hum, neon_hum: "50 CC0 Sci-Fi SFX" (all CC0, OpenGameArt)
