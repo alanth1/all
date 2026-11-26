@@ -22,26 +22,40 @@ def _money(cents, cur="USD"):
     return {"amount": int(cents), "divisor": 100, "currency_code": cur}
 
 
+DEMO_SHOP_NAMES = {1: "DemoPlansStudio", 2: "DemoCabinCraft", 3: "DemoTinyHomeLab"}
+
+
+def shop_id(slot=1) -> str:
+    return DEMO_SHOP_ID if int(slot) == 1 else f"9999999{int(slot)}0"
+
+
 class DemoEtsy:
+    """Demo Etsy. Each shop slot is a separate fake shop with its own ids, so multi-shop logic can be exercised."""
     created: dict = {}
 
+    def __init__(self, slot=1):
+        self.slot = int(slot or 1)
+        self.off = 0 if self.slot == 1 else self.slot * 1_000_000
+        self.seed = "" if self.slot == 1 else f"s{self.slot}-"
+
     def me(self):
-        return {"user_id": 111, "shop_id": int(DEMO_SHOP_ID)}
+        return {"user_id": 111 + self.slot - 1, "shop_id": int(shop_id(self.slot))}
 
-    def get_shop(self, shop_id):
-        return {"shop_id": int(DEMO_SHOP_ID), "shop_name": "DemoPlansStudio", "currency_code": "USD",
-                "url": "https://www.etsy.com/shop/DemoPlansStudio", "title": "Modern house plans", "announcement": "Demo shop"}
+    def get_shop(self, shop_id_):
+        name = DEMO_SHOP_NAMES.get(self.slot, "DemoShop")
+        return {"shop_id": int(shop_id(self.slot)), "shop_name": name, "currency_code": "USD",
+                "url": f"https://www.etsy.com/shop/{name}", "title": "Modern house plans", "announcement": "Demo shop"}
 
-    def shop_listings(self, shop_id, state="active"):
+    def shop_listings(self, shop_id_, state="active"):
         out = []
-        for i in range(8):
-            r = _rng(f"l{i}")
+        for i in range(8 if self.slot == 1 else 4):
+            r = _rng(f"{self.seed}l{i}")
             w = _WORDS[i % len(_WORDS)]
-            out.append({"listing_id": 5000 + i, "title": f"{w.title()} House Plan {i + 1} Bedroom (PDF Download)",
-                        "state": "active", "price": _money(r.randint(1500, 4900)), "url": f"https://www.etsy.com/listing/{5000 + i}",
+            out.append({"listing_id": self.off + 5000 + i, "title": f"{w.title()} House Plan {i + 1} Bedroom (PDF Download)",
+                        "state": "active", "price": _money(r.randint(1500, 4900)), "url": f"https://www.etsy.com/listing/{self.off + 5000 + i}",
                         "views": r.randint(50, 900), "num_favorers": r.randint(2, 80),
                         "tags": [w, "house plan", "pdf"], "creation_timestamp": int(time.time()) - 86400 * (40 + i)})
-        out.extend(v for v in DemoEtsy.created.values())
+        out.extend(v for v in DemoEtsy.created.values() if v.get("_slot", 1) == self.slot)
         return out
 
     def find_active(self, keywords: str, limit: int = 100, offset: int = 0, sort_on: str = "score"):
@@ -59,6 +73,10 @@ class DemoEtsy:
         return {"count": count, "results": results}
 
     def get_listing(self, listing_id):
+        if int(listing_id) in DemoEtsy.created:
+            return DemoEtsy.created[int(listing_id)]
+        if 5000 <= int(listing_id) % 1_000_000 < 5100:
+            return {"listing_id": int(listing_id), "shop_id": int(shop_id(max(1, int(listing_id) // 1_000_000)))}
         r = _rng(listing_id)
         return {"listing_id": int(listing_id), "title": "Competitor Cabin Plan 2 Bedroom Loft PDF", "shop_id": 12345,
                 "tags": ["cabin plan", "loft", "small house", "pdf plan"], "price": _money(2999), "num_favorers": r.randint(5, 300),
@@ -67,9 +85,9 @@ class DemoEtsy:
     def taxonomy(self):
         return {"results": [{"id": 1, "name": "Craft Supplies & Tools", "children": [{"id": 6201, "name": "Patterns & How To"}]}]}
 
-    def create_draft(self, shop_id, fields):
-        lid = 9000 + len(DemoEtsy.created)
-        DemoEtsy.created[lid] = {"listing_id": lid, "title": fields.get("title"), "state": "draft",
+    def create_draft(self, shop_id_, fields):
+        lid = self.off + 9000 + len(DemoEtsy.created)
+        DemoEtsy.created[lid] = {"listing_id": lid, "_slot": self.slot, "shop_id": int(shop_id(self.slot)), "title": fields.get("title"), "state": "draft",
                                  "price": _money(int(round(float(fields.get("price", 0)) * 100))),
                                  "url": f"https://www.etsy.com/listing/{lid}", "views": 0, "num_favorers": 0}
         return DemoEtsy.created[lid]
@@ -92,17 +110,17 @@ class DemoEtsy:
         out = []
         base = _BASE
         for i in range(60):
-            r = _rng(f"r{i}")
-            n = r.choice([0, 1, 1, 1, 2])
+            r = _rng(f"{self.seed}r{i}")
+            n = r.choice([0, 1, 1, 1, 2]) if self.slot == 1 else r.choice([0, 0, 1, 1])
             for k in range(n):
                 cents = r.choice([1999, 2499, 2999, 3999, 4999])
-                lid = 5000 + r.randint(0, 7)
-                out.append({"receipt_id": 300000 + i * 10 + k, "created_timestamp": base + i * 86400 + k * 3600,
+                lid = self.off + 5000 + r.randint(0, 7 if self.slot == 1 else 3)
+                out.append({"receipt_id": self.off + 300000 + i * 10 + k, "created_timestamp": base + i * 86400 + k * 3600,
                             "status": "Completed", "is_paid": True, "country_iso": r.choice(["US", "CA", "GB", "AU"]),
                             "grandtotal": _money(cents), "subtotal": _money(cents), "total_shipping_cost": _money(0),
                             "total_tax_cost": _money(0), "discount_amt": _money(0),
                             "refunds": [{"amount": _money(cents)}] if r.random() < 0.03 else [],
-                            "transactions": [{"transaction_id": 800000 + i * 10 + k, "listing_id": lid, "title": f"Demo plan {lid}",
+                            "transactions": [{"transaction_id": self.off + 800000 + i * 10 + k, "listing_id": lid, "title": f"Demo plan {lid}",
                                               "quantity": 1, "price": _money(cents)}]})
         return out
 
@@ -131,9 +149,9 @@ class DemoEtsy:
                 amt = max(0, bal) // 2
                 if amt:
                     bal -= amt
-                    out.append({"entry_id": f"disb-{k}", "create_date": next_payout, "ledger_type": "Disbursement",
+                    out.append({"entry_id": f"{self.seed}disb-{k}", "create_date": next_payout, "ledger_type": "Disbursement",
                                 "description": "Deposit to bank", "amount": -amt, "balance": bal, "currency": "USD",
-                                "reference_id": f"payout-{k}"})
+                                "reference_id": f"{self.seed}payout-{k}"})
                     k += 1
                 next_payout += 7 * 86400
             if ev[1] is None:

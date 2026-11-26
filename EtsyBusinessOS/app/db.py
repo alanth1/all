@@ -84,6 +84,10 @@ def migrate():
         c.execute("UPDATE sqlite_master SET sql=? WHERE type='table' AND name='listings'", (new_sql,))
         c.execute("PRAGMA writable_schema=OFF")
         c.execute("PRAGMA integrity_check")
+    for table in ("listings", "receipts", "etsy_ledger_entries", "shops"):
+        cols = [r[1] for r in c.execute(f"PRAGMA table_info({table})").fetchall()]
+        if "slot" not in cols:
+            c.execute(f"ALTER TABLE {table} ADD COLUMN slot INTEGER NOT NULL DEFAULT 1")
     if not q1("SELECT 1 FROM schema_migrations WHERE version=?", (SCHEMA_VERSION,)):
         ex("INSERT INTO schema_migrations(version, applied_at) VALUES(?,?)", (SCHEMA_VERSION, now()))
     if not q1("SELECT 1 FROM users"):

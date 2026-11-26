@@ -48,3 +48,36 @@
 .room-holo.flick{animation:rhFlick .5s}
 @keyframes rhFlick{20%{opacity:.2}40%{opacity:.9}55%{opacity:.35}100%{opacity:.82}}
 #holodeck.on ~ * .room-holo,body.hd-open .room-holo{opacity:0;pointer-events:none}
+/* mode bar, NPC settings controls, approval hologram */
+.hd-sub2{margin-top:4px;font-size:12px;letter-spacing:.04em;color:#e8fdff;min-height:1em;max-width:min(900px,80vw)}
+.hd-sub2 b{color:var(--hc)}.hd-sub2.pulse{animation:subIn .5s}
+@keyframes subIn{from{opacity:0;filter:blur(3px)}}
+.hd-modes{grid-column:span 12;display:flex;gap:8px;flex-wrap:wrap}
+.hd-mode{background:transparent;border:1px solid color-mix(in srgb,var(--hc) 55%,transparent);color:#dff;font:inherit;font-size:12px;letter-spacing:.16em;padding:7px 14px;cursor:pointer;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.hd-mode.on,.hd-mode:hover{background:color-mix(in srgb,var(--hc) 28%,transparent);color:#fff;text-shadow:0 0 8px var(--hc)}
+.hs-field{margin:0 0 12px}.hs-label{font-size:10px;letter-spacing:.2em;opacity:.75;margin:6px 0 5px;color:var(--c)}
+.hs-info{font-size:13px;padding:6px 8px;border-left:2px solid var(--c);background:color-mix(in srgb,var(--c) 8%,transparent)}
+.hp input,.hp textarea,.hp select{background:rgba(2,10,20,.55);border:1px solid color-mix(in srgb,var(--c) 55%,transparent);color:#eafcff;font:inherit;font-size:13px;padding:7px 9px;min-width:0;flex:1;outline:none;box-shadow:inset 0 0 10px color-mix(in srgb,var(--c) 12%,transparent)}
+.hp textarea{width:100%;box-sizing:border-box;resize:vertical}
+.hp input:focus,.hp textarea:focus,.hp select:focus{border-color:var(--c);box-shadow:0 0 10px color-mix(in srgb,var(--c) 50%,transparent)}
+.hs-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.hp button{font:inherit}
+.hs-row button,.hs-btn,.hs-form button{background:color-mix(in srgb,var(--c) 18%,transparent);border:1px solid var(--c);color:#fff;font-size:12px;letter-spacing:.14em;padding:7px 12px;cursor:pointer}
+.hs-btn{display:block;width:100%;text-align:left;margin:4px 0}
+.hs-row button:hover,.hs-btn:hover,.hs-form button:hover{background:color-mix(in srgb,var(--c) 40%,transparent);box-shadow:0 0 12px var(--c)}
+.hs-btn:disabled{opacity:.4;cursor:wait}
+.hs-choice{display:flex;flex-wrap:wrap;gap:6px}
+.hs-choice button{background:transparent;border:1px solid color-mix(in srgb,var(--c) 50%,transparent);color:#cfefff;font-size:12px;padding:7px 11px;cursor:pointer;letter-spacing:.06em}
+.hs-choice button.on{background:color-mix(in srgb,var(--c) 32%,transparent);color:#fff;border-color:var(--c);box-shadow:0 0 12px color-mix(in srgb,var(--c) 60%,transparent)}
+.hs-choice button:disabled{opacity:.35;cursor:not-allowed}
+.hs-toggle{display:inline-flex;align-items:center;gap:10px;background:transparent;border:1px solid var(--c);color:#fff;font-size:12px;letter-spacing:.16em;padding:6px 12px;cursor:pointer}
+.hs-toggle i{width:34px;height:14px;border:1px solid var(--c);position:relative}.hs-toggle i::after{content:"";position:absolute;top:1px;left:1px;width:14px;height:10px;background:#556;transition:all .25s}
+.hs-toggle.on i::after{left:17px;background:var(--c);box-shadow:0 0 8px var(--c)}
+.hs-form{display:grid;gap:8px}.hs-form label{display:grid;gap:4px;font-size:10px;letter-spacing:.18em;opacity:.9}
+.hs-msg{font-size:13px}.hs-log{--c:#9fffcf}
+.hl-imgs{display:flex;gap:8px;overflow-x:auto;margin:10px 0}.hl-imgs img{height:110px;border:1px solid var(--c);box-shadow:0 0 10px color-mix(in srgb,var(--c) 40%,transparent);opacity:.92}
+.hl-acts{display:grid;gap:7px;margin:8px 0}
+.hl-a{display:block;text-align:center;text-decoration:none;padding:10px;border:1px solid var(--c);background:color-mix(in srgb,var(--c) 12%,transparent);color:#fff;font-size:13px;letter-spacing:.16em;cursor:pointer;clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px)}
+.hl-a.ok{--c:#7dffb5}.hl-a.rev{--c:#ffb13f}.hl-a.no{--c:#ff3fa4}.hl-a.live{--c:#3ff0ff;animation:blink 1.4s infinite}
+.hl-a:hover:not(:disabled){background:color-mix(in srgb,var(--c) 35%,transparent);box-shadow:0 0 16px var(--c)}
+.hl-a:disabled{opacity:.3;cursor:not-allowed}

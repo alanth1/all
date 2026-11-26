@@ -11,7 +11,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, quote
 
 from fastapi import FastAPI, Form, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse, RedirectResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, PlainTextResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -202,6 +202,103 @@ def api_holo_dashboard(days: int = 30):
     return holo.dashboard(max(1, min(days, 365)))
 
 
+@app.get("/api/holo/settings")
+def api_holo_settings():
+    from .. import holo
+    return holo.settings_state()
+
+
+@app.post("/api/holo/settings")
+async def api_holo_settings_set(request: Request):
+    from .. import holo
+    body = await request.json()
+    try:
+        return holo.apply_setting(str(body.get("id", "")), body.get("value"), body.get("extra") or {})
+    except Exception as e:  # noqa: BLE001
+        return JSONResponse({"error": str(e)}, status_code=400)
+
+
+@app.post("/api/holo/stats-import")
+async def api_holo_stats_import(request: Request):
+    form = await request.form()
+    f = form.get("file")
+    text = (await f.read()).decode("utf-8-sig", "replace") if f is not None and hasattr(f, "read") else ""
+    try:
+        r = analytics.import_shop_stats(text, form.get("kind", "daily"))
+        return {"msg": f"{r['rows']} baris Shop Stats diimpor."}
+    except Exception as e:  # noqa: BLE001
+        return JSONResponse({"error": str(e)}, status_code=400)
+
+
+@app.get("/api/holo/listings")
+def api_holo_listings():
+    from .. import holo
+    return {"items": holo.listing_queue()}
+
+
+@app.get("/api/holo/listing/{lid}")
+def api_holo_listing(lid: int):
+    from .. import holo
+    try:
+        return holo.listing_detail(lid)
+    except KeyError:
+        raise HTTPException(404)
+
+
+@app.post("/api/holo/listing/{lid}/{action}")
+async def api_holo_listing_action(lid: int, action: str, request: Request):
+    from .. import holo, shops
+    body = await request.json()
+    try:
+        if action == "decide":
+            d = str(body.get("decision", ""))
+            listings.decide(lid, d, str(body.get("note", ""))[:500], "human")
+            msg = {"approve": "Disetujui. Dikirim ke Etsy.", "reject": "Ditolak.", "request_revision": "Diminta revisi. JUNO-X9 akan menulis ulang."}[d]
+        elif action == "golive":
+            l = db.q1("SELECT * FROM listings WHERE id=?", (lid,))
+            appr = listings.valid_approval(lid)
+            if not l or l["state"] != "etsy_draft" or not appr:
+                raise ValueError("hanya draft Etsy yang sudah di-approve yang bisa dijadikan LIVE")
+            jid = jobs.enqueue("etsy_publish", {"listing_id": lid, "version_id": appr["version_id"], "target": "active"}, priority=1, actor="human")
+            audit("human", "listing.go_live", "listing", lid, {"job": jid})
+            msg = "Menjadikan LIVE di Etsy."
+        elif action == "slot":
+            l = db.q1("SELECT * FROM listings WHERE id=?", (lid,))
+            slot = shops.norm(body.get("slot"))
+            if not l or l["etsy_listing_id"] or l["state"] in ("publishing", "approved"):
+                raise ValueError("toko tidak bisa diganti setelah listing dikirim ke Etsy")
+            db.ex("UPDATE listings SET slot=?, updated_at=? WHERE id=?", (slot, now(), lid))
+            audit("human", "listing.set_shop", "listing", lid, {"slot": slot})
+            msg = f"Listing dipindah ke {shops.info(slot)['name']}."
+        elif action == "edit":
+            patch = {}
+            if "title" in body:
+                patch["title"] = " ".join(str(body["title"]).split())
+            if "description" in body:
+                patch["description"] = str(body["description"]).strip()
+            if "tags" in body:
+                patch["tags"] = [t.strip() for t in str(body["tags"]).replace("\n", ",").split(",") if t.strip()]
+            if "price_usd" in body:
+                patch["price_usd"] = float(body["price_usd"])
+            listings.edit(lid, patch, "human")
+            msg = "Disimpan sebagai versi baru. Perlu approve ulang."
+        else:
+            raise HTTPException(404)
+        return {"msg": msg, "listing": holo.listing_detail(lid)}
+    except HTTPException:
+        raise
+    except Exception as e:  # noqa: BLE001
+        return JSONResponse({"error": str(e)}, status_code=400)
+
+
+@app.get("/api/holo/asset/{aid}")
+def api_holo_asset(aid: int):
+    a = db.q1("SELECT path, kind FROM social_assets WHERE id=? AND missing=0", (aid,))
+    if not a or a["kind"] != "image" or not Path(a["path"]).is_file():
+        raise HTTPException(404)
+    return FileResponse(a["path"])
+
+
 @app.get("/api/world/showcase")
 def api_showcase():
     """Real business data per agent, used by the HQ view (boards, NPC reports, cards)."""
@@ -213,7 +310,9 @@ def api_showcase():
     def one(sql, *a):
         r = q(sql, *a)
         return (r[0] if r else {}) or {}
-    money = lambda c, cur="USD": f"{'$' if cur == 'USD' else cur + ' '}{(c or 0) / 100:,.2f}"
+    from .. import holo as _holo
+    _rate = _holo.idr_rate()[0]
+    money = lambda c, cur="USD": "Rp " + f"{int(round((c or 0) / 100 * _rate)):,}".replace(",", ".")
     shop = one("SELECT name, currency FROM shops LIMIT 1")
     cur = shop.get("currency") or "USD"
     listings = q("SELECT title, state, price_cents, views, num_favorers FROM listings ORDER BY views DESC LIMIT 6")
@@ -388,8 +487,9 @@ def listings_generate(product_id: int = Form(...), keyword: str = Form("")):
 
 @app.post("/etsy/sync")
 def etsy_sync_now():
-    jid = jobs.enqueue("etsy_sync", {}, priority=1, actor="human")
-    return back("/listings", f"Etsy sync queued (job #{jid})")
+    from .. import shops
+    ids = [jobs.enqueue("etsy_sync", {"slot": s}, priority=1, actor="human") for s in (shops.active_slots() or [1])]
+    return back("/listings", f"Etsy sync queued (job #{', #'.join(map(str, ids))})")
 
 
 # ---------------- products & assets ----------------
@@ -853,13 +953,14 @@ def connect(platform: str):
 @app.get("/oauth/{platform}/callback")
 def oauth_callback(platform: str, code: str = "", state: str = "", error: str = ""):
     if error or not code:
-        ibase.set_connection(platform, "error", error=error or "no code")
-        return back("/settings#connections", err=f"{platform} authorization cancelled or failed: {error}")
+        if platform != "etsy":
+            ibase.set_connection(platform, "error", error=error or "no code")
+        return back("/", err=f"Login {platform} dibatalkan atau gagal: {error}")
     try:
-        {"etsy": etsy_api.handle_callback, "pinterest": pin_api.handle_callback, "youtube": yt_api.handle_callback}[platform](code, state)
-        return back("/settings#connections", f"{platform.title()} connected")
+        r = {"etsy": etsy_api.handle_callback, "pinterest": pin_api.handle_callback, "youtube": yt_api.handle_callback}[platform](code, state)
+        return back("/", f"Etsy Toko {r} tersambung ✅" if platform == "etsy" else f"{platform.title()} tersambung ✅")
     except Exception as e:  # noqa: BLE001
-        return back("/settings#connections", err=str(e))
+        return back("/", err=str(e))
 
 
 @app.post("/disconnect/{platform}")

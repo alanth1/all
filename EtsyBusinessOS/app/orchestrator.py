@@ -38,9 +38,10 @@ def tick_frequent():
     s = db.settings()
     sch = s["schedules"]
     try:
-        live_etsy = s["mode"] == "demo" or db.q1("SELECT 1 FROM api_connections WHERE platform='etsy' AND status='connected'")
-        if live_etsy:
-            enqueue("etsy_sync", {}, idempotency_key=_minute_bucket("etsy_sync", sch["etsy_sync_minutes"]), priority=4)
+        from .shops import active_slots
+        for slot in active_slots():
+            key = _minute_bucket("etsy_sync", sch["etsy_sync_minutes"]) + ("" if slot == 1 else f":s{slot}")
+            enqueue("etsy_sync", {} if slot == 1 else {"slot": slot}, idempotency_key=key, priority=4)
         if s["assets"].get("folders"):
             enqueue("asset_scan", {}, idempotency_key=_minute_bucket("asset_scan", s["assets"]["scan_minutes"]), priority=6)
         enqueue("social_plan", {}, idempotency_key=_minute_bucket("social_plan", 60), priority=6)

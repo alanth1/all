@@ -86,9 +86,9 @@ const ROOMS = [
 const SEATS = { 'NYX-21': [0, 14], 'SABLE-6': [1, 15], 'KADE-12': [1, 28], 'JUNO-X9': [2, 14.5], 'VOLT-3': [2, 26.5], 'RAZE-11': [3, 14], 'ORIN-88': [3, 24.4], 'HEX-04': [3, 31], 'KAI-07': [4, 16], 'ZERO-1': [5, 24.2] };
 const SEAT_Z = 2.25, LANE = 3.7, WALK_OUT = 7.6;
 const SPOTS = { smoke1: [0, -9.6, 7.8, 'smoke'], smoke2: [2, 33.1, 4.9, 'smoke'], smoke3: [3, 4.2, 4.6, 'smoke'], couch: [0, 24.6, 2.4, 'rest'], coffee: [0, 23.5, 2.6, 'snack'], vend: [0, 31.7, 2.6, 'snack'], arcade: [0, 28.7, 2.6, 'game'], arcade2: [0, 30.1, 2.6, 'game'], dance: [0, 26.8, 4.4, 'dance'],
-  ramen: [0, -4.6, 7.2, 'ramen'], ramen2: [0, -3.2, 7.2, 'ramen'], metro: [0, -13, 7.6, 'look'], balcony: [2, 33, 4.6, 'look'], pad: [3, 4.5, 3.5, 'look'], window: [4, 29.5, 1.6, 'look'] };
+  ramen: [0, 5, 7.2, 'ramen'], ramen2: [0, 6.4, 7.2, 'ramen'], metro: [0, -13, 7.6, 'look'], balcony: [2, 33, 4.6, 'look'], pad: [3, 4.5, 3.5, 'look'], window: [4, 29.5, 1.6, 'look'] };
 const MEET = { f: 4, c: [24, 2.4], pts: [[22.5, 2.4], [25.5, 2.4], [24, 3.9], [22.9, 3.5], [25.1, 3.5], [22.9, 1.3], [25.1, 1.3]] };
-const LUNCH = { f: 0, c: [-4, 6], pts: [[-6.2, 7.2], [-5, 7.2], [-3.8, 7.2], [-2.6, 7.2], [-1.4, 7.2], [-6, 8.3], [-3.2, 8.3], [-1.8, 8.3]] };
+const LUNCH = { f: 0, c: [5.6, 6], pts: [[3.4, 7.2], [4.6, 7.2], [5.8, 7.2], [7, 7.2], [8.2, 7.2], [3.6, 8.3], [6.4, 8.3], [7.8, 8.3]] };
 const BOARD = { f: 2, c: [12, .6], pts: [[11, 2.2], [12.3, 2.4], [13.5, 2.2], [11.6, 3.4], [13, 3.4]] };
 
 // ====================================================================== lights
@@ -322,16 +322,16 @@ const Core = (() => { const g = new THREE.Group(); g.position.set(21, FH * 5 + 3
     rbox(.5, 4.2, .5, .06, M(0x1a1f2c), 3.4, 0, 1.4, mg); plane(.4, 1.6, new THREE.MeshBasicMaterial({ color: new THREE.Color(C.cyan).multiplyScalar(1.8), toneMapped: false }), 3.4, 3.2, 1.66, 0, mg); neonSign('M', C.mag, 3.4, 3.9, 1.7, .5); pLight(C.cyan, 6, 6, 0, 1.4, 0, mg); }
   neonSign('METRO', C.cyan, -13, 3.6, 8.5, .5);
   // ramen stall: tiled roof, noren curtains, counter with stools, pots, bowls, menu board, lanterns
-  { const rg = new THREE.Group(); rg.position.set(-4, 0, 6.2); CUR.add(rg); const wood = M(0x6b4a2a, { roughness: .8 }), dw = M(0x3a2618, { roughness: .9 });
+  { const rg = new THREE.Group(); rg.position.set(5.6, 0, 6.2); CUR.add(rg); const wood = M(0x6b4a2a, { roughness: .8 }), dw = M(0x3a2618, { roughness: .9 });
     for (let k = 0; k < 8; k++) { const t = box(6.6, .08, .4, M(k % 2 ? 0x4a1a24 : 0x5a1f2c), 0, 2.85 + k * .07, -1.2 + k * .34, rg); t.rotation.x = -.2; } box(6.8, .1, .1, M(0x2a0e14), 0, 2.86, 1.6, rg);
     for (const x of [-3.1, 3.1]) for (const z of [-1.1, 1.3]) box(.14, 2.9, .14, dw, x, 0, z, rg);
     for (let k = 0; k < 9; k++) { const n = box(.62, 1, .02, M(k % 2 ? 0x1a2a4a : 0x24365c, { side: THREE.DoubleSide }), -2.6 + k * .65, 1.9, 1.35, rg); n.rotation.x = Math.sin(k) * .05; } neonSign('ラーメン', C.amber, 0, 2.45, 1.42, .4);
     rbox(5.8, .95, .7, .04, wood, 0, 0, .55, rg); rbox(6, .08, .9, .03, M(0x8a6a4a, { roughness: .5 }), 0, .95, .55, rg); box(5.8, .02, .02, E(0xffb066, 1.6), 0, .9, .91, rg);
     for (let k = 0; k < 5; k++) { const st = new THREE.Mesh(new THREE.CylinderGeometry(.18, .18, .08, 12), M(0xb3203f)); st.position.set(-2.2 + k * 1.1, .7, 1.35); rg.add(st); box(.05, .68, .05, mats.dark, -2.2 + k * 1.1, 0, 1.35, rg); const bw = new THREE.Mesh(new THREE.SphereGeometry(.12, 12, 6, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), M(0xf0e8e0, { side: THREE.DoubleSide })); bw.position.set(-2.2 + k * 1.1, 1.1, .7); rg.add(bw); box(.01, .01, .2, M(0x3a2618), -2.15 + k * 1.1, 1.12, .7, rg); }
-    for (const x of [-1.5, -.6]) { const pot = new THREE.Mesh(new THREE.CylinderGeometry(.3, .26, .4, 14), M(0x8a94a8, { metalness: .85, roughness: .25 })); pot.position.set(x, 1.2, -.3); rg.add(pot); steam(x - 4, 1.5, 5.9); }
+    for (const x of [-1.5, -.6]) { const pot = new THREE.Mesh(new THREE.CylinderGeometry(.3, .26, .4, 14), M(0x8a94a8, { metalness: .85, roughness: .25 })); pot.position.set(x, 1.2, -.3); rg.add(pot); steam(x + 5.6, 1.5, 5.9); }
     rbox(1.6, .9, .06, .02, M(0x1a1410), 1.6, 1.9, -1, rg); for (let k = 0; k < 4; k++) box(1.2, .06, .01, E(0xffcf73, 1.4), 1.6, 2.05 + k * .17, -.96, rg);
     for (const x of [-2.9, 2.9]) { const l = new THREE.Mesh(new THREE.CapsuleGeometry(.2, .25, 4, 12), E(0xff5a4a, 2.2)); l.position.set(x, 2.3, 1.5); rg.add(l); for (const dy of [-.22, .22]) box(.42, .03, .42, M(0x2a0e14), x, 2.3 + dy, 1.5, rg); } pLight(0xff7a50, 14, 9, 0, 2.2, 1.2, rg); }
-  vending(1.8, 0, 6.6, C.cyan); vending(2.8, 0, 6.6, C.mag);
+  vending(.6, 0, 6.6, C.cyan); vending(1.5, 0, 6.6, C.mag);
   // street lamps + hologram cones
   for (const x of [-9, 5, 26]) { const pc = new THREE.CatmullRomCurve3([new THREE.Vector3(x, 0, 8.3), new THREE.Vector3(x, 4.6, 8.3), new THREE.Vector3(x + .3, 5.4, 8.3), new THREE.Vector3(x + 1.2, 5.55, 8.3)]); CUR.add(new THREE.Mesh(new THREE.TubeGeometry(pc, 20, .08, 8), mats.frame)); const base = new THREE.Mesh(new THREE.CylinderGeometry(.22, .28, .5, 10), mats.frame); base.position.set(x, .25, 8.3); CUR.add(base); const hd = new THREE.Mesh(new THREE.CylinderGeometry(.18, .42, .25, 14), mats.dark); hd.position.set(x + 1.25, 5.45, 8.3); CUR.add(hd); box(.6, .04, .3, E(0xe8f0ff, 2.5), x + 1.25, 5.3, 8.3); pLight(0xd0dcff, 18, 12, x + 1, 5, 8.6);
     const cn = new THREE.Mesh(new THREE.ConeGeometry(2.2, 5.2, 16, 1, true), new THREE.MeshBasicMaterial({ color: 0xbfd0ff, transparent: true, opacity: .022, depthWrite: false, side: THREE.DoubleSide })); cn.position.set(x + 1, 2.7, 8.5); CUR.add(cn); }
@@ -1039,16 +1039,16 @@ async function loadShow() { try { const d = await (await fetch('/api/world/showc
   if (pn > lastPending) { Holo.show('APPROVAL DIBUTUHKAN', `${pn} listing menunggu keputusan owner. Klik badge di atas atau ruang QA BAY.`, npcs['KAI-07'], '#ff3fa4'); toast(`📝 ${pn} listing menunggu approval — klik ruang QA BAY`); Sound.chime(); const k = npcs['KAI-07']; if (k) { k.say(`Owner, ada ${pn} listing nunggu approval!`, 7000, 'alert'); NPCVoice.speak(k, `Owner, ada ${pn} listing menunggu persetujuan.`); k.pop('📝'); } }
   lastPending = pn; approvalBadge.style.display = pn ? '' : 'none'; approvalBadge.textContent = `📝 ${pn} menunggu approval`; } catch (e) {} }
 const approvalBadge = el('approval-badge', ''); approvalBadge.style.cssText = 'position:fixed;left:50%;top:14px;transform:translateX(-50%);display:none;cursor:pointer;z-index:20;padding:8px 14px;border:1px solid #ff3fa4;background:rgba(10,14,22,.9);color:#ffd0e8;font:14px monospace;box-shadow:0 0 14px #ff3fa4;animation:blink 1.2s infinite;pointer-events:auto';
-approvalBadge.onclick = () => { if (window.HoloDash) return window.HoloDash.open('QA BAY'); const r = ROOMS.find(q => q.name === 'COMMAND DECK'); openRoom(r); const b = [...document.querySelectorAll('.ptabs button')].find(x => x.textContent === 'Approval'); b && b.click(); };
+approvalBadge.onclick = () => { if (window.HoloDash) return window.HoloDash.open('QA BAY', 'approval'); const r = ROOMS.find(q => q.name === 'COMMAND DECK'); openRoom(r); const b = [...document.querySelectorAll('.ptabs button')].find(x => x.textContent === 'Approval'); b && b.click(); };
 loadShow(); setInterval(loadShow, 20000);
 poll(); setInterval(poll, 3000); setInterval(() => { Object.values(npcs).forEach(n => n.life()); Phase.tick(); }, 1000);
 for (let i = 0; i < 6; i++) spawnCar(i % 2);
 const perf = { frames: 0, t0: performance.now(), level: Q.has('lq') ? 2 : 0, fps: 0 }; const tn2 = () => performance.now(); window.tower && (window.tower.perf = perf);
 if (Q.has('lq')) { setTimeout(() => { bloom.enabled = false; renderer.setPixelRatio(.8); resize(); }, 0); }
 const RAIN_VIS = v => { scene.children.forEach(c => { if (c.isLineSegments) c.visible = v; }); };
-const clock = new THREE.Clock(); let ft = 0;
+const clock = new THREE.Clock(); let ft = 0; const FRAME_HOOKS = [];
 renderer.setAnimationLoop(() => {
-  const dt = Math.min(.1, clock.getDelta()), t = now() / 1000; ft += dt; window.__dt = dt;
+  const dt = Math.min(.1, clock.getDelta()), t = now() / 1000; ft += dt; window.__dt = dt; for (const h of FRAME_HOOKS) { try { h(dt, t); } catch (e) { console.warn(e); } }
   if (ft > .12) { ft = 0; for (const s of anim.screens) { if (s.type === 'leds') { const c = s.t.userData.c.getContext('2d'); c.fillStyle = '#10141f'; c.fillRect(0, 0, 16, 64); for (let y = 2; y < 64; y += 4) { c.fillStyle = '#1c2232'; c.fillRect(1, y, 14, 3); for (let k = 0; k < 3; k++) if (Math.random() > .25 + (1 - cpuLoad) * .3) { c.fillStyle = pick(['#3ff0ff', '#9fffcf', '#ff3fa4', '#ffcf73']); c.fillRect(2 + k * 4, y + 1, 2, 1); } } s.t.needsUpdate = true; } else if (Math.random() < .6) drawScreen(s, t); } }
   // camera ease
   const dist = fitDist() / camState.zoom; camState.dist += (dist - camState.dist) * Math.min(1, dt * 5); camState.cur.lerp(new THREE.Vector3(camState.tx, camState.ty, camState.tz), Math.min(1, dt * 5));
@@ -1099,4 +1099,4 @@ renderer.setAnimationLoop(() => {
   Holo.place();
   for (const l of labels) { const [x, y] = project(l.v); l.d.style.transform = `translate(${x}px, ${y}px) translate(-50%,-100%) scale(${k * .9})`; }
 });
-Object.assign(window.tower, { Holo, Focus, MK, Core, NPCVoice, Sound, ROOMS, FL, FH, D, project, SEATS });
+Object.assign(window.tower, { Holo, Focus, MK, Core, NPCVoice, Sound, ROOMS, FL, FH, D, project, SEATS, scene, renderer, FRAME_HOOKS, puff, shock, sparks, toast, outline, get lastInteract() { return lastInteract; } });

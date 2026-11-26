@@ -190,8 +190,9 @@ def job_generate(payload, job):
         content["price_usd"] = 0
     listing_id = payload.get("listing_id")
     if not listing_id:
-        listing_id = db.ex("INSERT INTO listings(product_id, state, created_at, updated_at) VALUES(?,?,?,?)",
-                           (product_id, "draft", now(), now()))
+        from ..shops import norm
+        listing_id = db.ex("INSERT INTO listings(product_id, slot, state, created_at, updated_at) VALUES(?,?,?,?,?)",
+                           (product_id, norm(payload.get("slot", 1)), "draft", now(), now()))
     vid = save_version(listing_id, content, f"ai:{meta['model']}")
     audit("ai:JUNO-X9", "listing.generate", "listing", listing_id, {"version_id": vid, "model": meta["model"], "demo": meta["demo"]})
     cur = current(listing_id)
@@ -229,9 +230,17 @@ def job_publish(payload, job):
     cur = current(listing_id)
     c = cur["content"]
     l = cur["listing"]
-    client = providers.etsy()
-    shop = providers.etsy_shop_id()
+    from ..shops import publish_target
+    slot = l["slot"] or 1
+    client = providers.etsy(slot)
+    shop = providers.etsy_shop_id(slot)
     d = db.settings()["listing_defaults"]
+    if l["etsy_listing_id"]:
+        # safety: the Etsy listing must belong to this shop, otherwise never touch it
+        owner = str((client.get_listing(l["etsy_listing_id"]) or {}).get("shop_id") or "")
+        if owner and owner != str(shop):
+            audit("system", "etsy.shop_mismatch", "listing", listing_id, {"slot": slot, "expected": shop, "found": owner}, outcome="denied")
+            raise Fatal(f"listing ini milik toko Etsy lain ({owner}), bukan Toko {slot} - publish dibatalkan")
     db.ex("UPDATE listings SET state='publishing', updated_at=? WHERE id=?", (now(), listing_id))
     etsy_id = l["etsy_listing_id"]
     if not etsy_id:
@@ -268,13 +277,13 @@ def job_publish(payload, job):
     if l["etsy_listing_id"]:
         client.update_listing(shop, etsy_id, {"title": c["title"], "description": c["description"], "tags": ",".join(c["tags"]),
                                               "price": f"{float(c['price_usd']):.2f}"})
-    target = payload.get("target") or d.get("publish_target", "draft")
+    target = payload.get("target") or publish_target(slot)
     if target == "draft":
         url = f"https://www.etsy.com/your/shops/me/listing-editor/edit/{etsy_id}"
         db.ex("UPDATE listings SET state='etsy_draft', url=?, updated_at=?, last_error=NULL WHERE id=?", (url, now(), listing_id))
         audit("system", "etsy.draft_ready", "listing", listing_id, {"etsy_listing_id": etsy_id, "approval_id": appr["id"]})
         notify("success", "Draft created on Etsy (not live)", c["title"], url)
-        return {"_state": "DONE", "etsy_listing_id": etsy_id, "url": url, "target": "draft"}
+        return {"_state": "DONE", "etsy_listing_id": etsy_id, "url": url, "target": "draft", "slot": slot}
     client.update_listing(shop, etsy_id, {"state": "active"})
     # verification
     live = [x for x in client.shop_listings(shop, "active") if str(x["listing_id"]) == etsy_id]

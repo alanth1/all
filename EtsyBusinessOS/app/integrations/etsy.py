@@ -14,7 +14,7 @@ from .. import config, db, vault
 from ..audit import audit
 from ..jobs import Fatal
 from ..util import now
-from .base import ApiError, RateLimiter, new_oauth_state, pkce_pair, pop_oauth_state, raise_for, set_connection
+from .base import ApiError, RateLimiter, connection, new_oauth_state, pkce_pair, pop_oauth_state, raise_for, set_connection
 
 log = logging.getLogger("ebos.etsy")
 API = "https://openapi.etsy.com/v3/application"
@@ -24,23 +24,27 @@ REDIRECT = f"{config.BASE_URL}/oauth/etsy/callback"
 _limiter = RateLimiter(5)
 
 
-def app_keys() -> dict:
-    return vault.get("etsy_app", {}) or {}
+def app_keys(slot=1) -> dict:
+    from ..shops import app_key_name
+    own = vault.get(app_key_name(slot), {}) or {}
+    return own if own.get("keystring") else (vault.get("etsy_app", {}) or {})
 
 
-def api_key_header() -> str:
-    k = app_keys()
+def api_key_header(slot=1) -> str:
+    k = app_keys(slot)
     if not k.get("keystring"):
         raise Fatal("Etsy API key is not set (Settings > Connections > Etsy)")
     return f"{k['keystring']}:{k['shared_secret']}" if k.get("shared_secret") else k["keystring"]
 
 
-def authorize_url() -> str:
-    k = app_keys()
+def authorize_url(slot=1) -> str:
+    from ..shops import norm
+    slot = norm(slot)
+    k = app_keys(slot)
     if not k.get("keystring"):
-        raise ValueError("Save your Etsy keystring first")
+        raise ValueError("Isi Etsy keystring dulu (KAI-07 > Toko)")
     verifier, challenge = pkce_pair()
-    state = new_oauth_state("etsy", verifier=verifier)
+    state = new_oauth_state("etsy", verifier=verifier, slot=slot)
     params = {"response_type": "code", "client_id": k["keystring"], "redirect_uri": REDIRECT,
               "scope": db.settings()["etsy"]["scopes"], "state": state, "code_challenge": challenge,
               "code_challenge_method": "S256"}
@@ -48,60 +52,78 @@ def authorize_url() -> str:
 
 
 def handle_callback(code: str, state: str):
+    from ..shops import SLOTS, norm, platform, token_key
     d = pop_oauth_state(state, "etsy")
-    k = app_keys()
+    slot = norm(d.get("slot", 1))
+    k = app_keys(slot)
     r = requests.post(TOKEN_URL, data={"grant_type": "authorization_code", "client_id": k["keystring"],
                                        "redirect_uri": REDIRECT, "code": code, "code_verifier": d["verifier"]},
-                      headers={"x-api-key": api_key_header()}, timeout=30)
+                      headers={"x-api-key": api_key_header(slot)}, timeout=30)
     if r.status_code >= 400:
-        set_connection("etsy", "error", error=r.text[:500])
+        set_connection(platform(slot), "error", error=r.text[:500])
         raise ValueError(f"Etsy token exchange failed: {r.text[:300]}")
-    _store_token(r.json())
-    c = EtsyClient()
+    tok = r.json()
+    c = EtsyClient(slot, token=tok)
     me = c.me()
+    sid = str(me.get("shop_id") or "")
+    # never let one Etsy shop be bound to two slots (that is how listings would end up in the wrong shop)
+    for other in SLOTS:
+        if other != slot and sid and connection(platform(other)).get("account_id") == sid and vault.get(token_key(other)):
+            set_connection(platform(slot), "error", error="this Etsy shop is already connected as another shop slot")
+            raise ValueError(f"Toko Etsy ini sudah tersambung sebagai Toko {other}. Login dengan akun Etsy yang lain.")
+    _store_token(tok, slot)
     shop = c.get_shop(me["shop_id"]) if me.get("shop_id") else {}
-    set_connection("etsy", "connected", account_name=shop.get("shop_name"), account_id=str(me.get("shop_id") or ""),
+    set_connection(platform(slot), "connected", account_name=shop.get("shop_name"), account_id=sid,
                    scopes=db.settings()["etsy"]["scopes"])
-    audit("human", "etsy.connect", "shop", me.get("shop_id"))
+    audit("human", "etsy.connect", "shop", me.get("shop_id"), {"slot": slot})
+    return slot
 
 
-def _store_token(tok: dict):
+def _store_token(tok: dict, slot=1):
+    from ..shops import token_key
     tok["expires_at"] = time.time() + int(tok.get("expires_in", 3600)) - 60
-    vault.put("etsy_token", tok)
+    vault.put(token_key(slot), tok)
 
 
 class EtsyClient:
     """Live client. All requests are rate-limited, 429/5xx become RetryLater, 401 triggers one refresh."""
 
-    def __init__(self):
+    def __init__(self, slot=1, token: dict | None = None):
+        from ..shops import norm, platform, token_key
         s = db.settings()["etsy"]
         _limiter.interval = 1.0 / max(float(s.get("rate_per_second", 5)), 0.5)
+        self.slot = norm(slot)
+        self.platform = platform(self.slot)
+        self.token_key = token_key(self.slot)
+        self._tmp_token = token
 
     # ---- auth ----
     def _token(self) -> str:
-        tok = vault.get("etsy_token")
+        if self._tmp_token:
+            return self._tmp_token["access_token"]
+        tok = vault.get(self.token_key)
         if not tok:
-            raise Fatal("Etsy is not connected (Settings > Connections > Connect Etsy)")
+            raise Fatal(f"Toko {self.slot} belum tersambung ke Etsy (KAI-07 > Toko > Sambungkan)")
         if time.time() > tok.get("expires_at", 0):
             tok = self.refresh()
         return tok["access_token"]
 
     def refresh(self) -> dict:
-        tok = vault.get("etsy_token") or {}
-        k = app_keys()
+        tok = vault.get(self.token_key) or {}
+        k = app_keys(self.slot)
         r = requests.post(TOKEN_URL, data={"grant_type": "refresh_token", "client_id": k.get("keystring", ""),
                                            "refresh_token": tok.get("refresh_token", "")},
-                          headers={"x-api-key": api_key_header()}, timeout=30)
+                          headers={"x-api-key": api_key_header(self.slot)}, timeout=30)
         if r.status_code >= 400:
-            set_connection("etsy", "expired", error="refresh failed: " + r.text[:300])
-            raise Fatal("Etsy authorization expired - reconnect Etsy in Settings")
+            set_connection(self.platform, "expired", error="refresh failed: " + r.text[:300])
+            raise Fatal(f"Login Etsy Toko {self.slot} kedaluwarsa - sambungkan ulang lewat KAI-07")
         new = r.json()
-        _store_token(new)
-        return vault.get("etsy_token")
+        _store_token(new, self.slot)
+        return vault.get(self.token_key)
 
     def _req(self, method: str, path: str, *, auth: bool = True, params=None, data=None, files=None, _retry=True):
         _limiter.wait()
-        headers = {"x-api-key": api_key_header()}
+        headers = {"x-api-key": api_key_header(self.slot)}
         if auth:
             headers["Authorization"] = f"Bearer {self._token()}"
         try:
@@ -113,7 +135,8 @@ class EtsyClient:
             self.refresh()
             return self._req(method, path, auth=auth, params=params, data=data, files=files, _retry=False)
         raise_for(r)
-        set_connection("etsy", "connected")
+        if auth and not self._tmp_token:
+            set_connection(self.platform, "connected")
         return r.json() if r.content else {}
 
     def _paged(self, path: str, params: dict, auth=True, max_items=2000):
@@ -181,17 +204,17 @@ class EtsyClient:
                                 {"min_created": min_created, "max_created": max_created}))
 
 
-def shop_id() -> str:
-    from .base import connection
-    sid = connection("etsy").get("account_id")
+def shop_id(slot=1) -> str:
+    from ..shops import platform
+    sid = connection(platform(slot)).get("account_id")
     if not sid:
-        raise Fatal("Etsy shop is not connected")
+        raise Fatal(f"Toko {slot} belum tersambung ke Etsy")
     return sid
 
 
-def test_connection() -> dict:
+def test_connection(slot=1) -> dict:
     try:
-        c = EtsyClient()
+        c = EtsyClient(slot)
         me = c.me()
         return {"ok": True, "detail": f"user {me.get('user_id')} shop {me.get('shop_id')}"}
     except (Fatal, ApiError, Exception) as e:  # noqa: BLE001

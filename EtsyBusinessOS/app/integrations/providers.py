@@ -9,18 +9,27 @@ def is_demo() -> bool:
     return db.settings()["mode"] == "demo"
 
 
-def etsy():
+def etsy(slot=1):
     if is_demo():
-        return demo.DemoEtsy()
+        return demo.DemoEtsy(slot)
     from .etsy import EtsyClient
-    return EtsyClient()
+    return EtsyClient(slot)
 
 
-def etsy_shop_id() -> str:
+def etsy_any():
+    """Client for public read-only calls (research): any connected shop works."""
     if is_demo():
-        return demo.DEMO_SHOP_ID
+        return demo.DemoEtsy(1)
+    from ..shops import active_slots
+    sl = active_slots()
+    return etsy(sl[0] if sl else 1)
+
+
+def etsy_shop_id(slot=1) -> str:
+    if is_demo():
+        return demo.shop_id(slot)
     from .etsy import shop_id
-    return shop_id()
+    return shop_id(slot)
 
 
 def pinterest():

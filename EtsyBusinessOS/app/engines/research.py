@@ -117,7 +117,7 @@ def _demo_interp(stats: dict) -> dict:
 def job_keyword(payload, job):
     query = payload["keyword"].strip()
     src = require_permission("Etsy API: findAllListingsActive")
-    client = providers.etsy()
+    client = providers.etsy_any()
     pages = int(payload.get("pages", 2))
     listings, total = [], 0
     for p in range(pages):
@@ -206,7 +206,7 @@ def job_competitor(payload, job):
         raise Fatal("could not find an Etsy listing ID in the URL - use manual-assisted research")
     src = require_permission("Etsy API: getListing")
     lid = m.group(1)
-    x = providers.etsy().get_listing(lid)
+    x = providers.etsy_any().get_listing(lid)
     rj = db.ex("INSERT INTO research_jobs(kind, query, job_id, status, created_at) VALUES('competitor',?,?,'collected',?)", (url, job["id"], now()))
     db.ex("INSERT INTO competitor_references(etsy_listing_id, url, title, price_cents, currency, tags, num_favorers, views, shop_id, method, source, research_job_id, captured_at) "
           "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
