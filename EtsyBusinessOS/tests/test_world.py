@@ -55,3 +55,12 @@ def test_world_page_and_assets(env):
             name, a = next(iter(assets["npc"].items()))
             assert len(a["rot"]) == 8
             assert c.get(a["rot"]["south"]).status_code == 200
+
+
+def test_tts_endpoint_reports_status(env):
+    from fastapi.testclient import TestClient
+    from app.web.server import app
+    with TestClient(app) as c:
+        st = c.get("/api/tts/status").json()
+        assert st["voice"] == "id_ID-news_tts-medium" and "model_ready" in st
+        assert c.get("/static/sfx/roar.ogg").status_code == 200

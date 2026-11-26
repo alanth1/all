@@ -493,13 +493,18 @@ function makeBody(meta, seed) {
 // ====================================================================== sound (synth, no files)
 const Sound = (() => {
   let ctx = null, master = null, on = !Q.has('mute');
-  const unlock = () => { if (ctx || !on) return; ctx = new (window.AudioContext || window.webkitAudioContext)(); master = ctx.createGain(); master.gain.value = .35; master.connect(ctx.destination); ambient(); };
+  const SM = {}, NAMES = ['roar', 'step', 'explosion', 'explosion2', 'explosion_big', 'laser_cannon', 'rain_loop', 'thunder', 'engine', 'traffic_loop', 'thrust', 'shoot_01', 'shoot_02', 'retro_laser_01', 'teleport_01', 'teleport_02', 'loop_ambient_weird', 'loop_machine_01', 'terminal_01', 'terminal_03', 'beep_01', 'beep_02', 'metal_hit', 'metal_hit2', 'slam', 'servo', 'whoosh'];
+  const loadAll = () => NAMES.forEach(n => fetch(`/static/sfx/${n}.ogg`).then(r => r.arrayBuffer()).then(b => ctx.decodeAudioData(b)).then(buf => { SM[n] = buf; if (n === 'rain_loop' || n === 'traffic_loop') bed(n); }).catch(() => {}));
+  function sample(n, vol = .7, rate = 1, loop = false, lp = 0) { if (!ctx || !SM[n]) return null; const src = ctx.createBufferSource(); src.buffer = SM[n]; src.playbackRate.value = rate * (loop ? 1 : (.94 + Math.random() * .12)); src.loop = loop;
+    const gg = ctx.createGain(); gg.gain.value = vol; let node = src; if (lp) { const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = lp; node.connect(f); node = f; } node.connect(gg); gg.connect(master); src.start(); src.gain = gg; return src; }
+  function bed(n) { const v = n === 'rain_loop' ? .32 : .1; sample(n, v, 1, true, n === 'traffic_loop' ? 1800 : 0); }
+  const unlock = () => { if (ctx || !on) return; ctx = new (window.AudioContext || window.webkitAudioContext)(); master = ctx.createGain(); master.gain.value = .35; master.connect(ctx.destination); ambient(); loadAll(); };
   function noise(sec) { const b = ctx.createBuffer(1, ctx.sampleRate * sec, ctx.sampleRate), d = b.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; const s = ctx.createBufferSource(); s.buffer = b; return s; }
-  function ambient() { const gg = ctx.createGain(); gg.gain.value = .05; const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 380; f.connect(gg); gg.connect(master); for (const fr of [55, 55.4, 82.5]) { const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = fr; o.connect(f); o.start(); }
+  function ambient() { const gg = ctx.createGain(); gg.gain.value = .025; const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 380; f.connect(gg); gg.connect(master); for (const fr of [55, 55.4, 82.5]) { const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = fr; o.connect(f); o.start(); }
     const n = noise(4), ng = ctx.createGain(), nf = ctx.createBiquadFilter(); nf.type = 'bandpass'; nf.frequency.value = 3200; nf.Q.value = .4; ng.gain.value = .05; n.connect(nf); nf.connect(ng); ng.connect(master); n.loop = true; n.start(); }
   function tone(freq, dur, type = 'square', vol = .12, slide = 0) { if (!ctx) return; const o = ctx.createOscillator(), gg = ctx.createGain(), t = ctx.currentTime; o.type = type; o.frequency.setValueAtTime(freq, t); if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(20, freq * slide), t + dur); gg.gain.setValueAtTime(vol, t); gg.gain.exponentialRampToValueAtTime(.0001, t + dur); o.connect(gg); gg.connect(master); o.start(t); o.stop(t + dur); }
   function burst(dur, vol, lp = 800, type = 'lowpass') { if (!ctx) return; const n = noise(dur), gg = ctx.createGain(), f = ctx.createBiquadFilter(), t = ctx.currentTime; f.type = type; f.frequency.value = lp; gg.gain.setValueAtTime(vol, t); gg.gain.exponentialRampToValueAtTime(.0001, t + dur); n.connect(f); f.connect(gg); gg.connect(master); n.start(); }
-  return { unlock, toggle() { on = !on; if (!on && ctx) { ctx.close(); ctx = null; } else unlock(); toast(on ? '🔊 Suara ON' : '🔇 Suara OFF'); },
+  return { sample, has: n => !!SM[n], get ctx() { return ctx; }, get out() { return master; }, unlock, toggle() { on = !on; if (!on && ctx) { ctx.close(); ctx = null; } else unlock(); toast(on ? '🔊 Suara ON' : '🔇 Suara OFF'); },
     blip: () => tone(rnd(700, 1100), .06, 'square', .04), type: () => tone(rnd(1800, 2600), .012, 'square', .015), chime: () => { tone(880, .25, 'triangle', .1); setTimeout(() => tone(1320, .35, 'triangle', .08), 110); },
     error: () => tone(140, .4, 'sawtooth', .12, .6), ding: () => { tone(1568, .4, 'sine', .07); setTimeout(() => tone(1175, .5, 'sine', .05), 150); }, zap: () => { tone(2400, .12, 'sawtooth', .06, .1); burst(.15, .08, 4000); },
     roar: () => { tone(90, 2.2, 'sawtooth', .2, .5); burst(2, .25, 500); }, boom: () => { tone(60, 1.2, 'sine', .35, .3); burst(1.2, .4, 300); }, step: () => { tone(45, .4, 'sine', .25, .5); burst(.3, .15, 200); },
@@ -516,6 +521,16 @@ const Sound = (() => {
     power: () => tone(320, 1.2, 'sawtooth', .12, .15), party: () => [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => tone(f, .2, 'square', .05), i * 90)) };
 })();
 
+// recorded CC0 samples take over from the synth versions when loaded
+{ const syn = { ...Sound }, S = (n, v, r, lp) => Sound.sample(n, v, r, false, lp);
+  const map = { roar: () => S('roar', .9, .85) && S('explosion2', .25, .5), step: () => S('step', 1, .55, 900) && S('slam', .35, .6, 600), boom: () => S(pick(['explosion', 'explosion2']), .7),
+    crash: () => S('explosion_big', .9) && S('metal_hit2', .5, .8), laser: () => S(pick(['shoot_01', 'shoot_02', 'laser_cannon']), .55), thunder: () => S('thunder', .8, .9),
+    car: () => S('engine', .12, rnd(.8, 1.2), 1400), vtol: () => S('thrust', .6, .7), whoosh: () => S('whoosh', .6), zap: () => S(pick(['teleport_01', 'teleport_02']), .35),
+    mecha: () => S('servo', .7, .7) && S('metal_hit', .5, .8), transform: () => { S('servo', .8, .6); setTimeout(() => S('metal_hit', .7), 250); setTimeout(() => S('metal_hit2', .7, .8), 500); setTimeout(() => S('slam', .8, .7), 800); return true; },
+    ding: () => S('terminal_03', .45), blip: () => S(pick(['beep_01', 'beep_02']), .18, rnd(.9, 1.3)), chime: () => S('terminal_01', .5), ufo: () => S('teleport_02', .6, .5), power: () => S('servo', .8, .4) };
+  for (const [k, f] of Object.entries(map)) Sound[k] = (...a) => (Sound.has && f(...a)) || syn[k](...a);
+  const synLoop = syn.loop; Sound.loop = kind => { const n = { thrust: 'thrust', hum: 'loop_ambient_weird', whale: 'loop_machine_01' }[kind]; const src = n && Sound.sample(n, kind === 'thrust' ? .5 : .35, kind === 'thrust' ? .6 : 1, true); if (!src) return synLoop(kind);
+    return { stop() { try { src.gain.gain.setTargetAtTime(0, Sound.ctx.currentTime, .4); src.stop(Sound.ctx.currentTime + 2); } catch (e) {} } }; }; }
 // ====================================================================== overlay helpers
 const overlay = document.getElementById('overlay');
 const el = (cls, html = '', parent = overlay) => { const d = document.createElement('div'); d.className = cls; d.innerHTML = html; parent.appendChild(d); return d; };
@@ -588,6 +603,7 @@ class NPC {
     else if (A === 'daydream') { hx = -.4; hyw = .5 + Math.sin(t * .22) * .35; aR = -.15; aL = .1; hy = .92 + Math.sin(t * .9) * .008; }
     else if (A === 'lean') { lean = .42; aL = aR = -.95; aLz = -.1; aRz = .1; hx = -.1 + Math.sin(t * .3) * .1; hyw = Math.sin(t * .2) * .4; hy = .9; }
     else { hyw = Math.sin(t * .5) * .5; hx = Math.sin(t * .7) * .05; aL = Math.sin(t * 1.4) * .04; aR = -aL; hy = .92 + Math.sin(t * 2) * .006; }
+    if (this.talking) { hx += Math.sin(this.t * 14) * .05; aR -= .25 + Math.sin(this.t * 7) * .2; }
     b.hips.position.y = hy; b.legL.rotation.x = lL; b.legR.rotation.x = lR; b.armL.rotation.set(aL, 0, aLz); b.armR.rotation.set(aR, 0, aRz); b.head.rotation.set(hx, hyw, 0); b.torso.rotation.set(lean, ty, 0); }
   busy() { return this.mode !== 'free' || this.inChat || isWork(this); }
   setStatus(a) { const prev = this.server.status; this.server = a; if (prev === a.status) return;
@@ -600,7 +616,7 @@ class NPC {
   pop(e) { if (['error', 'waiting'].includes(this.server.status)) return; this.icon.className = 'npc-icon pop'; this.icon.textContent = e; clearTimeout(this._p); this._p = setTimeout(() => { if (this.icon.textContent === e) { this.icon.className = 'npc-icon'; this.icon.textContent = ''; } }, 2200); }
   life() {
     if (this.sitting && !isWork(this) && Math.random() < .06) { this.sitMood = pick([null, null, 'tired', 'think', 'stretch', 'phone', 'sleep']); if (this.sitMood === 'sleep') this.pop('💤'); if (this.sitMood === 'tired') this.pop('😮‍💨'); } if (isWork(this)) this.sitMood = null;
-    { const d = SHOW.agents[this.name]; if (d && d.say && d.say.length && !this.moving() && Math.random() < .012 && now() - (this._rep || 0) > 25000) { this._rep = now(); this.say(pick(d.say), 6000, 'say'); this.pop('📊'); } }
+    { const d = SHOW.agents[this.name]; if (d && d.say && d.say.length && !this.moving() && Math.random() < .012 && now() - (this._rep || 0) > 25000) { this._rep = now(); const line = pick(d.say); this.say(line, 6000, 'say'); this.pop('📊'); NPCVoice.speak(this, line); } }
     if (this.sitting && Math.random() < .035) this.pop(isWork(this) ? pick(['⌨️', '🧠', '📊', '⚡', '💾', '🔍']) : pick(['💡', '☕', '🎧', '💭', '😴', '📈', '🎵', '😎']));
     if (this.busy() || now() < this.next || Phase.cur) return; this.next = now() + rnd(9000, 20000);
     const r = Math.random(), others = Object.values(npcs).filter(n => n !== this && !n.busy());
@@ -885,7 +901,7 @@ addEventListener('pointermove', e => { if (!drag || !(e.buttons & 1)) return; co
   const s = camState.dist * Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) * 2 / host.clientHeight; camState.tx = clamp(drag.tx - dx * s, -30, 40); camState.ty = clamp(drag.ty + dy * s, 1, 26); });
 addEventListener('pointerup', e => { if (drag && !drag.moved) onClick(e); drag = null; });
 addEventListener('keydown', e => { const k = e.key.toLowerCase();
-  if (k === 'escape') closePanel(); if (k === 'm') Sound.toggle(); 
+  if (k === 'escape') closePanel(); if (k === 'm') Sound.toggle(); if (k === 'n') NPCVoice.toggle(); 
   if (e.key === 'Home') { camState.zoom = 1; camState.tx = VIEW.cx; camState.ty = VIEW.cy; }
   const f = { 1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5 }[e.key]; if (f !== undefined) { camState.zoom = 2.6; camState.tx = 22; camState.ty = FL[f].y + 1.8; } });
 
@@ -919,10 +935,32 @@ const Holo = { q: [], cur: null, last: {},
     if (it.n) { it.n.pop('📢'); setTimeout(() => { it.n.say(it.body, 6500, 'say'); NPCVoice.speak(it.n, it.body); }, 600); }
     setTimeout(() => { d.classList.add('out'); setTimeout(() => { d.remove(); this.next(); }, 600); }, 8000); },
   place() { if (!this.cur) return; const n = this.cur.it.n; const w = n ? new THREE.Vector3(n.x, n.y + 3.1, D) : new THREE.Vector3(22, FH * 3, D); const [x, y] = project(w); this.cur.d.style.transform = `translate(${x}px, ${y}px) translate(-50%,-100%)`; } };
-const NPCVoice = { speak() {} };
+// NPC voices: Piper (Indonesian) from the local server + a different cyberpunk effect chain per NPC
+const NPCVoice = (() => {
+  const FX = { 'KAI-07': { rate: .96, crush: 10, ring: 0, band: [300, 3600], echo: .18 }, 'RAZE-11': { rate: 1.04, crush: 0, ring: 38, band: [400, 3200], echo: .1 },
+    'JUNO-X9': { rate: 1.1, crush: 0, ring: 0, band: [500, 5000], echo: .28, chorus: 1 }, 'VOLT-3': { rate: .9, crush: 7, ring: 0, band: [350, 2800], echo: .08 },
+    'NYX-21': { rate: 1.14, crush: 0, ring: 70, band: [600, 4200], echo: .12 }, 'KADE-12': { rate: .86, crush: 0, ring: 0, band: [200, 2400], echo: .22, chorus: 1 },
+    'SABLE-6': { rate: 1.02, crush: 12, ring: 0, band: [700, 3000], echo: .3 }, 'HEX-04': { rate: 1.18, crush: 0, ring: 25, band: [500, 6000], echo: .15, chorus: 1 },
+    'ORIN-88': { rate: .94, crush: 8, ring: 55, band: [300, 3400], echo: .1 }, 'ZERO-1': { rate: .8, crush: 6, ring: 90, band: [180, 2200], echo: .2 } };
+  const q = []; let busy = false, on = !Q.has('novoice'), failed = 0; const cache = new Map();
+  const crushCurve = bits => { const n = 2048, c = new Float32Array(n), st = Math.pow(2, bits); for (let i = 0; i < n; i++) { const x = i / (n - 1) * 2 - 1; c[i] = Math.round(x * st) / st; } return c; };
+  async function play(n, text) { const ctx = Sound.ctx; if (!ctx) return; const fx = FX[n.name] || FX['KAI-07'];
+    let buf = cache.get(n.name + text); if (!buf) { const r = await fetch(`/api/tts?agent=${encodeURIComponent(n.name)}&text=${encodeURIComponent(text)}`); if (!r.ok) throw new Error('tts ' + r.status); buf = await ctx.decodeAudioData(await r.arrayBuffer()); if (cache.size > 60) cache.clear(); cache.set(n.name + text, buf); }
+    const src = ctx.createBufferSource(); src.buffer = buf; src.playbackRate.value = fx.rate; let node = src;
+    const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = fx.band[0]; const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = fx.band[1]; node.connect(hp); hp.connect(lp); node = lp;
+    if (fx.crush) { const ws = ctx.createWaveShaper(); ws.curve = crushCurve(fx.crush); node.connect(ws); node = ws; }
+    if (fx.ring) { const rg = ctx.createGain(); rg.gain.value = 0; const osc = ctx.createOscillator(); osc.frequency.value = fx.ring; const og = ctx.createGain(); og.gain.value = .7; osc.connect(og); og.connect(rg.gain); const dry = ctx.createGain(); dry.gain.value = .5; node.connect(rg); node.connect(dry); const mix = ctx.createGain(); rg.connect(mix); dry.connect(mix); osc.start(); osc.stop(ctx.currentTime + buf.duration / fx.rate + .5); node = mix; }
+    const out = ctx.createGain(); out.gain.value = 1.4; node.connect(out);
+    if (fx.chorus) { const dl = ctx.createDelay(); dl.delayTime.value = .018; const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = .8; lg.gain.value = .004; lfo.connect(lg); lg.connect(dl.delayTime); lfo.start(); lfo.stop(ctx.currentTime + buf.duration + 1); node.connect(dl); dl.connect(out); }
+    const ec = ctx.createDelay(); ec.delayTime.value = .16; const eg = ctx.createGain(); eg.gain.value = fx.echo; out.connect(ec); ec.connect(eg); eg.connect(ec); eg.connect(Sound.out); out.connect(Sound.out);
+    Sound.blip(); src.start(); n.talking = true; await new Promise(res => { src.onended = res; }); n.talking = false; }
+  async function pump() { if (busy) return; busy = true; while (q.length) { const [n, t] = q.shift(); try { await play(n, t); failed = 0; } catch (e) { if (++failed > 3) { on = false; console.info('NPC voice disabled:', e.message); } } await new Promise(r => setTimeout(r, 250)); } busy = false; }
+  return { speak(n, text) { if (!on || !n || !text) return; const clean = String(text).replace(/[\u{1F300}-\u{1FAFF}☀-➿]/gu, '').replace(/_/g, ' ').trim(); if (!clean) return; if (q.length > 3) q.shift(); q.push([n, clean]); pump(); },
+    toggle() { on = !on; toast(on ? '🗣 Suara NPC ON' : '🗣 Suara NPC OFF'); }, get on() { return on; } };
+})();
 let lastPending = 0;
 async function loadShow() { try { const d = await (await fetch('/api/world/showcase')).json(); SHOW.agents = d.agents || {}; SHOW.ticker = d.ticker || []; const pn = d.pending || 0;
-  if (pn > lastPending) { Holo.show('APPROVAL DIBUTUHKAN', `${pn} listing menunggu keputusan owner. Klik badge di atas atau COMMAND DECK → Approval.`, npcs['KAI-07'], '#ff3fa4'); toast(`📝 ${pn} listing menunggu approval — klik COMMAND DECK → tab Approval`); Sound.chime(); const k = npcs['KAI-07']; if (k) { k.say(`Owner, ada ${pn} listing nunggu approval!`, 7000, 'alert'); k.pop('📝'); } }
+  if (pn > lastPending) { Holo.show('APPROVAL DIBUTUHKAN', `${pn} listing menunggu keputusan owner. Klik badge di atas atau COMMAND DECK → Approval.`, npcs['KAI-07'], '#ff3fa4'); toast(`📝 ${pn} listing menunggu approval — klik COMMAND DECK → tab Approval`); Sound.chime(); const k = npcs['KAI-07']; if (k) { k.say(`Owner, ada ${pn} listing nunggu approval!`, 7000, 'alert'); NPCVoice.speak(k, `Owner, ada ${pn} listing menunggu persetujuan.`); k.pop('📝'); } }
   lastPending = pn; approvalBadge.style.display = pn ? '' : 'none'; approvalBadge.textContent = `📝 ${pn} menunggu approval`; } catch (e) {} }
 const approvalBadge = el('approval-badge', ''); approvalBadge.style.cssText = 'position:fixed;left:50%;top:14px;transform:translateX(-50%);display:none;cursor:pointer;z-index:20;padding:8px 14px;border:1px solid #ff3fa4;background:rgba(10,14,22,.9);color:#ffd0e8;font:14px monospace;box-shadow:0 0 14px #ff3fa4;animation:blink 1.2s infinite;pointer-events:auto';
 approvalBadge.onclick = () => { const r = ROOMS.find(q => q.name === 'COMMAND DECK'); openRoom(r); const b = [...document.querySelectorAll('.ptabs button')].find(x => x.textContent === 'Approval'); b && b.click(); };
@@ -984,4 +1022,4 @@ renderer.setAnimationLoop(() => {
   Holo.place();
   for (const l of labels) { const [x, y] = project(l.v); l.d.style.transform = `translate(${x}px, ${y}px) translate(-50%,-100%) scale(${k * .9})`; }
 });
-Object.assign(window.tower, { Holo, Focus, MK, Core });
+Object.assign(window.tower, { Holo, Focus, MK, Core, NPCVoice, Sound });

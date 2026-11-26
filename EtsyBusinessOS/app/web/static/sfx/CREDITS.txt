@@ -1,0 +1,11 @@
+All sound effects in this folder are CC0 (public domain) from OpenGameArt.org:
+- "CC0 Deep Monster Roar" (roar)            https://opengameart.org/content/cc0-deep-monster-roar
+- "Mech stomp step sound" (step)            https://opengameart.org/content/mech-stomp-step-sound
+- "Chunky Explosion" (explosion_big)        https://opengameart.org/content/chunky-explosion
+- "Doomsday laser cannon" (laser_cannon)    https://opengameart.org/content/doomsday-laser-cannon-sound-effect
+- "Rain, long thunder" (rain_loop)          https://opengameart.org/content/rain-long-thunder
+- "Engine sounds 2" (engine)                https://opengameart.org/content/engine-sounds2
+- "50 CC0 Sci-Fi SFX" (explosion*, thrust, shoot_*, retro_laser_01, teleport_*, loop_*, terminal_*, beep_*)  https://opengameart.org/content/50-cc0-sci-fi-sfx
+- "100 CC0 SFX #2" (thunder, traffic_loop, metal_hit*, whoosh)  https://opengameart.org/content/100-cc0-sfx-2
+- "100 CC0 SFX" (slam, servo)               https://opengameart.org/content/100-cc0-sfx
+Converted to mono OGG. No attribution required (CC0); listed for transparency.

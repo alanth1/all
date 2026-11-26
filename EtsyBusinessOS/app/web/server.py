@@ -3,6 +3,7 @@ local Host header, so other websites cannot drive the app."""
 from __future__ import annotations
 
 import re
+import os
 import secrets
 from contextlib import asynccontextmanager
 from datetime import date, timedelta
@@ -39,6 +40,13 @@ async def lifespan(_app):
             jobs.enqueue("asset_scan", {}, priority=1, actor="system")
     except Exception as e:  # demo seed must never block start-up
         print("demo assets:", e)
+    try:
+        import threading
+        from .. import voice
+        if "PYTEST_CURRENT_TEST" not in os.environ:
+            threading.Thread(target=lambda: voice.status()["model_ready"] or voice._ensure_model(), daemon=True).start()
+    except Exception as e:  # voices are optional
+        print("voice prefetch:", e)
     orchestrator.start()
     yield
     orchestrator.stop()
@@ -163,6 +171,23 @@ def world3d(request: Request):
 @app.get("/api/world")
 def api_world(since: int = 0):
     return JSONResponse(world.snapshot(since))
+
+
+@app.get("/api/tts")
+def api_tts(text: str, agent: str = ""):
+    """NPC voice line (Piper, Indonesian). Returns WAV; 503 while the voice model is unavailable."""
+    from fastapi.responses import Response
+    from .. import voice
+    try:
+        return Response(voice.synth(text, agent), media_type="audio/wav", headers={"Cache-Control": "max-age=86400"})
+    except Exception as e:  # noqa: BLE001
+        return JSONResponse({"error": str(e)[:200], **voice.status()}, status_code=503)
+
+
+@app.get("/api/tts/status")
+def api_tts_status():
+    from .. import voice
+    return JSONResponse(voice.status())
 
 
 @app.get("/api/world/showcase")
