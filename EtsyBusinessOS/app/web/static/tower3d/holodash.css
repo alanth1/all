@@ -1,0 +1,50 @@
+/* NEONLOOM full-hologram dashboards: every panel is a translucent projection over the living 3D tower */
+#holodeck{position:fixed;inset:0;z-index:40;pointer-events:none;opacity:0;transition:opacity .35s;font-family:"JetBrains Mono",ui-monospace,Consolas,monospace;color:#dffbff}
+#holodeck.on{opacity:1;pointer-events:auto}
+#holodeck .hd-veil{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 55%,rgba(0,30,50,.18),rgba(0,6,14,.58));backdrop-filter:blur(1.5px) saturate(1.2)}
+#holodeck .hd-veil::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(120,240,255,.045) 0 1px,transparent 1px 4px);animation:hdScan 7s linear infinite;pointer-events:none}
+@keyframes hdScan{to{background-position:0 400px}}
+#holodeck .hd-frame{position:absolute;left:clamp(10px,3vw,48px);right:clamp(10px,3vw,48px);top:clamp(10px,3vh,40px);bottom:clamp(10px,3vh,40px);display:flex;flex-direction:column;gap:12px}
+.hd-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.hd-title{font-weight:800;letter-spacing:.32em;font-size:clamp(15px,1.6vw,22px);color:var(--hc);text-shadow:0 0 12px var(--hc),0 0 2px #fff}
+.hd-sub{font-size:12px;letter-spacing:.12em;opacity:.75}
+.hd-close{margin-left:auto;background:transparent;border:1px solid var(--hc);color:var(--hc);font:inherit;font-size:13px;letter-spacing:.2em;padding:6px 14px;cursor:pointer;clip-path:polygon(0 0,88% 0,100% 30%,100% 100%,12% 100%,0 70%);box-shadow:inset 0 0 12px color-mix(in srgb,var(--hc) 30%,transparent)}
+.hd-close:hover{background:color-mix(in srgb,var(--hc) 20%,transparent)}
+.hd-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.hd-tab{--c:#3ff0ff;border:1px solid color-mix(in srgb,var(--c) 60%,transparent);background:color-mix(in srgb,var(--c) 7%,transparent);color:#cfefff;font:inherit;font-size:11px;letter-spacing:.14em;padding:5px 10px;cursor:pointer;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);transition:all .2s}
+.hd-tab b{color:var(--c);font-weight:700}
+.hd-tab.on,.hd-tab:hover{background:color-mix(in srgb,var(--c) 26%,transparent);color:#fff;text-shadow:0 0 6px var(--c)}
+.hd-body{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(12,1fr);gap:12px;align-content:start;padding:2px 4px 8px;scrollbar-width:thin;scrollbar-color:var(--hc) transparent}
+.hp{--c:var(--hc);position:relative;grid-column:span 3;padding:12px 14px 12px;background:linear-gradient(160deg,color-mix(in srgb,var(--c) 14%,transparent),rgba(4,12,24,.32) 60%);border:1px solid color-mix(in srgb,var(--c) 70%,transparent);box-shadow:0 0 18px color-mix(in srgb,var(--c) 35%,transparent),inset 0 0 22px color-mix(in srgb,var(--c) 14%,transparent);clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px));animation:hpIn .6s cubic-bezier(.2,.9,.3,1) both;animation-delay:calc(var(--i,0) * 70ms)}
+.hp::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 3px);pointer-events:none}
+.hp::after{content:"";position:absolute;left:0;right:0;height:40%;top:-40%;background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--c) 16%,transparent),transparent);animation:hpSweep 5.5s linear infinite;animation-delay:calc(var(--i,0) * .4s);pointer-events:none}
+@keyframes hpSweep{0%{top:-40%}60%,100%{top:110%}}
+@keyframes hpIn{0%{opacity:0;transform:perspective(900px) rotateX(18deg) translateY(16px) scale(.96);filter:blur(5px) brightness(2.4)}35%{opacity:.5}48%{opacity:.15}100%{opacity:1;transform:none;filter:none}}
+.hp.w2{grid-column:span 2}.hp.w4{grid-column:span 4}.hp.w5{grid-column:span 5}.hp.w6{grid-column:span 6}.hp.w7{grid-column:span 7}.hp.w8{grid-column:span 8}.hp.w12{grid-column:span 12}
+@media (max-width:1100px){.hp,.hp.w2{grid-column:span 6}.hp.w4,.hp.w5,.hp.w6,.hp.w7,.hp.w8{grid-column:span 12}}
+@media (max-width:640px){.hp,.hp.w2{grid-column:span 12}}
+.hp h4{margin:0 0 8px;font-size:11px;letter-spacing:.26em;color:var(--c);text-shadow:0 0 6px var(--c);font-weight:700}
+.hp .big{font-size:clamp(20px,2.1vw,32px);font-weight:800;color:#fff;text-shadow:0 0 14px var(--c);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hp .sm{font-size:11px;opacity:.72;margin-top:4px;letter-spacing:.06em}
+.hp .up{color:#7dffb5}.hp .down{color:#ff7aa8}
+.hp table{width:100%;border-collapse:collapse;font-size:12px}
+.hp td{padding:5px 4px;border-bottom:1px dashed color-mix(in srgb,var(--c) 30%,transparent);vertical-align:top}
+.hp td.r{text-align:right;white-space:nowrap;color:#fff}
+.hp .tag{display:inline-block;padding:1px 6px;border:1px solid var(--c);font-size:10px;letter-spacing:.1em;color:var(--c)}
+.hp .bar{height:6px;background:color-mix(in srgb,var(--c) 15%,transparent);margin-top:4px;position:relative;overflow:hidden}
+.hp .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--c);box-shadow:0 0 8px var(--c);transform-origin:left;animation:barIn 1s cubic-bezier(.2,.9,.3,1) both;animation-delay:calc(var(--i,0) * 70ms + .3s)}
+@keyframes barIn{from{transform:scaleX(0)}}
+.hp svg{width:100%;display:block;overflow:visible}
+.hp .empty{opacity:.55;font-size:12px;font-style:italic}
+.hp ul{margin:0;padding:0;list-style:none;font-size:12px}.hp li{padding:4px 0;border-bottom:1px dashed color-mix(in srgb,var(--c) 25%,transparent)}
+.hp .chips{display:flex;flex-wrap:wrap;gap:5px}.hp .chips span{border:1px solid color-mix(in srgb,var(--c) 60%,transparent);padding:2px 7px;font-size:11px}
+.hd-foot{display:flex;gap:14px;align-items:center;font-size:11px;letter-spacing:.1em;opacity:.8;flex-wrap:wrap}
+.hd-foot .presenter{color:var(--hc);text-shadow:0 0 6px var(--hc)}
+.hd-foot .mode{border:1px solid currentColor;padding:1px 7px}
+/* floating per-room mini holograms in the 3D world */
+.room-holo{position:absolute;left:0;top:0;pointer-events:auto;cursor:pointer;padding:3px 8px 3px;font:600 11px/1.2 "JetBrains Mono",ui-monospace,monospace;color:#e8fdff;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 26%,transparent),rgba(4,10,20,.25));border:1px solid color-mix(in srgb,var(--c) 75%,transparent);box-shadow:0 0 10px color-mix(in srgb,var(--c) 45%,transparent);clip-path:polygon(0 0,92% 0,100% 30%,100% 100%,8% 100%,0 70%);opacity:.82;white-space:nowrap;transition:opacity .3s;will-change:transform}
+.room-holo small{display:block;font-size:9px;letter-spacing:.18em;color:var(--c);opacity:.9}
+.room-holo:hover{opacity:1;box-shadow:0 0 18px var(--c)}
+.room-holo.flick{animation:rhFlick .5s}
+@keyframes rhFlick{20%{opacity:.2}40%{opacity:.9}55%{opacity:.35}100%{opacity:.82}}
+#holodeck.on ~ * .room-holo,body.hd-open .room-holo{opacity:0;pointer-events:none}

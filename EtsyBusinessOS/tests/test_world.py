@@ -64,3 +64,16 @@ def test_tts_endpoint_reports_status(env):
         st = c.get("/api/tts/status").json()
         assert st["voice"] == "id_ID-news_tts-medium" and "model_ready" in st
         assert c.get("/static/sfx/roar.ogg").status_code == 200
+
+
+def test_holo_dashboard_rupiah(env):
+    from app.web.server import app
+    with TestClient(app) as c:
+        r = c.get("/api/holo/dashboard")
+        assert "holodash.js" in c.get("/").text
+    assert r.status_code == 200
+    d = r.json()
+    assert d["currency"]["code"] == "IDR" and d["currency"]["rate"] > 1000
+    for k in ("overview", "finance", "sales", "approval", "listings", "assets", "research", "data", "social", "system"):
+        assert k in d
+    assert isinstance(d["finance"]["revenue"], int)

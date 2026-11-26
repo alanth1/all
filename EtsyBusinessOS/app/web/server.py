@@ -196,6 +196,12 @@ def api_tts_status():
     return JSONResponse(voice.status())
 
 
+@app.get("/api/holo/dashboard")
+def api_holo_dashboard(days: int = 30):
+    from .. import holo
+    return holo.dashboard(max(1, min(days, 365)))
+
+
 @app.get("/api/world/showcase")
 def api_showcase():
     """Real business data per agent, used by the HQ view (boards, NPC reports, cards)."""
@@ -222,7 +228,7 @@ def api_showcase():
     sources = q("SELECT name, access_method, permission_status FROM research_sources")
     kw = q("SELECT keyword FROM keywords ORDER BY id DESC LIMIT 5")
     reports = q("SELECT title FROM market_reports ORDER BY id DESC LIMIT 3")
-    pend = one("SELECT COUNT(*) n FROM listings WHERE state IN ('pending_approval','draft','awaiting_approval')")
+    pend = one("SELECT COUNT(*) n FROM listings WHERE state='pending_approval'")
     jobstat = q("SELECT state, COUNT(*) n FROM jobs GROUP BY state")
     lastjobs = q("SELECT type, state, agent FROM jobs ORDER BY id DESC LIMIT 6")
     notes = q("SELECT title FROM notifications ORDER BY id DESC LIMIT 3")
