@@ -58,7 +58,8 @@ def _talk(job) -> str:
     st = job["state"]
     try:
         if st in ("DONE", "PUBLISHED"):
-            return done.format(**vals)
+            txt = done.format(**vals)
+            return txt if "?" not in txt else done.split(":")[0].split("{")[0].strip().rstrip(":") + "."
         if st == "FAILED":
             return f"Gagal: {(job['error'] or '')[:90]}"
         if st == "WAITING_APPROVAL":
@@ -79,7 +80,7 @@ def events(since_id: int) -> tuple[list[dict], int]:
         last = r["id"]
         if r["state"] not in ("RUNNING", "DONE", "PUBLISHED", "FAILED", "WAITING_APPROVAL", "RETRYING"):
             continue
-        if r["type"] in ("social_publish", "unload_ai_idle") and r["state"] == "DONE":
+        if r["type"] in ("social_publish", "unload_ai_idle", "npc_banter") and r["state"] in ("DONE", "RUNNING"):
             continue
         fake = {"type": r["type"], "state": r["state"], "result": r["result"], "payload": r["payload"], "error": r["error"]}
         out.append({"id": r["id"], "agent": agents.agent_for(r["type"]), "kind": r["state"].lower(), "job": r["job_id"],

@@ -66,3 +66,11 @@ h3{font:12px Pix;color:#c4b5fd;letter-spacing:.08em}
 .holo-pop.out{animation:holoOut .6s forwards}
 @keyframes holoIn{0%{opacity:0;filter:blur(6px) brightness(3)}30%{opacity:.4}45%{opacity:.1}100%{opacity:.88}}
 @keyframes holoOut{to{opacity:0;filter:blur(8px)}}
+/* speech bubbles: semi-transparent holographic */
+.bubble{background:rgba(8,16,30,.62)!important;color:#e8fbff!important;border:1px solid #3ff0ff!important;border-radius:4px!important;box-shadow:0 0 12px rgba(63,240,255,.45),inset 0 0 10px rgba(63,240,255,.15)!important;backdrop-filter:blur(2px);font:15px/1.25 monospace!important;text-shadow:0 0 4px rgba(63,240,255,.6)}
+.bubble::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 3px);pointer-events:none}
+.bubble::after{border-top-color:#3ff0ff!important}
+.bubble .who{color:#3ff0ff!important;font:bold 10px monospace!important;letter-spacing:2px}
+.bubble.chat{border-color:#9fffcf!important;box-shadow:0 0 12px rgba(159,255,207,.4)!important}.bubble.chat .who{color:#9fffcf!important}
+.bubble.alert{border-color:#ff3fa4!important;box-shadow:0 0 14px rgba(255,63,164,.55)!important}.bubble.alert .who{color:#ff3fa4!important}
+.bubble.think{border-color:#c9a6ff!important;font-style:italic}.bubble.think .who{color:#c9a6ff!important}
