@@ -81,3 +81,6 @@
 .hl-a.ok{--c:#7dffb5}.hl-a.rev{--c:#ffb13f}.hl-a.no{--c:#ff3fa4}.hl-a.live{--c:#3ff0ff;animation:blink 1.4s infinite}
 .hl-a:hover:not(:disabled){background:color-mix(in srgb,var(--c) 35%,transparent);box-shadow:0 0 16px var(--c)}
 .hl-a:disabled{opacity:.3;cursor:not-allowed}
+.hd-title img.hd-logo{height:clamp(26px,3.4vw,46px);display:block;filter:drop-shadow(0 0 10px var(--hc)) drop-shadow(0 0 2px #fff);animation:logoFlick 6s infinite}
+.hd-tagline{display:block;font-size:11px;letter-spacing:.24em;color:var(--hc);margin-top:4px;text-shadow:0 0 6px var(--hc)}
+@keyframes logoFlick{0%,96%,100%{opacity:1}97%{opacity:.35}98%{opacity:.9}99%{opacity:.5}}

@@ -5,7 +5,13 @@ from __future__ import annotations
 from . import db
 
 SLOTS = (1, 2, 3)
-COLORS = {1: "#3ff0ff", 2: "#ff3fa4", 3: "#ffb13f"}
+# Owner's brands: floor 1 Buildvero, floor 2 StudioForgeCo, floor 3 AvArchID (logos in static/tower3d/logos)
+BRANDS = {
+    1: {"name": "Buildvero", "logo": "buildvero", "tagline": "architectural and diy building plans", "kind": "house", "color": "#e0a86a"},
+    2: {"name": "StudioForgeCo", "logo": "studioforgeco", "tagline": "studio and shed blueprints", "kind": "shed", "color": "#ffa62b"},
+    3: {"name": "AvArchID", "logo": "avarchid", "tagline": "architecture", "kind": "modern", "color": "#ff6a1a"},
+}
+COLORS = {k: v["color"] for k, v in BRANDS.items()}
 
 
 def norm(slot) -> int:
@@ -37,8 +43,13 @@ def app_key_name(slot) -> str:
 def info(slot) -> dict:
     s = norm(slot)
     cfg = (db.settings().get("shops") or {}).get(str(s), {}) or {}
-    return {"slot": s, "name": (cfg.get("name") or f"Toko {s}").strip(), "enabled": bool(cfg.get("enabled", True)),
-            "publish_target": cfg.get("publish_target") or None, "color": COLORS[s]}
+    name = (cfg.get("name") or "").strip()
+    if not name or name == f"Toko {s}":
+        name = BRANDS[s]["name"]
+    b = BRANDS[s]
+    return {"slot": s, "name": name, "enabled": bool(cfg.get("enabled", True)), "publish_target": cfg.get("publish_target") or None,
+            "color": COLORS[s], "logo": f"/static/tower3d/logos/{b['logo']}.png", "logo_holo": f"/static/tower3d/logos/{b['logo']}_holo.png",
+            "tagline": b["tagline"], "kind": b["kind"]}
 
 
 def publish_target(slot) -> str:

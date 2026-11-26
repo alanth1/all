@@ -109,3 +109,13 @@ def test_holo_settings_and_approval_api(env, asset_root):
         jobs.drain()
         assert c.get(f"/api/holo/listing/{lid}").json()["state"] == "active"
         assert any(i["id"] == lid for i in c.get("/api/holo/listings").json()["items"]) is False  # live listings leave the queue
+
+
+def test_brand_names_and_logos(env):
+    names = [shops.info(s)["name"] for s in shops.SLOTS]
+    assert names == ["Buildvero", "StudioForgeCo", "AvArchID"]
+    from pathlib import Path
+    static = Path(__file__).resolve().parent.parent / "app" / "web" / "static"
+    for s in shops.SLOTS:
+        i = shops.info(s)
+        assert (static / i["logo"].removeprefix("/static/")).is_file() and (static / i["logo_holo"].removeprefix("/static/")).is_file()

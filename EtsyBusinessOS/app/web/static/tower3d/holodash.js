@@ -149,7 +149,8 @@ const SECTIONS = {
     say: () => 'Ini kru NEONLOOM. Semua agen dan apa yang sedang mereka kerjakan.',
     html: () => [P('KRU', `<table>${Object.values(T().npcs).map(n => `<tr><td style="color:${n.meta.color}"><b>${esc(n.name)}</b></td><td>${esc(n.meta.role || '')}</td><td class="r">${esc(n.server && n.server.current || (n.sitting ? 'di meja' : 'jalan-jalan'))}</td></tr>`).join('')}</table>`, 'w12')] },
 };
-for (const sl of [1, 2, 3]) SECTIONS['TOKO ' + sl] = { key: 'shop' + sl, title: 'TOKO ' + sl, col: ['#3ff0ff', '#ff3fa4', '#ffb13f'][sl - 1], shop: sl, npc: 'NYX-21',
+const BRAND_NAMES = ['Buildvero', 'StudioForgeCo', 'AvArchID'];
+for (const sl of [1, 2, 3]) SECTIONS['TOKO ' + sl] = { key: 'shop' + sl, title: BRAND_NAMES[sl - 1].toUpperCase(), col: ['#e0a86a', '#ffa62b', '#ff6a1a'][sl - 1], shop: sl, npc: 'NYX-21',
   say: d => { const x = (d.shops || [])[sl - 1]; if (!x) return ''; if (!x.enabled) return `${x.name} sedang nonaktif. Aktifkan di tab pengaturan kalau mau dipakai.`;
     return `${x.name}. Pendapatan ${RPs(x.revenue)}, ${x.orders} order, ${x.live} listing live${x.pending ? ', ' + x.pending + ' menunggu approval' : ''}.`; },
   html: d => { const x = (d.shops || [])[sl - 1] || {}; const c = SECTIONS['TOKO ' + sl].col; return [
@@ -163,10 +164,10 @@ for (const sl of [1, 2, 3]) SECTIONS['TOKO ' + sl] = { key: 'shop' + sl, title: 
 const STAT_ID = { connected: 'TERSAMBUNG', not_connected: 'BELUM TERSAMBUNG', expired: 'LOGIN KEDALUWARSA', error: 'ERROR' };
 function shopsTable(d) { const rows = d.shops || []; if (!rows.length) return '<div class="empty">—</div>';
   const tot = rows.reduce((a, x) => a + (x.revenue || 0), 0);
-  return `<table>${rows.map(x => `<tr style="cursor:pointer" data-open="TOKO ${x.slot}"><td><b style="color:${x.color}">TOKO ${x.slot}</b> · ${esc(x.name)}</td><td>${x.enabled ? (d.mode === 'demo' ? 'DEMO' : esc(STAT_ID[x.status] || x.status)) : 'NONAKTIF'}</td><td class="r">${x.orders} order</td><td class="r">${N(x.live)} live</td><td class="r">${RP(x.revenue)}</td></tr>`).join('')}
+  return `<table>${rows.map(x => `<tr style="cursor:pointer" data-open="TOKO ${x.slot}"><td><img src="${esc(x.logo_holo)}" alt="" style="height:16px;vertical-align:middle;margin-right:6px"><b style="color:${x.color}">L${x.slot}</b> · ${esc(x.name)}</td><td>${x.enabled ? (d.mode === 'demo' ? 'DEMO' : esc(STAT_ID[x.status] || x.status)) : 'NONAKTIF'}</td><td class="r">${x.orders} order</td><td class="r">${N(x.live)} live</td><td class="r">${RP(x.revenue)}</td></tr>`).join('')}
     <tr><td><b>TOTAL (1 owner)</b></td><td></td><td class="r"><b>${rows.reduce((a, x) => a + x.orders, 0)} order</b></td><td></td><td class="r"><b>${RP(tot)}</b></td></tr></table>`; }
 const ORDER = ['COMMAND DECK', 'FINANCE VAULT', 'TOKO 1', 'TOKO 2', 'TOKO 3', 'SHOP FLOOR', 'QA BAY', 'WRITERS STUDIO', 'DATA ROOM', 'GROWTH STUDIO', 'RESEARCH LAB', 'ARCHIVE', 'SERVER ROOM', 'LOUNGE · PANTRY'];
-const SHORT = { 'TOKO 1': 'TOKO 1', 'TOKO 2': 'TOKO 2', 'TOKO 3': 'TOKO 3', 'COMMAND DECK': 'RINGKASAN', 'FINANCE VAULT': 'KEUANGAN', 'SHOP FLOOR': 'PENJUALAN', 'QA BAY': 'APPROVAL', 'WRITERS STUDIO': 'LISTING', 'DATA ROOM': 'STATISTIK', 'GROWTH STUDIO': 'PROMOSI', 'RESEARCH LAB': 'RISET', 'ARCHIVE': 'ARSIP', 'SERVER ROOM': 'SISTEM', 'LOUNGE · PANTRY': 'KRU' };
+const SHORT = { 'TOKO 1': 'L1 BUILDVERO', 'TOKO 2': 'L2 STUDIOFORGECO', 'TOKO 3': 'L3 AVARCHID', 'COMMAND DECK': 'RINGKASAN', 'FINANCE VAULT': 'KEUANGAN', 'SHOP FLOOR': 'PENJUALAN', 'QA BAY': 'APPROVAL', 'WRITERS STUDIO': 'LISTING', 'DATA ROOM': 'STATISTIK', 'GROWTH STUDIO': 'PROMOSI', 'RESEARCH LAB': 'RISET', 'ARCHIVE': 'ARSIP', 'SERVER ROOM': 'SISTEM', 'LOUNGE · PANTRY': 'KRU' };
 
 // ---------- DOM
 const deck = document.createElement('div'); deck.id = 'holodeck';
@@ -200,7 +201,8 @@ function subtitle(line, who) { const f = deck.querySelector('.hd-sub2'); if (f) 
 function render(name, fresh = true) {
   const S = SECTIONS[name]; if (!S || !DATA) return; cur = name;
   deck.style.setProperty('--hc', S.col);
-  deck.querySelector('.hd-title').textContent = S.title;
+  const shopRow = S.shop && DATA.shops ? DATA.shops[S.shop - 1] : null;
+  deck.querySelector('.hd-title').innerHTML = shopRow ? `<img class="hd-logo" src="${esc(shopRow.logo_holo)}" alt="${esc(shopRow.name)}"><span class="hd-tagline">LANTAI ${S.shop} · ${esc(shopRow.tagline || '')}${shopRow.name !== BRAND_NAMES[S.shop - 1] ? ' · ' + esc(shopRow.name) : ''}</span>` : esc(S.title);
   const who = ownerOf(name);
   deck.querySelector('.hd-sub').innerHTML = `${DATA.period.start} → ${DATA.period.end} · semua angka dalam Rupiah<div class="hd-sub2"></div>`;
   deck.querySelector('.hd-tabs').innerHTML = ORDER.map(k => `<button class="hd-tab${k === name ? ' on' : ''}" style="--c:${SECTIONS[k].col}" data-k="${esc(k)}">${SHORT[k]}${ownerOf(k) && !SECTIONS[k].shop ? ` <b>${esc(ownerOf(k))}</b>` : ''}</button>`).join('');
@@ -268,7 +270,7 @@ async function loadQueue(name) {
   const S = SECTIONS[name]; if (S && S.shop) items = items.filter(i => i.slot === S.shop);
   if (cur !== name || view !== 'approval') return;
   const sec = body.querySelector('.hp:not(.hd-modes)') || body.lastElementChild;
-  sec.outerHTML = `<section class="hp w12"><h4>ANTRIAN LISTING ${S && S.shop ? '· TOKO ' + S.shop : '· SEMUA TOKO'}</h4>${items.length ? `<table>${items.map(i => `<tr class="hs-pick" data-id="${i.id}" style="cursor:pointer"><td>${esc(i.title || '(belum ada judul)')}</td><td><b>${esc(i.shop)}</b></td><td class="r">${ST_TAG(i.state)}</td></tr>`).join('')}</table>` : '<div class="empty">tidak ada listing yang perlu diurus ✔</div>'}</section>`;
+  sec.outerHTML = `<section class="hp w12"><h4>ANTRIAN LISTING ${S && S.shop ? '· ' + esc(BRAND_NAMES[S.shop - 1]) : '· SEMUA TOKO'}</h4>${items.length ? `<table>${items.map(i => `<tr class="hs-pick" data-id="${i.id}" style="cursor:pointer"><td>${esc(i.title || '(belum ada judul)')}</td><td><b>${esc(i.shop)}</b></td><td class="r">${ST_TAG(i.state)}</td></tr>`).join('')}</table>` : '<div class="empty">tidak ada listing yang perlu diurus ✔</div>'}</section>`;
   body.querySelectorAll('.hs-pick').forEach(r => r.onclick = () => { detailId = +r.dataset.id; view = 'detail'; render(name); });
 }
 async function loadDetail(name, id) {

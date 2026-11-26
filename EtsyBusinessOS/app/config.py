@@ -76,6 +76,6 @@ DEFAULT_SETTINGS: dict = {
     },
     "accounting": {"base_currency": "USD"},
     "display": {"currency": "IDR", "idr_per_usd": 16500},
-    "shops": {"1": {"name": "Toko 1", "enabled": True}, "2": {"name": "Toko 2", "enabled": True}, "3": {"name": "Toko 3", "enabled": True}},
+    "shops": {"1": {"name": "Buildvero", "enabled": True}, "2": {"name": "StudioForgeCo", "enabled": True}, "3": {"name": "AvArchID", "enabled": True}},
     "world": {"city": "", "lat": "", "lon": "", "ai_banter": True},
 }
