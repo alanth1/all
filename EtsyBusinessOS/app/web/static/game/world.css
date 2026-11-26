@@ -48,7 +48,7 @@
 .hist{list-style:none;padding:0}.hist li{border-bottom:1px dashed #2a2350;padding:4px 0}.hist span{color:#7c76b8;margin-right:8px}
 .lounge ul{list-style:none;padding:0}.lounge li{padding:3px 0}.lounge i{display:inline-block;width:10px;height:10px;margin-right:6px;border-radius:2px}.muted{color:#8b85c9}
 h3{font:12px Pix;color:#c4b5fd;letter-spacing:.08em}
-@keyframes pop{from{transform:scale(.6)}}@keyframes blink{50%{opacity:.2}}@keyframes bob{50%{margin-top:-3px}}@keyframes zz{0%{opacity:0;margin-top:0}50%{opacity:1}100%{opacity:0;margin-top:-14px}}
+@keyframes pop{from{opacity:0}}@keyframes blink{50%{opacity:.2}}@keyframes bob{50%{margin-top:-3px}}@keyframes zz{0%{opacity:0;margin-top:0}50%{opacity:1}100%{opacity:0;margin-top:-14px}}
 @keyframes flick{0%,100%{opacity:1}45%{opacity:.4}50%{opacity:1}55%{opacity:.3}}@keyframes slide{from{opacity:0;transform:translateX(40px)}}@keyframes slidein{from{transform:translateX(60px);opacity:.4}}
 @media (min-width:2200px){#hud,#toasts,#tip,#hint,.pwin{zoom:1.35}}@media (min-width:3200px){#hud,#toasts,#tip,#hint,.pwin{zoom:1.8}}
 .npc-icon.pop{background:none!important;border:0!important;box-shadow:none!important;font-size:18px;display:block!important;animation:none}
@@ -58,3 +58,11 @@ h3{font:12px Pix;color:#c4b5fd;letter-spacing:.08em}
 #hud .brand span{color:#ff3fa4!important;text-shadow:0 0 8px #ff3fa4!important}
 .toast{background:rgba(10,14,22,.88)!important;border-left:3px solid #3ff0ff!important}
 .room-label span{background:rgba(10,14,22,.8)!important;border:1px solid var(--accent)!important;box-shadow:0 0 10px var(--accent)!important}
+/* holographic popup */
+.holo-pop{min-width:260px;max-width:360px;padding:10px 14px 8px;color:#e6fbff;font:14px/1.35 monospace;background:linear-gradient(180deg,color-mix(in srgb,var(--hc) 22%,transparent),rgba(6,12,24,.35));border:1px solid var(--hc);box-shadow:0 0 22px color-mix(in srgb,var(--hc) 60%,transparent),inset 0 0 18px color-mix(in srgb,var(--hc) 25%,transparent);backdrop-filter:blur(2px);opacity:.88;clip-path:polygon(0 0,94% 0,100% 18%,100% 100%,6% 100%,0 82%);animation:holoIn .45s ease-out}
+.holo-pop::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.07) 0 1px,transparent 1px 3px);pointer-events:none}
+.holo-pop .hh{font:bold 15px monospace;letter-spacing:3px;color:var(--hc);text-shadow:0 0 8px var(--hc);margin-bottom:4px}
+.holo-pop .hf{margin-top:6px;font-size:10px;letter-spacing:2px;opacity:.7}
+.holo-pop.out{animation:holoOut .6s forwards}
+@keyframes holoIn{0%{opacity:0;filter:blur(6px) brightness(3)}30%{opacity:.4}45%{opacity:.1}100%{opacity:.88}}
+@keyframes holoOut{to{opacity:0;filter:blur(8px)}}
