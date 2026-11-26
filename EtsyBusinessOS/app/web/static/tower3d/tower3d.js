@@ -67,6 +67,9 @@ const ADS = [['NEONLOOM HOUSE PLANS', 'digital download · instant pdf'], ['TINY
   ['SYNTH COLA', 'taste the voltage'], ['KUROI NET', 'faster than your thoughts'], ['ARASAKA? NEVER HEARD', 'local is better'], ['METRO LINE 9', 'last train 03:40'], ['VOID BANK', 'your money, encrypted']];
 let adBag = [];
 function nextAd() { if (!adBag.length) { const live = (SHOW.ticker || []).slice(1, 4).map(x => [String(x).toUpperCase().slice(0, 22), (SHOW.shop || 'neonloom') + ' live data']); adBag = shuffle([...SLOGANS, ...SLOGANS.slice(0, 12), ...ADS, ...live]); } return adBag.pop(); }
+// inverted-hull outlines: makes every character / giant readable against the busy city
+function outline(root, col = 0x05070c, w = .035, skip = 0) { const mat = new THREE.MeshBasicMaterial({ color: col, side: THREE.BackSide, toneMapped: false, fog: true }); const list = []; root.traverse(o => { if (o.isMesh && !o.userData.ol && o.geometry && !(o.material && o.material.transparent)) list.push(o); });
+  for (const o of list) { if (skip && o.geometry.boundingSphere === null) o.geometry.computeBoundingSphere(); const r = (o.geometry.boundingSphere || { radius: 1 }).radius || 1; const m = new THREE.Mesh(o.geometry, mat); m.userData.ol = 1; m.scale.setScalar(1 + w / Math.max(.05, r)); m.raycast = () => {}; o.add(m); } }
 const anim = { screens: [], blink: [], neon: [], spin: [], holo: [], steam: [], lamps: [], tubes: [], scan: [] };
 
 // ====================================================================== world layout
@@ -422,7 +425,7 @@ const MK = (() => { const g = new THREE.Group(); scene.add(g);
   spikesAlong([[-2, 9.7], [-.8, 10.5], [.6, 11.1], [1.9, 11.8], [3.1, 12.4], [4.4, 12.6], [5.6, 13.7], [6.5, 14.4]], [1.1, 1.6, 2, 2.2, 2.1, 1.7, 1.3, 1]);
   spikesAlong([[-4, 9.3 - 8.4 + 8.4], [-6, 8.9], [-8, 8.4], [-10, 7.8], [-12, 7], [-14, 6.2]].map(([x, y]) => [x + 2.4, y - 8.4]), [1.2, 1.1, 1, .85, .7, .55], tail);
   pLight(C.mag, 320, 46, -2, 22, 10, scene); pLight(0x6a8cff, 220, 40, -30, 14, 8, scene); pLight(C.cyan, 200, 30, -10, 8, 8, scene); const core = pLight(C.cyan, 12, 10, 2.4, 9, 3.5, g);
-  g.position.set(-16.5, 0, -5); g.scale.setScalar(1.05);
+  outline(g, 0x05070c, .09, 1); g.position.set(-16.5, 0, -5); g.scale.setScalar(1.05);
   let nextRoar = now() + rnd(9000, 14000), roarT = -1;
   let st = 'away', stT = 0, awaySince = now() - 20000, X = -52; g.visible = false;
   let flinch = 0;
@@ -607,7 +610,7 @@ let seedN = 1;
 class NPC {
   constructor(name) {
     this.name = name; this.meta = META[name] || { name, color: '#3ff0ff', role: '', desc: '' }; [this.sf, this.sx] = SEATS[name];
-    this.b = makeBody(this.meta, seedN++); scene.add(this.b.root); for (const m of this.b.meshes) m.userData.npc = this;
+    this.b = makeBody(this.meta, seedN++); this.b.root.scale.setScalar(1.12); outline(this.b.root, new THREE.Color(this.meta.color || '#3ff0ff').multiplyScalar(.55).getHex(), .022, 1); scene.add(this.b.root); for (const m of this.b.meshes) m.userData.npc = this;
     this.f = this.sf; this.x = this.sx; this.z = SEAT_Z; this.y = FL[this.f].y; this.way = []; this.legs = []; this.mode = 'free'; this.server = { status: 'idle' }; this.next = now() + rnd(3000, 12000); this.history = []; this.act = 'sit'; this.actUntil = 0; this.t = Math.random() * 9; this.face = Math.PI; this.faceT = Math.PI;
     this.tag = el('npc-tag', `<b>${name}</b>`); this.tag.style.setProperty('--c', this.meta.color); this.tag.onclick = () => openNPC(this); this.bubble = el('bubble hidden', ''); this.icon = el('npc-icon', ''); this.carry = el('npc-carry hidden', '📦');
     this.sit();
@@ -850,7 +853,7 @@ const SkyEvents = (() => {
     X([[-1.6, 10.6], [1.6, 10.6], [1.6, 13.6], [-1.6, 13.6]], 1.4, Dk, g, -1.6); for (const s of [-1, 1]) { const th = new THREE.Mesh(new THREE.CylinderGeometry(.45, .65, 1.4, 12), J); th.position.set(s * .9, 10.1, -1.9); g.add(th); const sb = new THREE.Mesh(new THREE.CylinderGeometry(.13, .13, 1.6, 8), Wm); sb.position.set(s * 1.1, 14.2, -1.6); sb.rotation.z = -s * .35; g.add(sb); box(.12, .3, .12, E(C.mag, 3), s * 1.4, 14.9, -1.6); }
     const head = new THREE.Group(); head.position.set(0, 13.7, 0); g.add(head); X([[-.75, 0], [.75, 0], [.85, 1.1], [.5, 1.6], [-.5, 1.6], [-.85, 1.1]], 1.5, Wm, head); X([[-.45, .05], [.45, .05], [.35, .55], [-.35, .55]], 1.6, Ac, head); box(.9, .13, .05, G, 0, .8, .82, head);
     for (const s of [-1, 1]) X([[0, 1.3], [s * .15, 1.2], [s * 1.5, 2.6], [s * 1.35, 2.7]], .16, Y, head, .7, .02); X([[-.12, 1.4], [.12, 1.4], [.1, 1.9], [-.1, 1.9]], .3, E(C.red, 3), head, .72, .02);
-    return { g, legs, arms }; }
+    outline(g, 0x05070c, .08, 1); return { g, legs, arms }; }
   const MAKE = {
     battle() { const r = robot(0xeef1f7, 0x2b303d, 0x3f7bff), g = r.g, flames = [], loop = Sound.loop('thrust'); g.scale.set(-1.05, 1.05, 1.05);
       for (const [x, z] of [[-.9, -1.9], [.9, -1.9]]) { const f = new THREE.Mesh(new THREE.ConeGeometry(.55, 3, 10), new THREE.MeshBasicMaterial({ color: new THREE.Color(C.cyan).multiplyScalar(2), transparent: true, opacity: .75, toneMapped: false, depthWrite: false })); f.rotation.x = -Math.PI / 2 - .5; f.position.set(x, 10.4, z - 1.2); g.add(f); flames.push(f); }
@@ -1084,7 +1087,7 @@ renderer.setAnimationLoop(() => {
   const k = clamp(camState.zoom * .85, .8, 1.6);
   const placed = [], placedB = [];
   for (const n of Object.values(npcs)) { const top = n.b.root.position.clone(); top.y += n.sitting ? 1.55 : 2.05; const [x, y] = project(top), [, fy] = project(n.b.root.position);
-    let ty2 = fy + 2; for (const [px2, py2] of placed) if (Math.abs(px2 - x) < 70 * k && Math.abs(py2 - ty2) < 16 * k) ty2 = py2 + 17 * k; placed.push([x, ty2]); n.tag.style.transform = `translate(${x}px, ${ty2}px) translate(-50%,0) scale(${k})`; let by2 = y; if (!n.bubble.classList.contains('hidden')) { const bh = (n.bubble.offsetHeight || 40) * k + 4; for (const [bx3, by3, bh3] of placedB) if (Math.abs(bx3 - x) < 180 * k && Math.abs(by3 - by2) < Math.max(bh, bh3)) by2 = by3 - bh3; placedB.push([x, by2, bh]); } n.bubble.style.transform = `translate(${x}px, ${by2}px) translate(-50%,-100%) scale(${k})`;
+    let ty2 = fy + 2; for (const [px2, py2] of placed) if (Math.abs(px2 - x) < 70 * k && Math.abs(py2 - ty2) < 16 * k) ty2 = py2 + 17 * k; placed.push([x, ty2]); n.tag.style.transform = `translate(${x}px, ${ty2}px) translate(-50%,0) scale(${k})`; let by2 = y; if (!n.bubble.classList.contains('hidden')) { const bh = (n.bubble.offsetHeight || 40) * Math.min(k, 1) + 4; for (const [bx3, by3, bh3] of placedB) if (Math.abs(bx3 - x) < 180 * k && Math.abs(by3 - by2) < Math.max(bh, bh3)) by2 = by3 - bh3; placedB.push([x, by2, bh]); } n.bubble.style.transform = `translate(${x}px, ${by2}px) translate(-50%,-100%) scale(${Math.min(k, 1)})`;
     n.icon.style.transform = `translate(${x}px, ${y - 4}px) translate(-50%,-100%)`; n.carry.style.transform = `translate(${x + 10}px, ${y + 14}px)`; }
   if (cat) { const [x, y] = project(new THREE.Vector3(cat.x, .8, cat.z)); cat.bubble.style.transform = `translate(${x}px, ${y}px) translate(-50%,-100%)`; }
   Holo.place();
