@@ -16,8 +16,11 @@ export function makeBody(meta, seed) {
   const pants = M(pick([0x1b2232, 0x23283a, 0x2a2236, 0x1d1d24]), { roughness: .75 }), boots = M(0x0b0d12, { roughness: .3, metalness: .35 }), glow = E(accHex, 2.4), hairM = M(HAIR[(R2() * HAIR.length) | 0], { roughness: .45 }), dark = M(0x0b0d12), metal = M(0x8a94a8, { metalness: .85, roughness: .25 });
   const cap = (r, l, m, x, y, z, p, rz = 0) => { const o = new THREE.Mesh(new THREE.CapsuleGeometry(r, l, 4, 12), m); o.position.set(x, y, z); o.rotation.z = rz; p.add(o); return o; };
   const sph = (r, m, x, y, z, p, sx = 1, sy = 1, sz = 1) => { const o = new THREE.Mesh(new THREE.SphereGeometry(r, 16, 12), m); o.position.set(x, y, z); o.scale.set(sx, sy, sz); p.add(o); return o; };
+  const limb = (prof, m, x, y, z, p) => { const o = new THREE.Mesh(new THREE.LatheGeometry(prof.map(([r, h]) => new THREE.Vector2(r, h)), 16), m); o.position.set(x, y, z); p.add(o); return o; };
+  const THIGH = [[0, 0], [.07, .01], [.078, .08], [.09, .2], [.095, .3], [.08, .38], [0, .4]], CALF = [[0, 0], [.055, .01], [.06, .1], [.074, .24], [.07, .32], [.062, .38], [0, .39]];
+  const UPPER = [[0, 0], [.05, .01], [.056, .1], [.066, .2], [.07, .26], [.06, .3], [0, .31]], FORE = [[0, 0], [.044, .01], [.048, .08], [.058, .2], [.055, .25], [0, .26]];
   const root = new THREE.Group(), hips = new THREE.Group(); hips.position.y = .92; root.add(hips);
-  const leg = s => { const p = new THREE.Group(); p.position.set(s * .1, 0, 0); hips.add(p); cap(.085, .3, pants, 0, -.22, 0, p); sph(.07, metal, 0, -.46, .04, p, 1, .8, .6); cap(.07, .3, pants, 0, -.66, 0, p);
+  const leg = s => { const p = new THREE.Group(); p.position.set(s * .1, 0, 0); hips.add(p); limb(THIGH, pants, 0, -.42, 0, p); sph(.065, metal, 0, -.46, .04, p, 1, .8, .6); limb(CALF, pants, 0, -.86, 0, p);
     const bt = new THREE.Mesh(new THREE.CapsuleGeometry(.075, .14, 4, 10), boots); bt.rotation.x = Math.PI / 2; bt.position.set(0, -.88, .05); p.add(bt); box(.16, .025, .27, glow, 0, -.95, .05, p); return p; };
   const legL = leg(-1), legR = leg(1);
   const torso = new THREE.Group(); hips.add(torso); const pel = cap(.13, .14, pants, 0, .02, 0, torso, Math.PI / 2); pel.scale.z = .9;
@@ -34,8 +37,8 @@ export function makeBody(meta, seed) {
   else if (style < .8) { cap(.06, .32, hairM, 0, .02, -.12, head); } else { const bun = sph(.07, hairM, 0, .3, -.12, head); }
   if (R2() < .5) { const vz = new THREE.Mesh(new THREE.TorusGeometry(.15, .022, 6, 20, Math.PI * .8), glow); vz.rotation.set(0, 0, Math.PI * .1); vz.position.set(0, .21, .01); vz.rotation.x = Math.PI / 2; vz.rotation.z = Math.PI * 1.1; head.add(vz); } else sph(.03, E(C.cyan, 3), -.15, .2, .04, head);
   if (R2() < .35) { const mask = sph(.11, dark, 0, .1, .06, head, 1, .5, .9); }
-  const arm = s => { const p = new THREE.Group(); p.position.set(s * .27, .5, 0); torso.add(p); sph(.09, jacket2, 0, -.01, 0, p, 1, .9, 1); cap(.06, .24, jacket, 0, -.2, 0, p); const cf = new THREE.Mesh(new THREE.TorusGeometry(.058, .012, 4, 14), glow); cf.rotation.x = Math.PI / 2; cf.position.y = -.4; p.add(cf);
-    cap(.055, .2, jacket, 0, -.5, 0, p); sph(.052, R2() < .4 ? dark : skin, 0, -.68, 0, p, .9, 1.1, .8); return p; };
+  const arm = s => { const p = new THREE.Group(); p.position.set(s * .27, .5, 0); torso.add(p); sph(.09, jacket2, 0, -.01, 0, p, 1, .9, 1); limb(UPPER, jacket, 0, -.36, 0, p); const cf = new THREE.Mesh(new THREE.TorusGeometry(.058, .012, 4, 14), glow); cf.rotation.x = Math.PI / 2; cf.position.y = -.4; p.add(cf);
+    limb(FORE, jacket, 0, -.64, 0, p); sph(.052, R2() < .4 ? dark : skin, 0, -.68, 0, p, .9, 1.1, .8); return p; };
   const armL = arm(-1), armR = arm(1);
   const cup = new THREE.Group(); armR.add(cup); cup.position.set(0, -.74, .06); const cu = new THREE.Mesh(new THREE.CylinderGeometry(.045, .038, .12, 12), M(0xe8e8e8)); cup.add(cu); cup.visible = false;
   const cig = new THREE.Group(); armR.add(cig); cig.position.set(.02, -.72, .07); box(.02, .02, .12, M(0xeeeeee), 0, 0, .04, cig); const ember = box(.025, .025, .025, E(0xff5a2a, 4), 0, 0, .11, cig); cig.visible = false;

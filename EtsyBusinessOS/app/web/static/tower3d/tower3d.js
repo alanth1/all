@@ -526,8 +526,11 @@ function makeBody(meta, seed) {
   const pants = M(pick([0x1b2232, 0x23283a, 0x2a2236, 0x1d1d24]), { roughness: .75 }), boots = M(0x0b0d12, { roughness: .3, metalness: .35 }), glow = E(accHex, 2.4), hairM = M(HAIR[(R2() * HAIR.length) | 0], { roughness: .45 }), dark = M(0x0b0d12), metal = M(0x8a94a8, { metalness: .85, roughness: .25 });
   const cap = (r, l, m, x, y, z, p, rz = 0) => { const o = new THREE.Mesh(new THREE.CapsuleGeometry(r, l, 4, 12), m); o.position.set(x, y, z); o.rotation.z = rz; p.add(o); return o; };
   const sph = (r, m, x, y, z, p, sx = 1, sy = 1, sz = 1) => { const o = new THREE.Mesh(new THREE.SphereGeometry(r, 16, 12), m); o.position.set(x, y, z); o.scale.set(sx, sy, sz); p.add(o); return o; };
+  const limb = (prof, m, x, y, z, p) => { const o = new THREE.Mesh(new THREE.LatheGeometry(prof.map(([r, h]) => new THREE.Vector2(r, h)), 16), m); o.position.set(x, y, z); p.add(o); return o; };
+  const THIGH = [[0, 0], [.07, .01], [.078, .08], [.09, .2], [.095, .3], [.08, .38], [0, .4]], CALF = [[0, 0], [.055, .01], [.06, .1], [.074, .24], [.07, .32], [.062, .38], [0, .39]];
+  const UPPER = [[0, 0], [.05, .01], [.056, .1], [.066, .2], [.07, .26], [.06, .3], [0, .31]], FORE = [[0, 0], [.044, .01], [.048, .08], [.058, .2], [.055, .25], [0, .26]];
   const root = new THREE.Group(), hips = new THREE.Group(); hips.position.y = .92; root.add(hips);
-  const leg = s => { const p = new THREE.Group(); p.position.set(s * .1, 0, 0); hips.add(p); cap(.085, .3, pants, 0, -.22, 0, p); sph(.07, metal, 0, -.46, .04, p, 1, .8, .6); cap(.07, .3, pants, 0, -.66, 0, p);
+  const leg = s => { const p = new THREE.Group(); p.position.set(s * .1, 0, 0); hips.add(p); limb(THIGH, pants, 0, -.42, 0, p); sph(.065, metal, 0, -.46, .04, p, 1, .8, .6); limb(CALF, pants, 0, -.86, 0, p);
     const bt = new THREE.Mesh(new THREE.CapsuleGeometry(.075, .14, 4, 10), boots); bt.rotation.x = Math.PI / 2; bt.position.set(0, -.88, .05); p.add(bt); box(.16, .025, .27, glow, 0, -.95, .05, p); return p; };
   const legL = leg(-1), legR = leg(1);
   const torso = new THREE.Group(); hips.add(torso); const pel = cap(.13, .14, pants, 0, .02, 0, torso, Math.PI / 2); pel.scale.z = .9;
@@ -544,8 +547,8 @@ function makeBody(meta, seed) {
   else if (style < .8) { cap(.06, .32, hairM, 0, .02, -.12, head); } else { const bun = sph(.07, hairM, 0, .3, -.12, head); }
   if (R2() < .5) { const vz = new THREE.Mesh(new THREE.TorusGeometry(.15, .022, 6, 20, Math.PI * .8), glow); vz.rotation.set(0, 0, Math.PI * .1); vz.position.set(0, .21, .01); vz.rotation.x = Math.PI / 2; vz.rotation.z = Math.PI * 1.1; head.add(vz); } else sph(.03, E(C.cyan, 3), -.15, .2, .04, head);
   if (R2() < .35) { const mask = sph(.11, dark, 0, .1, .06, head, 1, .5, .9); }
-  const arm = s => { const p = new THREE.Group(); p.position.set(s * .27, .5, 0); torso.add(p); sph(.09, jacket2, 0, -.01, 0, p, 1, .9, 1); cap(.06, .24, jacket, 0, -.2, 0, p); const cf = new THREE.Mesh(new THREE.TorusGeometry(.058, .012, 4, 14), glow); cf.rotation.x = Math.PI / 2; cf.position.y = -.4; p.add(cf);
-    cap(.055, .2, jacket, 0, -.5, 0, p); sph(.052, R2() < .4 ? dark : skin, 0, -.68, 0, p, .9, 1.1, .8); return p; };
+  const arm = s => { const p = new THREE.Group(); p.position.set(s * .27, .5, 0); torso.add(p); sph(.09, jacket2, 0, -.01, 0, p, 1, .9, 1); limb(UPPER, jacket, 0, -.36, 0, p); const cf = new THREE.Mesh(new THREE.TorusGeometry(.058, .012, 4, 14), glow); cf.rotation.x = Math.PI / 2; cf.position.y = -.4; p.add(cf);
+    limb(FORE, jacket, 0, -.64, 0, p); sph(.052, R2() < .4 ? dark : skin, 0, -.68, 0, p, .9, 1.1, .8); return p; };
   const armL = arm(-1), armR = arm(1);
   const cup = new THREE.Group(); armR.add(cup); cup.position.set(0, -.74, .06); const cu = new THREE.Mesh(new THREE.CylinderGeometry(.045, .038, .12, 12), M(0xe8e8e8)); cup.add(cu); cup.visible = false;
   const cig = new THREE.Group(); armR.add(cig); cig.position.set(.02, -.72, .07); box(.02, .02, .12, M(0xeeeeee), 0, 0, .04, cig); const ember = box(.025, .025, .025, E(0xff5a2a, 4), 0, 0, .11, cig); cig.visible = false;
@@ -809,6 +812,9 @@ function puff(x, y, z, col = 0x8a96b0, n = 10, size = .5, spd = 2, life = 1.4) {
 function shock(x, y, z, col = C.cyan, r0 = 1, ry = 0) { const m = new THREE.Mesh(new THREE.TorusGeometry(1, .05, 6, 40), new THREE.MeshBasicMaterial({ color: new THREE.Color(col).multiplyScalar(2.4), transparent: true, opacity: .7, toneMapped: false, depthWrite: false })); m.position.set(x, y, z); m.rotation.y = ry; m.scale.setScalar(r0); scene.add(m); parts.push({ m, v: new THREE.Vector3(), life: .6, fade: .6, grow: 2.2, gr: 0 }); }
 function debris(x, y, z, col = 0x3a3f4a, n = 14, spd = 7) { for (let i = 0; i < n; i++) { const m = new THREE.Mesh(new THREE.IcosahedronGeometry(rnd(.15, .45), 0), M(col, { roughness: .8, emissive: 0x2a1205 })); m.position.set(x, y, z); scene.add(m); parts.push({ m, v: new THREE.Vector3(rnd(-spd, spd), rnd(2, spd * 1.4), rnd(-spd * .4, spd * .4)), life: rnd(1.2, 2.2), gr: 12, spin: 1 }); } }
 const partGeo = new THREE.BoxGeometry(.07, .07, .07);
+function smoothMove(g, dt, rate = 4) { const u = g.userData, goal = g.position.clone(); if (!u.sp) { u.sp = goal.clone(); u.vel = new THREE.Vector3(); }
+  const prev = u.sp.clone(); u.sp.lerp(goal, 1 - Math.exp(-dt * rate)); g.position.copy(u.sp); u.vel.lerp(u.sp.clone().sub(prev).divideScalar(Math.max(dt, .001)), .2);
+  g.rotation.z += (-u.vel.x * .02 - g.rotation.z * 0) * 0; g.rotation.x = THREE.MathUtils.clamp(u.vel.x * .015, -.35, .35) * (g.scale.x < 0 ? -1 : 1); }
 function beamFX(a, b, col, life = .35, r = .2) { const d = b.clone().sub(a), len = d.length(); const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 1.4, len, 10, 1, true), new THREE.MeshBasicMaterial({ color: new THREE.Color(col).multiplyScalar(3), transparent: true, opacity: .95, toneMapped: false, depthWrite: false, side: THREE.DoubleSide }));
   m.position.copy(a).addScaledVector(d, .5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()); scene.add(m); parts.push({ m, v: new THREE.Vector3(), life, fade: life, gr: 0, op: 1 });
   const core = new THREE.Mesh(new THREE.CylinderGeometry(r * .35, r * .35, len, 6), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xffffff).multiplyScalar(3), toneMapped: false })); core.position.copy(m.position); core.quaternion.copy(m.quaternion); scene.add(core); parts.push({ m: core, v: new THREE.Vector3(), life: life * .8, gr: 0 }); }
@@ -863,7 +869,7 @@ const SkyEvents = (() => {
       const sl = new THREE.PointLight(C.mag, 0, 16, 1.5); sl.position.y = -4; saber.add(sl); const fl = new THREE.PointLight(C.cyan, 30, 20, 1.5); fl.position.set(0, 8, -3); g.add(fl); rim(g, 0x8fb4ff);
       const P = new THREE.Vector3(30, 26, -5); let lastShot = 0, done = {}, spin = 0; MK.hold = true; toast('⚔ Mecha menyerang kaiju!'); Sound.mecha();
       const once = (k2, fn) => { if (!done[k2]) { done[k2] = 1; fn(); } };
-      const pose = (aim, guard, swing, legs) => { r.arms[1].rotation.set(0, 0, aim); r.arms[0].rotation.set(0, 0, guard); r.legs[0].rotation.x = legs; r.legs[1].rotation.x = -legs * .6; const sv = swing !== null; if (sv && !saber.visible) { saber.hum = Sound.loop('saber'); Sound.zap(); } if (!sv && saber.visible) saber.hum?.stop(); if (sv && Math.abs((swing || 0) - (saber.lastSw ?? swing)) > .25) Sound.whoosh(); saber.lastSw = swing; saber.visible = sv; if (swing !== null) r.arms[1].rotation.z = swing; };
+      const pose = (aim, guard, swing, legs) => { const e = 1 - Math.exp(-(window.__dt || .016) * (swing !== null ? 16 : 7)), L = (o, k2, v) => { o[k2] += (v - o[k2]) * e; }; L(r.arms[1].rotation, 'z', swing !== null ? swing : aim); L(r.arms[0].rotation, 'z', guard); L(r.legs[0].rotation, 'x', legs); L(r.legs[1].rotation, 'x', -legs * .6); const sv = swing !== null; if (sv && !saber.visible) { saber.hum = Sound.loop('saber'); Sound.zap(); } if (!sv && saber.visible) saber.hum?.stop(); if (sv && Math.abs((swing || 0) - (saber.lastSw ?? swing)) > .25) Sound.whoosh(); saber.lastSw = swing; saber.visible = sv; };
       const muzzle = () => r.arms[1].localToWorld(new THREE.Vector3(0, -7.6, 0));
       return { g, dur: 32000, stop() { loop.stop(); MK.hold = false; }, update(k, t, dt) { const mx = MK.g.position.x, home = new THREE.Vector3(mx + 18.5, 5 + Math.sin(t * 1.6) * .8, -5); let boost = .6;
         if (k < .12) { const q = k / .12; g.position.lerpVectors(P, home, 1 - (1 - q) ** 3); boost = 1.4; pose(.2, -.2, null, .5); g.rotation.z = -.25 * (1 - q); }
@@ -875,12 +881,12 @@ const SkyEvents = (() => {
         else if (k < .86) { g.position.lerp(home, .05); pose(.2, 1.3, null, .2); sl.intensity = 0; once('kf2', () => MK.fire(g.position.clone().add(new THREE.Vector3(0, 16, 2)))); }
         else { const q = (k - .86) / .14; g.position.lerpVectors(home, new THREE.Vector3(mx + 60, 40, -12), q * q); boost = 1.8; pose(.3, -.2, null, .4); if (q > .5) MK.hold = false; }
         g.rotation.z = spin ? Math.sin(spin) * .5 : g.rotation.z * .9; for (const f of flames) f.scale.y = boost * (.75 + Math.random() * .5);
-        if (Math.random() < .3 * boost) puff(g.position.x + rnd(-1, 1), g.position.y + 9, g.position.z - 2.5, 0x9fdcff, 1, .3, .6, .7); } }; },
+        if (Math.random() < .3 * boost) puff(g.position.x + rnd(-1, 1), g.position.y + 9, g.position.z - 2.5, 0x9fdcff, 1, .3, .6, .7); g.position.y -= 2.5; smoothMove(g, dt, 4.5); } }; },
     mecha() { const r = robot(0xe8ebf2, 0x2b303d, 0xe0407a), g = r.g, flames = [], loop = Sound.loop('thrust');
       for (const x of [-1.25, 1.25]) { const f = new THREE.Mesh(new THREE.ConeGeometry(.8, 3.4, 10), new THREE.MeshBasicMaterial({ color: new THREE.Color(C.cyan).multiplyScalar(1.6), transparent: true, opacity: .6, toneMapped: false, depthWrite: false })); f.rotation.x = Math.PI; f.position.set(x, -1.6, 0); g.add(f); flames.push(f); }
       const fl = new THREE.PointLight(C.cyan, 40, 30, 1.5); fl.position.set(0, -1, 2); g.add(fl); rim(g); g.scale.setScalar(1.15); g.rotation.y = .35; let shot = 0;
-      return { g, dur: 26000, stop() { loop.stop(); }, update(k, t, dt) { g.position.set(-66 + k * 60, 4 + Math.sin(t * 1.4) * 1.2, -30); for (const f of flames) { f.scale.y = .8 + Math.random() * .6; } fl.intensity = 30 + Math.random() * 20;
-        r.legs[0].rotation.x = Math.sin(t * 1.4) * .15; r.legs[1].rotation.x = -Math.sin(t * 1.4) * .15; r.arms[0].rotation.z = -.15; const aim = k > .45 && k < .62; r.arms[1].rotation.z = aim ? 1.45 : .1; r.arms[1].rotation.x = aim ? -.2 : 0;
+      return { g, dur: 26000, stop() { loop.stop(); }, update(k, t, dt) { g.position.set(-66 + k * 60, 4 + Math.sin(t * 1.4) * 1.2, -30); smoothMove(g, dt, 3); for (const f of flames) { f.scale.y = .8 + Math.random() * .6; } fl.intensity = 30 + Math.random() * 20;
+        r.legs[0].rotation.x = Math.sin(t * 1.4) * .15; r.legs[1].rotation.x = -Math.sin(t * 1.4) * .15; r.arms[0].rotation.z = -.15; const aim = k > .45 && k < .62, ea = 1 - Math.exp(-dt * 6); r.arms[1].rotation.z += ((aim ? 1.45 : .1) - r.arms[1].rotation.z) * ea; r.arms[1].rotation.x += ((aim ? -.2 : 0) - r.arms[1].rotation.x) * ea;
         if (Math.random() < .25) puff(g.position.x + rnd(-1, 1), g.position.y - 1, g.position.z, 0x9fdcff, 1, .35, .6, .8);
         if (aim && t - shot > 1.1) { shot = t; Sound.laser(); const mp = new THREE.Vector3(3.9, 5, .6).applyMatrix4(r.arms[1].matrixWorld); const bm = new THREE.Mesh(new THREE.CylinderGeometry(.18, .18, 70, 8), new THREE.MeshBasicMaterial({ color: new THREE.Color(C.mag).multiplyScalar(3), transparent: true, opacity: .9, toneMapped: false, depthWrite: false }));
           bm.position.copy(mp).add(new THREE.Vector3(35, 2, -10)); bm.rotation.z = Math.PI / 2 - .06; bm.rotation.y = .28; scene.add(bm); parts.push({ m: bm, v: new THREE.Vector3(), life: .35, fade: .35, gr: 0 }); shock(mp.x, mp.y, mp.z, C.mag, .4, Math.PI / 2); flash = Math.max(flash, .12); } } }; },
@@ -1042,7 +1048,7 @@ if (Q.has('lq')) { setTimeout(() => { bloom.enabled = false; renderer.setPixelRa
 const RAIN_VIS = v => { scene.children.forEach(c => { if (c.isLineSegments) c.visible = v; }); };
 const clock = new THREE.Clock(); let ft = 0;
 renderer.setAnimationLoop(() => {
-  const dt = Math.min(.1, clock.getDelta()), t = now() / 1000; ft += dt;
+  const dt = Math.min(.1, clock.getDelta()), t = now() / 1000; ft += dt; window.__dt = dt;
   if (ft > .12) { ft = 0; for (const s of anim.screens) { if (s.type === 'leds') { const c = s.t.userData.c.getContext('2d'); c.fillStyle = '#10141f'; c.fillRect(0, 0, 16, 64); for (let y = 2; y < 64; y += 4) { c.fillStyle = '#1c2232'; c.fillRect(1, y, 14, 3); for (let k = 0; k < 3; k++) if (Math.random() > .25 + (1 - cpuLoad) * .3) { c.fillStyle = pick(['#3ff0ff', '#9fffcf', '#ff3fa4', '#ffcf73']); c.fillRect(2 + k * 4, y + 1, 2, 1); } } s.t.needsUpdate = true; } else if (Math.random() < .6) drawScreen(s, t); } }
   // camera ease
   const dist = fitDist() / camState.zoom; camState.dist += (dist - camState.dist) * Math.min(1, dt * 5); camState.cur.lerp(new THREE.Vector3(camState.tx, camState.ty, camState.tz), Math.min(1, dt * 5));
@@ -1053,7 +1059,7 @@ renderer.setAnimationLoop(() => {
   for (const s of anim.spin) { if (s.search) { s.search.rotation.z = Math.sin(t * .2 + s.ph) * .35; s.search.rotation.x = Math.cos(t * .17 + s.ph) * .2; } else s.rotation.y += dt * (s.userData.fast ? 8 : .8); }
   for (const h of anim.holo) { h.visible = Math.random() > .02; }
   for (const b of anim.blink) b.m.visible = Math.sin(t * 2.5 + b.ph) > .2;
-  for (const n of anim.neon) { const f = Math.random() < .012 ? .15 : 1; n.m.material.color.copy(n.base).multiplyScalar(f * (dark ? .3 : 1)); }
+  for (const n of anim.neon) { n.f = n.f ?? 1; if (!n.dip && Math.random() < .004) n.dip = .15 + Math.random() * .4; const tgt = n.dip ? n.dip : 1; n.f += (tgt - n.f) * Math.min(1, dt * (n.dip ? 18 : 4)); if (n.dip && Math.abs(n.f - n.dip) < .05) n.dip = 0; n.m.material.color.copy(n.base).multiplyScalar(n.f * (dark ? .3 : 1)); }
   for (const s of anim.scan) s.m.position.y = s.y + .2 + (Math.sin(t * 2) * .5 + .5) * 2.2;
   for (let i = smokeSprites.length - 1; i >= 0; i--) { const s2 = smokeSprites[i]; s2.t += dt; s2.sp.position.addScaledVector(s2.v, dt); s2.sp.scale.setScalar(.15 + s2.t * .5); s2.sp.material.opacity = Math.max(0, .4 - s2.t * .18); if (s2.t > 2.2) { scene.remove(s2.sp); smokeSprites.splice(i, 1); } }
   liftOpen += (liftWant - liftOpen) * Math.min(1, dt * 6); liftDoorL.position.z = -.42 - liftOpen * .4; liftDoorR.position.z = .42 + liftOpen * .4;
