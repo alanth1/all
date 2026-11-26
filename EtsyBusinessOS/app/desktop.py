@@ -19,6 +19,14 @@ def _base() -> Path:
 
 os.environ.setdefault("EBOS_ROOT", str(_base()))
 
+# Windowed exe has no console: give stdout/stderr a log file so uvicorn/logging never crash on None streams
+_logdir = _base() / "logs"
+_logdir.mkdir(parents=True, exist_ok=True)
+if sys.stdout is None or sys.stderr is None:
+    _log = open(_logdir / "neonloom.log", "a", encoding="utf-8", buffering=1)
+    sys.stdout = sys.stdout or _log
+    sys.stderr = sys.stderr or _log
+
 from . import config  # noqa: E402
 
 URL = f"http://{config.HOST}:{config.PORT}"
@@ -33,7 +41,7 @@ def _port_open() -> bool:
 def _start_server():
     import uvicorn
     from .web.server import app
-    srv = uvicorn.Server(uvicorn.Config(app, host=config.HOST, port=config.PORT, log_level="warning"))
+    srv = uvicorn.Server(uvicorn.Config(app, host=config.HOST, port=config.PORT, log_level="warning", log_config=None))
     th = threading.Thread(target=srv.run, daemon=True, name="ebos-server")
     th.start()
     for _ in range(200):
@@ -106,6 +114,15 @@ class CompanionApi:
 
 
 def main():
+    try:
+        _main()
+    except Exception:  # noqa: BLE001 - always leave a trace for support
+        import traceback
+        (_base() / "logs" / "crash.log").write_text(traceback.format_exc(), encoding="utf-8")
+        raise
+
+
+def _main():
     if "--server-only" in sys.argv:              # used by the CI smoke test and for headless use
         srv = _start_server()
         while not srv.should_exit:
