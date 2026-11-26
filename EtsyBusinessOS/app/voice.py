@@ -15,6 +15,7 @@ URL = "https://huggingface.co/rhasspy/piper-voices/resolve/main/id/id_ID/news_tt
 PACE = {"KAI-07": 1.0, "RAZE-11": .92, "JUNO-X9": 1.05, "VOLT-3": .95, "NYX-21": .9, "KADE-12": 1.08,
         "SABLE-6": 1.12, "HEX-04": .88, "ORIN-88": 1.0, "ZERO-1": .96}
 _lock = threading.Lock()
+_dl_lock = threading.Lock()
 _voice = None
 _status = {"state": "idle", "error": None}
 
@@ -34,13 +35,18 @@ def status() -> dict:
 
 
 def _ensure_model():
+    with _dl_lock:
+        _download()
+
+
+def _download():
     d = vdir()
     d.mkdir(parents=True, exist_ok=True)
     for name in (f"{VOICE}.onnx.json", f"{VOICE}.onnx"):
         p = d / name
         if not p.exists() or p.stat().st_size == 0:
             _status["state"] = f"downloading {name}"
-            tmp = p.with_suffix(p.suffix + ".part")
+            tmp = p.with_name(f"{p.name}.{threading.get_ident()}.part")
             urllib.request.urlretrieve(URL + name, tmp)
             tmp.replace(p)
     _status["state"] = "ready"

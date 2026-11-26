@@ -78,3 +78,10 @@ HEX-04 (social media) · SABLE-6 (aset) · ORIN-88 (analis) · KADE-12 (keuangan
 - Tag model Ollama untuk Gemma 12B ditulis manual di Settings (sesuaikan dengan tag di ollama.com).
 
 Lihat `docs\CHECKLIST_TES.md` untuk langkah tes di PC Anda.
+
+## Desktop app (NEONLOOM.exe)
+- Download the Windows build from GitHub Actions ("NEONLOOM Windows build" → artifact `NEONLOOM_v…_windows`), unzip, run `NEONLOOM.exe`.
+- The local server runs inside the app; no browser needed. Data is stored in the `data` folder next to the exe.
+- Minimise the window to get the desktop companion. Double-click the companion to bring the HQ back.
+- Needs Microsoft Edge WebView2 (preinstalled on Windows 10/11). NPC voices (Piper, Indonesian) download ~63 MB on first start.
+- `NEONLOOM.exe --server-only` runs just the server (open http://127.0.0.1:8765 in a browser).

@@ -168,6 +168,12 @@ def world3d(request: Request):
     return templates.TemplateResponse(request, "world3d.html", {"agents": agents.statuses(), "assets": game_assets()})
 
 
+@app.get("/companion", response_class=HTMLResponse)
+def companion_view(request: Request):
+    """Small transparent window shown on the desktop while the HQ window is minimised."""
+    return templates.TemplateResponse(request, "companion.html", {"agents": agents.statuses()})
+
+
 @app.get("/api/world")
 def api_world(since: int = 0):
     return JSONResponse(world.snapshot(since))
