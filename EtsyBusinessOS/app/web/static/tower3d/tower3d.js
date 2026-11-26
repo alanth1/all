@@ -21,14 +21,18 @@ const hex = c => '#' + c.toString(16).padStart(6, '0');
 // ====================================================================== renderer, scene, post
 const host = document.getElementById('game');
 const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5)); renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+const GFX = (window.GFX || 'auto');   // auto | high | ultra  (set by ZERO-1 in the hologram)
+const BASE_PR = Math.max(1, Math.min(devicePixelRatio, GFX === 'ultra' ? 2 : 1.5));
+renderer.setPixelRatio(BASE_PR); renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
 host.appendChild(renderer.domElement); renderer.domElement.style.cssText = 'width:100%;height:100%;display:block';
 const scene = new THREE.Scene(); const FOGC = new THREE.Color(0x3a4560); scene.fog = new THREE.Fog(FOGC, 90, 260);
 const skyC = document.createElement('canvas'); skyC.width = 64; skyC.height = 256; { const s = skyC.getContext('2d'), gr = s.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, '#0e1320'); gr.addColorStop(.6, '#2a344b'); gr.addColorStop(1, '#4c5874'); s.fillStyle = gr; s.fillRect(0, 0, 64, 256); }
 const skyTex = new THREE.CanvasTexture(skyC); skyTex.colorSpace = THREE.SRGBColorSpace; scene.background = skyTex;
 let cityMats = [], moonSprite = null;
 const cam = new THREE.PerspectiveCamera(30, 1, .5, 900);
-const composer = new EffectComposer(renderer); composer.addPass(new RenderPass(scene, cam));
+// MSAA render target: without it the post-processing chain renders with NO anti-aliasing (jagged / blocky edges)
+const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: renderer.capabilities.isWebGL2 ? (GFX === 'ultra' ? 8 : 4) : 0 }));
+composer.addPass(new RenderPass(scene, cam));
 const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), .7, .45, .86); composer.addPass(bloom);
 const fx = new ShaderPass({ uniforms: { tDiffuse: { value: null }, time: { value: 0 }, glitch: { value: 0 }, flash: { value: 0 }, dark: { value: 0 }, alarm: { value: 0 } },
   vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.); }',
@@ -689,7 +693,7 @@ class NPC {
   pop(e) { if (['error', 'waiting'].includes(this.server.status)) return; this.icon.className = 'npc-icon pop'; this.icon.textContent = e; clearTimeout(this._p); this._p = setTimeout(() => { if (this.icon.textContent === e) { this.icon.className = 'npc-icon'; this.icon.textContent = ''; } }, 2200); }
   life() {
     if (this.sitting && !isWork(this) && Math.random() < .06) { this.sitMood = pick([null, null, 'tired', 'think', 'stretch', 'phone', 'sleep']); if (this.sitMood === 'sleep') this.pop('💤'); if (this.sitMood === 'tired') this.pop('😮‍💨'); } if (isWork(this)) this.sitMood = null;
-    { const d = SHOW.agents[this.name]; if (d && d.say && d.say.length && !this.moving() && Math.random() < .012 && now() - (this._rep || 0) > 25000) { this._rep = now(); const line = pick(d.say); this.say(line, 6000, 'say'); this.pop('📊'); NPCVoice.speak(this, line); } }
+    { const d = SHOW.agents[this.name]; if (d && d.say && d.say.length && !this.moving() && Math.random() < .012 && now() - (this._rep || 0) > 25000) { this._rep = now(); const k = Math.floor(Math.random() * d.say.length), line = d.say[k]; this.say(line, 6000, 'say'); this.pop('📊'); NPCVoice.speak(this, line, d.say_en && d.say_en[k]); } }
     if (this.sitting && Math.random() < .035) this.pop(isWork(this) ? pick(['⌨️', '🧠', '📊', '⚡', '💾', '🔍']) : pick(['💡', '☕', '🎧', '💭', '😴', '📈', '🎵', '😎']));
     if (this.busy() || now() < this.next || Phase.cur) return; this.next = now() + rnd(9000, 20000);
     const r = Math.random(), others = Object.values(npcs).filter(n => n !== this && !n.busy());
@@ -1005,46 +1009,45 @@ for (const name of Object.keys(SEATS)) { npcs[name] = new NPC(name); npcMeshes.p
 window.tower = { perf: null, npcs, Phase, SkyEvents, Surprises, Vtol, camState, cam, THREE };
 // important events -> holographic popup, NPC walks to it and reads it
 const Holo = { q: [], cur: null, last: {},
-  show(title, body, n, col = '#3ff0ff') { this.q.push({ title, body, n, col }); if (!this.cur) this.next(); },
+  show(title, body, n, col = '#3ff0ff', en = '') { this.q.push({ title, body, n, col, en }); if (!this.cur) this.next(); },
   next() { const it = this.q.shift(); if (!it) { this.cur = null; return; } const d = el('holo-pop', `<div class="hh">${esc(it.title)}</div><div class="hb">${esc(it.body)}</div><div class="hf">${it.n ? esc(it.n.name) + ' · ' + esc(it.n.meta.role || '') : 'NEONLOOM'}</div>`);
     d.style.setProperty('--hc', it.col); this.cur = { d, it, t0: now() }; Sound.chime(); flash = Math.max(flash, .08);
-    if (it.n) { it.n.pop('📢'); setTimeout(() => { it.n.say(it.body, 6500, 'say'); NPCVoice.speak(it.n, it.body); }, 600); }
+    if (it.n) { it.n.pop('📢'); setTimeout(() => { it.n.say(it.body, 6500, 'say'); NPCVoice.speak(it.n, it.body, it.en); }, 600); }
     setTimeout(() => { d.classList.add('out'); setTimeout(() => { d.remove(); this.next(); }, 600); }, 8000); },
   place() { if (!this.cur) return; const n = this.cur.it.n; const w = n ? new THREE.Vector3(n.x, n.y + 3.1, D) : new THREE.Vector3(22, FH * 3, D); const [x, y] = project(w); this.cur.d.style.transform = `translate(${x}px, ${y}px) translate(-50%,-100%)`; } };
 // NPC voices: Piper (Indonesian) from the local server + a different cyberpunk effect chain per NPC
 const NPCVoice = (() => {
-  const FX = { 'KAI-07': { rate: .96, crush: 10, ring: 0, band: [300, 3600], echo: .18 }, 'RAZE-11': { rate: 1.04, crush: 0, ring: 38, band: [400, 3200], echo: .1 },
-    'JUNO-X9': { rate: 1.1, crush: 0, ring: 0, band: [500, 5000], echo: .28, chorus: 1 }, 'VOLT-3': { rate: .9, crush: 7, ring: 0, band: [350, 2800], echo: .08 },
-    'NYX-21': { rate: 1.14, crush: 0, ring: 70, band: [600, 4200], echo: .12 }, 'KADE-12': { rate: .86, crush: 0, ring: 0, band: [200, 2400], echo: .22, chorus: 1 },
-    'SABLE-6': { rate: 1.02, crush: 12, ring: 0, band: [700, 3000], echo: .3 }, 'HEX-04': { rate: 1.18, crush: 0, ring: 25, band: [500, 6000], echo: .15, chorus: 1 },
-    'ORIN-88': { rate: .94, crush: 8, ring: 55, band: [300, 3400], echo: .1 }, 'ZERO-1': { rate: .8, crush: 6, ring: 90, band: [180, 2200], echo: .2 } };
+  const FX = { 'KAI-07': { band: [90, 9000], echo: .1, pan: -.15 }, 'RAZE-11': { band: [110, 8500], echo: .08, pan: .2 }, 'JUNO-X9': { band: [120, 10000], echo: .12, pan: -.25 },
+    'VOLT-3': { band: [100, 8000], echo: .07, pan: .1, radio: .12 }, 'NYX-21': { band: [130, 10000], echo: .1, pan: -.1 }, 'KADE-12': { band: [80, 8500], echo: .14, pan: .25 },
+    'SABLE-6': { band: [120, 9500], echo: .16, pan: -.2 }, 'HEX-04': { band: [140, 11000], echo: .1, pan: .15 }, 'ORIN-88': { band: [100, 9000], echo: .09, pan: 0, radio: .1 },
+    'ZERO-1': { band: [70, 7500], echo: .12, pan: .05, radio: .18 } };
   const q = []; let busy = false, on = !Q.has('novoice'), failed = 0; const cache = new Map();
   const crushCurve = bits => { const n = 2048, c = new Float32Array(n), st = Math.pow(2, bits); for (let i = 0; i < n; i++) { const x = i / (n - 1) * 2 - 1; c[i] = Math.round(x * st) / st; } return c; };
-  async function play(n, text) { const ctx = Sound.ctx; if (!ctx) return; const fx = FX[n.name] || FX['KAI-07'];
-    let buf = cache.get(n.name + text); if (!buf) { const r = await fetch(`/api/tts?agent=${encodeURIComponent(n.name)}&text=${encodeURIComponent(text)}`); if (!r.ok) throw new Error('tts ' + r.status); buf = await ctx.decodeAudioData(await r.arrayBuffer()); if (cache.size > 60) cache.clear(); cache.set(n.name + text, buf); }
-    const src = ctx.createBufferSource(); src.buffer = buf; src.playbackRate.value = fx.rate; let node = src;
+  async function play(n, text, en) { const ctx = Sound.ctx; if (!ctx) return; const fx = FX[n.name] || FX['KAI-07'];
+    const key = n.name + (en || text); let buf = cache.get(key); if (!buf) { const r = await fetch(`/api/tts?agent=${encodeURIComponent(n.name)}&text=${encodeURIComponent(text)}&en=${encodeURIComponent(en || '')}`); if (!r.ok) throw new Error('tts ' + r.status); buf = await ctx.decodeAudioData(await r.arrayBuffer()); if (cache.size > 60) cache.clear(); cache.set(key, buf); }
+    const src = ctx.createBufferSource(); src.buffer = buf; let node = src;
     const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = fx.band[0]; const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = fx.band[1]; node.connect(hp); hp.connect(lp); node = lp;
-    if (fx.crush) { const ws = ctx.createWaveShaper(); ws.curve = crushCurve(fx.crush); node.connect(ws); node = ws; }
-    if (fx.ring) { const rg = ctx.createGain(); rg.gain.value = 0; const osc = ctx.createOscillator(); osc.frequency.value = fx.ring; const og = ctx.createGain(); og.gain.value = .7; osc.connect(og); og.connect(rg.gain); const dry = ctx.createGain(); dry.gain.value = .5; node.connect(rg); node.connect(dry); const mix = ctx.createGain(); rg.connect(mix); dry.connect(mix); osc.start(); osc.stop(ctx.currentTime + buf.duration / fx.rate + .5); node = mix; }
-    const out = ctx.createGain(); out.gain.value = 1.4; node.connect(out);
-    if (fx.chorus) { const dl = ctx.createDelay(); dl.delayTime.value = .018; const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = .8; lg.gain.value = .004; lfo.connect(lg); lg.connect(dl.delayTime); lfo.start(); lfo.stop(ctx.currentTime + buf.duration + 1); node.connect(dl); dl.connect(out); }
-    const ec = ctx.createDelay(); ec.delayTime.value = .16; const eg = ctx.createGain(); eg.gain.value = fx.echo; out.connect(ec); ec.connect(eg); eg.connect(ec); eg.connect(Sound.out); out.connect(Sound.out);
+    if (fx.radio) { const pk = ctx.createBiquadFilter(); pk.type = 'peaking'; pk.frequency.value = 2200; pk.Q.value = 1; pk.gain.value = fx.radio * 30; node.connect(pk); node = pk; }
+    const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -20; comp.ratio.value = 3; node.connect(comp); node = comp;
+    const out = ctx.createGain(); out.gain.value = 1.25; node.connect(out); const pan = ctx.createStereoPanner ? ctx.createStereoPanner() : null; let last = out; if (pan) { pan.pan.value = fx.pan || 0; out.connect(pan); last = pan; }
+    const ec = ctx.createDelay(); ec.delayTime.value = .09; const eg = ctx.createGain(); eg.gain.value = fx.echo; const ef = ctx.createBiquadFilter(); ef.type = 'lowpass'; ef.frequency.value = 3000;
+    last.connect(ec); ec.connect(ef); ef.connect(eg); eg.connect(Sound.out); last.connect(Sound.out);
     Sound.blip(); src.start(); n.talking = true; await new Promise(res => { src.onended = res; }); n.talking = false; }
-  async function pump() { if (busy) return; busy = true; while (q.length) { const [n, t] = q.shift(); try { await play(n, t); failed = 0; } catch (e) { if (++failed > 3) { on = false; console.info('NPC voice disabled:', e.message); } } await new Promise(r => setTimeout(r, 250)); } busy = false; }
-  return { speak(n, text) { if (!on || !n || !text) return; const clean = String(text).replace(/[\u{1F300}-\u{1FAFF}☀-➿]/gu, '').replace(/_/g, ' ').trim(); if (!clean) return; if (q.length > 3) q.shift(); q.push([n, clean]); pump(); },
+  async function pump() { if (busy) return; busy = true; while (q.length) { const [n, t, en] = q.shift(); try { await play(n, t, en); failed = 0; } catch (e) { if (++failed > 3) { on = false; console.info('NPC voice disabled:', e.message); } } await new Promise(r => setTimeout(r, 250)); } busy = false; }
+  return { speak(n, text, en) { if (!on || !n || !text) return; const strip = x => String(x || '').replace(/[\u{1F300}-\u{1FAFF}☀-➿]/gu, '').replace(/_/g, ' ').trim(); const clean = strip(text); if (!clean) return; if (q.length > 3) q.shift(); q.push([n, clean, strip(en)]); pump(); },
     toggle() { on = !on; toast(on ? '🗣 Suara NPC ON' : '🗣 Suara NPC OFF'); }, get on() { return on; } };
 })();
 let lastPending = 0;
 async function loadShow() { try { const d = await (await fetch('/api/world/showcase')).json(); SHOW.agents = d.agents || {}; SHOW.ticker = d.ticker || []; const pn = d.pending || 0;
-  if (pn > lastPending) { Holo.show('APPROVAL DIBUTUHKAN', `${pn} listing menunggu keputusan owner. Klik badge di atas atau ruang QA BAY.`, npcs['KAI-07'], '#ff3fa4'); toast(`📝 ${pn} listing menunggu approval — klik ruang QA BAY`); Sound.chime(); const k = npcs['KAI-07']; if (k) { k.say(`Owner, ada ${pn} listing nunggu approval!`, 7000, 'alert'); NPCVoice.speak(k, `Owner, ada ${pn} listing menunggu persetujuan.`); k.pop('📝'); } }
+  if (pn > lastPending) { Holo.show('APPROVAL DIBUTUHKAN', `${pn} listing menunggu keputusan owner. Klik badge di atas atau ruang QA BAY.`, npcs['KAI-07'], '#ff3fa4', `Owner, ${pn} listing${pn > 1 ? 's are' : ' is'} waiting for your decision in the QA bay.`); toast(`📝 ${pn} listing menunggu approval — klik ruang QA BAY`); Sound.chime(); const k = npcs['KAI-07']; if (k) { k.say(`Owner, ada ${pn} listing nunggu approval!`, 7000, 'alert'); k.pop('📝'); } }
   lastPending = pn; approvalBadge.style.display = pn ? '' : 'none'; approvalBadge.textContent = `📝 ${pn} menunggu approval`; } catch (e) {} }
 const approvalBadge = el('approval-badge', ''); approvalBadge.style.cssText = 'position:fixed;left:50%;top:14px;transform:translateX(-50%);display:none;cursor:pointer;z-index:20;padding:8px 14px;border:1px solid #ff3fa4;background:rgba(10,14,22,.9);color:#ffd0e8;font:14px monospace;box-shadow:0 0 14px #ff3fa4;animation:blink 1.2s infinite;pointer-events:auto';
 approvalBadge.onclick = () => { if (window.HoloDash) return window.HoloDash.open('QA BAY', 'approval'); const r = ROOMS.find(q => q.name === 'COMMAND DECK'); openRoom(r); const b = [...document.querySelectorAll('.ptabs button')].find(x => x.textContent === 'Approval'); b && b.click(); };
 loadShow(); setInterval(loadShow, 20000);
 poll(); setInterval(poll, 3000); setInterval(() => { Object.values(npcs).forEach(n => n.life()); Phase.tick(); }, 1000);
 for (let i = 0; i < 6; i++) spawnCar(i % 2);
-const perf = { frames: 0, t0: performance.now(), level: Q.has('lq') ? 2 : 0, fps: 0 }; const tn2 = () => performance.now(); window.tower && (window.tower.perf = perf);
-if (Q.has('lq')) { setTimeout(() => { bloom.enabled = false; renderer.setPixelRatio(.8); resize(); }, 0); }
+const perf = { frames: 0, t0: performance.now(), level: Q.has('lq') ? 2 : 0, fps: 0, low: 0, born: performance.now() }; const tn2 = () => performance.now(); window.tower && (window.tower.perf = perf);
+if (Q.has('lq')) { setTimeout(() => { bloom.enabled = false; RAIN_VIS(false); }, 0); }
 const RAIN_VIS = v => { scene.children.forEach(c => { if (c.isLineSegments) c.visible = v; }); };
 const clock = new THREE.Clock(); let ft = 0; const FRAME_HOOKS = [];
 renderer.setAnimationLoop(() => {
@@ -1088,7 +1091,11 @@ renderer.setAnimationLoop(() => {
   fx.uniforms.time.value = t; fx.uniforms.glitch.value = now() < glitchUntil ? .6 + Math.random() * .4 : (Math.random() < .002 ? .35 : 0); fx.uniforms.flash.value = flash; fx.uniforms.dark.value = dark; fx.uniforms.alarm.value = Object.values(npcs).some(n => n.server.status === 'error') ? .25 : 0;
   composer.render();
   perf.frames++; if (tn2() - perf.t0 > 3000) { const fps = perf.frames * 1000 / (tn2() - perf.t0); perf.frames = 0; perf.t0 = tn2(); perf.fps = fps;
-    if (fps < 28 && perf.level < 3 && !Q.has('hq')) { perf.level++; if (perf.level === 1) renderer.setPixelRatio(1); if (perf.level === 2) { bloom.enabled = false; renderer.setPixelRatio(.8); } if (perf.level === 3) { renderer.setPixelRatio(.65); RAIN_VIS(false); } resize(); console.info('quality ->', perf.level, fps.toFixed(1)); } }
+    // adaptive quality never lowers resolution below 100% (that made everything blocky); it only trims effects,
+    // ignores the first 12 s (shader compile / loading stutter) and needs 3 slow checks in a row. 'high'/'ultra' never degrade.
+    perf.low = fps < 30 ? perf.low + 1 : 0;
+    if (GFX === 'auto' && !Q.has('hq') && tn2() - perf.born > 12000 && perf.low >= 3 && perf.level < 2) { perf.low = 0; perf.level++;
+      if (perf.level === 1) { renderer.setPixelRatio(1); resize(); } if (perf.level === 2) RAIN_VIS(false); console.info('quality ->', perf.level, fps.toFixed(1)); } }
   // DOM overlays
   const k = clamp(camState.zoom * .85, .8, 1.6);
   const placed = [], placedB = [];

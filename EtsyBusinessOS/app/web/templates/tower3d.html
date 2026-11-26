@@ -3,10 +3,10 @@
 <body>
 <div id="game"></div><div id="overlay"></div>
 <div id="hud"><div class="brand">NEONLOOM<span>HQ</span> <small> v{{ VERSION }}</small></div><div class="sys"></div><div class="ai"></div>
-<div class="date">Scroll = zoom · tarik = geser · klik ruangan/NPC · P = pixel · M = suara · N = suara NPC · 1–6 = zoom lantai · Home = semua</div></div><div id="toasts"></div>
+<div class="date">Scroll = zoom · tarik = geser · klik ruangan/NPC · M = suara · N = suara NPC · 1–6 = zoom lantai · Home = semua</div></div><div id="toasts"></div>
 <div id="panel"><div class="pwin"><div class="phead"><div class="ptitle"></div><button class="pclose">✕</button></div><div class="ptabs"></div>
 <div class="pbody"><iframe title="room" src="about:blank"></iframe><div class="pbody-info"></div></div></div></div>
-<script>window.CSRF = "{{ CSRF }}"; window.AGENTS_META = {{ agents|tojson }}; window.ASSETS = {{ assets|tojson }};</script>
+<script>window.CSRF = "{{ CSRF }}"; window.GFX = "{{ gfx }}"; window.AGENTS_META = {{ agents|tojson }}; window.ASSETS = {{ assets|tojson }};</script>
 <script type="importmap">{"imports":{"three":"/static/game3d/vendor/build/three.module.min.js","three/addons/":"/static/game3d/vendor/jsm/"}}</script>
 <script type="module" src="/static/tower3d/tower3d.js?v={{ VERSION }}"></script>
 <link rel="stylesheet" href="/static/tower3d/holodash.css?v={{ VERSION }}"><script type="module" src="/static/tower3d/holodash.js?v={{ VERSION }}"></script><script type="module" src="/static/tower3d/shoptower.js?v={{ VERSION }}"></script>

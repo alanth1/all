@@ -7,7 +7,7 @@ ROOT = Path(SPECPATH).parent
 datas = [(str(ROOT / "app" / "web" / "templates"), "app/web/templates"), (str(ROOT / "app" / "web" / "static"), "app/web/static"),
          (str(ROOT / "app" / "schema.sql"), "app")]
 binaries, hidden = [], collect_submodules("uvicorn") + collect_submodules("app") + ["apscheduler.triggers.interval", "apscheduler.triggers.cron"]
-for pkg in ("piper", "onnxruntime", "webview", "keyring", "tzdata"):
+for pkg in ("kokoro_onnx", "espeakng_loader", "phonemizer", "segments", "dlinfo", "onnxruntime", "webview", "keyring", "tzdata"):
     d, b, h = collect_all(pkg)
     datas += d; binaries += b; hidden += h
 

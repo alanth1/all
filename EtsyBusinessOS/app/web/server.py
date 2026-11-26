@@ -131,7 +131,8 @@ def period(request: Request) -> tuple[str, str]:
 @app.get("/", response_class=HTMLResponse)
 def world_view(request: Request):
     """The living office (game view). Every feature is reached through its room."""
-    return templates.TemplateResponse(request, "tower3d.html", {"agents": agents.statuses(), "assets": game_assets()})
+    gfx = db.settings().get("display", {}).get("graphics", "high")
+    return templates.TemplateResponse(request, "tower3d.html", {"agents": agents.statuses(), "assets": game_assets(), "gfx": gfx if gfx in ("auto", "high", "ultra") else "high"})
 
 
 @app.get("/hq2d", response_class=HTMLResponse)
@@ -180,12 +181,12 @@ def api_world(since: int = 0):
 
 
 @app.get("/api/tts")
-def api_tts(text: str, agent: str = ""):
-    """NPC voice line (Piper, Indonesian). Returns WAV; 503 while the voice model is unavailable."""
+def api_tts(text: str = "", agent: str = "", en: str = ""):
+    """NPC voice line (Kokoro, English). Returns WAV; 503 while the voice model is unavailable."""
     from fastapi.responses import Response
     from .. import voice
     try:
-        return Response(voice.synth(text, agent), media_type="audio/wav", headers={"Cache-Control": "max-age=86400"})
+        return Response(voice.synth(text, agent, en), media_type="audio/wav", headers={"Cache-Control": "max-age=86400"})
     except Exception as e:  # noqa: BLE001
         return JSONResponse({"error": str(e)[:200], **voice.status()}, status_code=503)
 
@@ -254,6 +255,7 @@ async def api_holo_listing_action(lid: int, action: str, request: Request):
             d = str(body.get("decision", ""))
             listings.decide(lid, d, str(body.get("note", ""))[:500], "human")
             msg = {"approve": "Disetujui. Dikirim ke Etsy.", "reject": "Ditolak.", "request_revision": "Diminta revisi. JUNO-X9 akan menulis ulang."}[d]
+            en = {"approve": "Approved. Sending it to Etsy now.", "reject": "Rejected.", "request_revision": "Revision requested. JUNO will rewrite it."}[d]
         elif action == "golive":
             l = db.q1("SELECT * FROM listings WHERE id=?", (lid,))
             appr = listings.valid_approval(lid)
@@ -261,7 +263,7 @@ async def api_holo_listing_action(lid: int, action: str, request: Request):
                 raise ValueError("hanya draft Etsy yang sudah di-approve yang bisa dijadikan LIVE")
             jid = jobs.enqueue("etsy_publish", {"listing_id": lid, "version_id": appr["version_id"], "target": "active"}, priority=1, actor="human")
             audit("human", "listing.go_live", "listing", lid, {"job": jid})
-            msg = "Menjadikan LIVE di Etsy."
+            msg, en = "Menjadikan LIVE di Etsy.", "Going live on Etsy now."
         elif action == "slot":
             l = db.q1("SELECT * FROM listings WHERE id=?", (lid,))
             slot = shops.norm(body.get("slot"))
@@ -270,6 +272,7 @@ async def api_holo_listing_action(lid: int, action: str, request: Request):
             db.ex("UPDATE listings SET slot=?, updated_at=? WHERE id=?", (slot, now(), lid))
             audit("human", "listing.set_shop", "listing", lid, {"slot": slot})
             msg = f"Listing dipindah ke {shops.info(slot)['name']}."
+            en = f"Moved the listing to {shops.info(slot)['name']}."
         elif action == "edit":
             patch = {}
             if "title" in body:
@@ -281,10 +284,10 @@ async def api_holo_listing_action(lid: int, action: str, request: Request):
             if "price_usd" in body:
                 patch["price_usd"] = float(body["price_usd"])
             listings.edit(lid, patch, "human")
-            msg = "Disimpan sebagai versi baru. Perlu approve ulang."
+            msg, en = "Disimpan sebagai versi baru. Perlu approve ulang.", "Saved as a new version. It needs your approval again."
         else:
             raise HTTPException(404)
-        return {"msg": msg, "listing": holo.listing_detail(lid)}
+        return {"msg": msg, "en": en, "listing": holo.listing_detail(lid)}
     except HTTPException:
         raise
     except Exception as e:  # noqa: BLE001
@@ -362,6 +365,22 @@ def api_showcase():
         "pending": pend.get("n", 0),
         "ticker": [f"{shop.get('name') or 'NEONLOOM'}", f"{rev.get('n', 0)} ORDER · {money(rev.get('g'), cur)}", *L(listings[:3], lambda r: f"{(r['title'] or '')[:30]} {money(r['price_cents'], cur)}"), f"{pend.get('n', 0)} MENUNGGU APPROVAL"],
     }
+    rp_en = lambda c: money(c, cur).replace("Rp ", "") + " rupiah"
+    en = {
+        "KAI-07": [f"Daily brief: {rev.get('n', 0)} orders in total, revenue {rp_en(rev.get('g'))}.", f"{pend.get('n', 0)} listings are waiting for the owner's approval.", "I'm watching every queue."],
+        "RAZE-11": [f"Research source: {', '.join(r['name'] for r in sources[:2]) or 'Etsy API'}. No scraping.", *(f"Tracking keyword: {r['keyword']}" for r in kw[:2])] or ["Ready to research keywords."],
+        "JUNO-X9": [f"Best listing: {(top.get('title') or '')[:40]}", "I write the titles and tags, Python validates them."],
+        "VOLT-3": ["I check every AI output before it reaches the owner.", *(f"{r['n']} listings with status {r['state'].replace('_', ' ')}." for r in by_state[:2])],
+        "NYX-21": [*(f"Order of {rp_en(r['g'])} from {r['c'] or 'somewhere'}." for r in orders[:3])] or ["No new orders yet."],
+        "KADE-12": [f"Total outgoing, fees and payouts: {rp_en(-(fees.get('f') or 0))}.", *(f"Payout on {r['d']}: {rp_en(r['a'])}." for r in payouts[:1]), "Debits equal credits. The books are balanced."],
+        "SABLE-6": [f"Archive: {assets.get('n') or 0} asset files stored.", f"{audits.get('n', 0)} audit entries recorded."],
+        "HEX-04": [*(f"{r['platform']} status is {r['status'].replace('_', ' ')}." for r in socials[:2]), "Instagram and Facebook are not available yet."],
+        "ORIN-88": [f"Top listing: {top.get('views') or 0} views and {top.get('num_favorers') or 0} favorites.", "Shop Stats come from the CSV, not the API."],
+        "ZERO-1": [*(f"Job {r['type'].replace('_', ' ')} is {r['state'].lower()}." for r in lastjobs[:2]), "Daily backup is safe."],
+    }
+    for k, v in en.items():
+        if k in data["agents"] and len(v) == len(data["agents"][k]["say"]):
+            data["agents"][k]["say_en"] = v
     return JSONResponse(data)
 
 

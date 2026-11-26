@@ -62,7 +62,7 @@ def test_tts_endpoint_reports_status(env):
     from app.web.server import app
     with TestClient(app) as c:
         st = c.get("/api/tts/status").json()
-        assert st["voice"] == "id_ID-news_tts-medium" and "model_ready" in st
+        assert st["voice"] == "kokoro-v1.0" and st["language"] == "en" and "model_ready" in st
         assert c.get("/static/sfx/roar.ogg").status_code == 200
 
 

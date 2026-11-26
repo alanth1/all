@@ -166,6 +166,24 @@ function shopsTable(d) { const rows = d.shops || []; if (!rows.length) return '<
   const tot = rows.reduce((a, x) => a + (x.revenue || 0), 0);
   return `<table>${rows.map(x => `<tr style="cursor:pointer" data-open="TOKO ${x.slot}"><td><img src="${esc(x.logo_holo)}" alt="" style="height:16px;vertical-align:middle;margin-right:6px"><b style="color:${x.color}">L${x.slot}</b> · ${esc(x.name)}</td><td>${x.enabled ? (d.mode === 'demo' ? 'DEMO' : esc(STAT_ID[x.status] || x.status)) : 'NONAKTIF'}</td><td class="r">${x.orders} order</td><td class="r">${N(x.live)} live</td><td class="r">${RP(x.revenue)}</td></tr>`).join('')}
     <tr><td><b>TOTAL (1 owner)</b></td><td></td><td class="r"><b>${rows.reduce((a, x) => a + x.orders, 0)} order</b></td><td></td><td class="r"><b>${RP(tot)}</b></td></tr></table>`; }
+// what the NPC SAYS (English voice); the hologram text stays Indonesian
+const RPe = v => { v = v || 0; const a = Math.abs(v); return a >= 1e9 ? (v / 1e9).toFixed(1) + ' billion rupiah' : a >= 1e6 ? (v / 1e6).toFixed(1) + ' million rupiah' : a >= 1e3 ? Math.round(v / 1e3) + ' thousand rupiah' : Math.round(v) + ' rupiah'; };
+const pl = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const EN = {
+  'COMMAND DECK': d => `Here's your ${d.period.days}-day summary. Revenue ${RPe(d.overview.revenue)}, profit ${RPe(d.overview.profit)}, ${pl(d.overview.orders, 'order')}. ${d.overview.pending ? pl(d.overview.pending, 'listing') + ' waiting for your approval.' : 'Nothing is waiting for approval.'}`,
+  'FINANCE VAULT': d => `Finance report. Revenue ${RPe(d.finance.revenue)}, Etsy fees ${RPe(d.finance.fees)}, net profit ${RPe(d.finance.profit)}. The books are ${d.finance.balanced ? 'balanced' : 'NOT balanced, please check'}.`,
+  'SHOP FLOOR': d => d.sales.orders.length ? `Latest order: ${RPe(d.sales.orders[0].g)}. Best seller: ${d.sales.top[0] ? d.sales.top[0].t : 'none yet'}.` : 'No orders yet.',
+  'QA BAY': d => d.approval.count ? `${pl(d.approval.count, 'listing')} waiting for the owner's decision.` : 'All listings are decided. The approval queue is empty.',
+  'WRITERS STUDIO': d => `${pl(d.listings.total, 'listing')} in total. ${d.listings.by_state.active || 0} live, ${d.listings.by_state.pending_approval || 0} waiting for approval.`,
+  'ARCHIVE': d => `The archive holds ${pl(d.assets.n || 0, 'file')} for ${pl(d.assets.products, 'product')}.`,
+  'RESEARCH LAB': d => d.research.keywords.length ? `Latest keywords: ${d.research.keywords.slice(0, 3).join(', ')}.` : 'No keyword research yet.',
+  'DATA ROOM': d => `Listings were viewed ${d.data.views || 0} times and favorited ${d.data.favorites || 0} times.${d.data.visits == null ? ' Visit data has not been imported yet.' : ''}`,
+  'GROWTH STUDIO': d => `${pl(d.social.posts, 'post')} published, ${d.social.scheduled} scheduled, ${d.social.impressions || 0} impressions.`,
+  'SERVER ROOM': d => `System is in ${d.mode === 'live' ? 'live' : 'demo'} mode. ${pl(d.system.jobs.FAILED || 0, 'failed job')}, ${d.system.audit_total} audit records.`,
+  'LOUNGE · PANTRY': () => 'This is the NEONLOOM crew, and what everyone is working on.',
+};
+for (const sl of [1, 2, 3]) EN['TOKO ' + sl] = d => { const x = (d.shops || [])[sl - 1]; if (!x) return ''; if (!x.enabled) return `${x.name} is switched off. Turn it on in the settings tab if you need it.`;
+  return `${x.name}. Revenue ${RPe(x.revenue)}, ${pl(x.orders, 'order')}, ${x.live} live listings${x.pending ? ', ' + x.pending + ' waiting for approval' : ''}.`; };
 const ORDER = ['COMMAND DECK', 'FINANCE VAULT', 'TOKO 1', 'TOKO 2', 'TOKO 3', 'SHOP FLOOR', 'QA BAY', 'WRITERS STUDIO', 'DATA ROOM', 'GROWTH STUDIO', 'RESEARCH LAB', 'ARCHIVE', 'SERVER ROOM', 'LOUNGE · PANTRY'];
 const SHORT = { 'TOKO 1': 'L1 BUILDVERO', 'TOKO 2': 'L2 STUDIOFORGECO', 'TOKO 3': 'L3 AVARCHID', 'COMMAND DECK': 'RINGKASAN', 'FINANCE VAULT': 'KEUANGAN', 'SHOP FLOOR': 'PENJUALAN', 'QA BAY': 'APPROVAL', 'WRITERS STUDIO': 'LISTING', 'DATA ROOM': 'STATISTIK', 'GROWTH STUDIO': 'PROMOSI', 'RESEARCH LAB': 'RISET', 'ARCHIVE': 'ARSIP', 'SERVER ROOM': 'SISTEM', 'LOUNGE · PANTRY': 'KRU' };
 
@@ -194,8 +212,8 @@ function fieldsFor(name) { if (!SET) return []; const S = SECTIONS[name];
   if (S && S.shop) return [...(SET.npcs['KAI-07'] || []).filter(f => f.group === 'TOKO ' + S.shop), ...(SET.npcs['VOLT-3'] || []).filter(f => f.id === `shop${S.shop}.target`)];
   return SET.npcs[ownerOf(name)] || []; }
 
-function speak(name, line) { const t = T(), n = npcObj(name); if (!line) return; subtitle(line, ownerOf(name));
-  try { if (n) { n.say(line, 7000, 'say'); t.NPCVoice && t.NPCVoice.speak(n, line); } } catch (e) {} }
+function speak(name, line, en) { const t = T(), n = npcObj(name); if (!line) return; subtitle(line, ownerOf(name));
+  try { if (n) { n.say(line, 7000, 'say'); t.NPCVoice && t.NPCVoice.speak(n, line, en); } } catch (e) {} }
 function subtitle(line, who) { const f = deck.querySelector('.hd-sub2'); if (f) { f.innerHTML = `<b>${esc(who || 'NEONLOOM')}:</b> ${esc(line)}`; f.classList.remove('pulse'); void f.offsetWidth; f.classList.add('pulse'); } }
 
 function render(name, fresh = true) {
@@ -220,7 +238,7 @@ function render(name, fresh = true) {
     else countUp(body);
     body.querySelectorAll('[data-open]').forEach(r => r.onclick = () => { view = 'dash'; render(r.dataset.open); present(r.dataset.open); });
   }
-  body.querySelectorAll('.hd-mode').forEach(b => b.onclick = async () => { view = b.dataset.m; if (view === 'settings' && !SET) await loadSettings(); render(name); if (view === 'settings') { const f = fieldsFor(name).find(x => x.ask); speak(name, f ? f.ask : 'Ini pengaturan yang saya pegang.'); } if (view === 'approval') speak(name, 'Ini antrian listing. Pilih satu untuk diperiksa.'); });
+  body.querySelectorAll('.hd-mode').forEach(b => b.onclick = async () => { view = b.dataset.m; if (view === 'settings' && !SET) await loadSettings(); render(name); if (view === 'settings') { const f = fieldsFor(name).find(x => x.ask); speak(name, f ? f.ask : 'Ini pengaturan yang saya pegang.', f && f.ask_en ? f.ask_en : 'These are the settings I take care of.'); } if (view === 'approval') speak(name, 'Ini antrian listing. Pilih satu untuk diperiksa.', 'Here is the listing queue. Pick one to review.'); });
   deck.querySelector('.hd-foot').innerHTML = `${who ? `<span class="presenter">◉ ${S.shop ? 'dipandu' : 'dipresentasikan'} oleh ${esc(who)}</span>` : ''}<span class="mode">${DATA.mode === 'live' ? 'LIVE' : 'DEMO · data contoh'}</span><span>kurs ${RP(DATA.currency.rate)} / USD · ${esc(DATA.currency.source)}</span><span style="margin-left:auto">ESC / klik luar = tutup</span>`;
 }
 
@@ -242,15 +260,15 @@ function ctl(f) {
 function settingsHTML(name) {
   const fs = fieldsFor(name); if (!fs.length) return `<section class="hp w12"><h4>PENGATURAN</h4><div class="empty">NPC ini tidak memegang pengaturan.</div></section>`;
   const groups = {}; fs.forEach(f => (groups[f.group] = groups[f.group] || []).push(f));
-  return Object.entries(groups).map(([g, list], i) => `<section class="hp ${Object.keys(groups).length === 1 ? 'w12' : 'w6'}" style="--i:${i}"><h4>${esc(g)}</h4>${list.map(f => `<div class="hs-field" data-ask="${esc(f.ask || '')}">${f.type === 'button' ? '' : `<div class="hs-label">${esc(f.label)}</div>`}${ctl(f)}</div>`).join('')}</section>`).join('')
+  return Object.entries(groups).map(([g, list], i) => `<section class="hp ${Object.keys(groups).length === 1 ? 'w12' : 'w6'}" style="--i:${i}"><h4>${esc(g)}</h4>${list.map(f => `<div class="hs-field" data-ask="${esc(f.ask || '')}" data-ask-en="${esc(f.ask_en || '')}">${f.type === 'button' ? '' : `<div class="hs-label">${esc(f.label)}</div>`}${ctl(f)}</div>`).join('')}</section>`).join('')
     + `<section class="hp w12 hs-log"><h4>LOG</h4><div class="hs-msg">Klik pilihan, ${esc(ownerOf(name) || 'NPC')} akan mengonfirmasi.</div></section>`;
 }
 function bindSettings(name) {
   const body = deck.querySelector('.hd-body'), log = m => { const el = body.querySelector('.hs-msg'); if (el) el.textContent = m; };
-  const done = (r, f) => { log(r.msg); speak(name, r.msg); if (r.open) { location.href = r.open; return; } T().Sound && T().Sound.chime && T().Sound.chime(); loadSettings().then(() => { load(); if (cur === name && view === 'settings') render(name); }); };
-  const fail = e => { log('✖ ' + e.message); speak(name, 'Maaf, gagal: ' + e.message); T().Sound && T().Sound.error && T().Sound.error(); };
+  const done = (r, f) => { log(r.msg); speak(name, r.msg, r.en); if (r.open) { location.href = r.open; return; } if (r.reload) { setTimeout(() => location.reload(), 2500); return; } T().Sound && T().Sound.chime && T().Sound.chime(); loadSettings().then(() => { load(); if (cur === name && view === 'settings') render(name); }); };
+  const fail = e => { log('✖ ' + e.message); speak(name, 'Maaf, gagal: ' + e.message, 'Sorry, that did not work. Please check the message on the hologram.'); T().Sound && T().Sound.error && T().Sound.error(); };
   const fdef = id => fieldsFor(name).find(f => f.id === id) || {};
-  let asked = 0; body.querySelectorAll('.hs-field').forEach(el => el.addEventListener('mouseenter', () => { const a = el.dataset.ask; if (a && Date.now() - asked > 6000) { asked = Date.now(); speak(name, a); } }));
+  let asked = 0; body.querySelectorAll('.hs-field').forEach(el => el.addEventListener('mouseenter', () => { const a = el.dataset.ask; if (a && Date.now() - asked > 6000) { asked = Date.now(); speak(name, a, el.dataset.askEn || ''); } }));
   body.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { const f = fdef(b.dataset.f); let v = b.dataset.v; if (f.type === 'toggle') v = b.dataset.v !== '1';
     const cm = f.confirm_value && f.confirm_value[v]; if (cm && !confirm(cm)) return; api('/api/holo/settings', { id: b.dataset.f, value: v }).then(r => done(r, f), fail); });
   body.querySelectorAll('[data-save]').forEach(b => b.onclick = () => { const i = body.querySelector(`[data-in="${b.dataset.save}"]`); api('/api/holo/settings', { id: b.dataset.save, value: i.value }).then(r => done(r), fail); });
@@ -303,8 +321,9 @@ async function loadDetail(name, id) {
       <button class="hs-btn hl-back">← kembali ke antrian</button></section>`);
   const who = 'VOLT-3', qa = T().npcs[who];
   const line = L.valid ? `Listing ${L.shop}: ${L.title.slice(0, 70)}. QA lolos. Silakan diputuskan.` : `Listing ini belum lolos QA: ${(L.checks.find(c => !c.ok && c.sev === 'error') || {}).msg || 'ada yang perlu diperbaiki'}.`;
-  subtitle(line, who); try { qa && (qa.say(line, 7000), T().NPCVoice.speak(qa, line)); } catch (e) {}
-  const after = r => { subtitle(r.msg, who); try { qa && (qa.say(r.msg, 6000), T().NPCVoice.speak(qa, r.msg)); T().Sound.chime(); } catch (e) {} load(); render(name); };
+  const lineEn = L.valid ? `Listing for ${L.shop}: ${L.title.slice(0, 70)}. Quality check passed. It's your call.` : `This listing has not passed the quality check yet: ${(L.checks.find(c => !c.ok && c.sev === 'error') || {}).msg || 'something needs fixing'}.`;
+  subtitle(line, who); try { qa && (qa.say(line, 7000), T().NPCVoice.speak(qa, line, lineEn)); } catch (e) {}
+  const after = r => { subtitle(r.msg, who); try { qa && (qa.say(r.msg, 6000), T().NPCVoice.speak(qa, r.msg, r.en)); T().Sound.chime(); } catch (e) {} load(); render(name); };
   const fail = e => { subtitle('Gagal: ' + e.message, who); try { T().Sound.error(); } catch (x) {} };
   body.querySelectorAll('.hl-a[data-d]').forEach(b => b.onclick = () => { const d = b.dataset.d; if (d === 'approve' && !confirm(`Approve dan kirim ke Etsy sebagai ${L.target === 'active' ? 'LIVE' : 'DRAFT'} di ${L.shop}?`)) return;
     api(`/api/holo/listing/${L.id}/decide`, { decision: d, note: body.querySelector('.hl-note').value }).then(r => { if (d === 'approve') try { window.ShopTower && window.ShopTower.sendPacket(L.slot - 1, true); } catch (e) {} after(r); }, fail); });
@@ -317,11 +336,11 @@ async function loadDetail(name, id) {
 function present(name) {
   const t = T(), S = SECTIONS[name];
   if (!saved) saved = { tx: t.camState.tx, ty: t.camState.ty, zoom: t.camState.zoom };
-  if (S.shop && window.ShopTower && window.ShopTower.floors[S.shop - 1]) { const F = window.ShopTower.floors[S.shop - 1]; t.camState.tx = -4.5 + 2.4; t.camState.ty = F.y + 1.7; t.camState.zoom = 3.2; window.ShopTower.floors[S.shop - 1].flash = .8; speak(name, S.say(DATA)); return; }
+  if (S.shop && window.ShopTower && window.ShopTower.floors[S.shop - 1]) { const F = window.ShopTower.floors[S.shop - 1]; t.camState.tx = -4.5 + 2.4; t.camState.ty = F.y + 1.7; t.camState.zoom = 3.2; window.ShopTower.floors[S.shop - 1].flash = .8; speak(name, S.say(DATA), EN[name] && EN[name](DATA)); return; }
   const n = npcObj(name); if (!n) return;
   t.camState.tx = n.x + 2.2; t.camState.ty = n.y + 1.4; t.camState.zoom = 3.4;
   try { n.pop && n.pop('📊'); t.Sound && t.Sound.chime && t.Sound.chime(); } catch (e) {}
-  speak(name, S.say(DATA));
+  speak(name, S.say(DATA), EN[name] && EN[name](DATA));
 }
 
 function open(name, mode = 'dash') {

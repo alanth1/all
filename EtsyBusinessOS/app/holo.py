@@ -142,15 +142,15 @@ def _shop_fields() -> list[dict]:
         st = {"connected": "TERSAMBUNG", "expired": "LOGIN KEDALUWARSA", "error": "ERROR", "not_connected": "BELUM TERSAMBUNG"}.get(i["status"], i["status"])
         grp = f"TOKO {s}"
         out += [
-            {"id": f"shop{s}.name", "group": grp, "type": "text", "label": "Nama toko", "value": i["name"], "ask": f"Mau kasih nama apa untuk toko {s}?"},
+            {"id": f"shop{s}.name", "group": grp, "type": "text", "label": "Nama toko", "value": i["name"], "ask": f"Mau kasih nama apa untuk toko {s}?", "ask_en": f"What name do you want for shop {s}?"},
             {"id": f"shop{s}.enabled", "group": grp, "type": "toggle", "label": "Aktifkan toko ini", "value": i["enabled"],
-             "ask": f"Toko {s} mau diaktifkan?"},
+             "ask": f"Toko {s} mau diaktifkan?", "ask_en": f"Should shop {s} be active?"},
             {"id": f"shop{s}.status", "group": grp, "type": "info", "label": "Etsy",
              "value": f"{st}" + (f" · {i['account']}" if i.get("account") else "") + (f" · {i['last_error'][:80]}" if i.get("last_error") and i["status"] != "connected" else "")},
             {"id": f"shop{s}.keys", "group": grp, "type": "keys", "label": "Etsy API key (keystring + shared secret)",
-             "value": "tersimpan ✔" if has_keys else "", "ask": "Masukkan keystring dan shared secret dari developer Etsy. Kalau semua toko pakai satu app, cukup isi di toko 1."},
+             "value": "tersimpan ✔" if has_keys else "", "ask": "Masukkan keystring dan shared secret dari developer Etsy. Kalau semua toko pakai satu app, cukup isi di toko 1.", "ask_en": "Enter the keystring and shared secret from your Etsy developer app. If all shops use one app, shop one is enough."},
             {"id": f"shop{s}.connect", "group": grp, "type": "button", "label": "🔗 Sambungkan / login akun Etsy toko ini",
-             "ask": f"Login dengan akun Etsy milik toko {s}. Pastikan akunnya beda dengan toko lain."},
+             "ask": f"Login dengan akun Etsy milik toko {s}. Pastikan akunnya beda dengan toko lain.", "ask_en": f"Log in with the Etsy account of shop {s}. Make sure it is a different account from the other shops."},
             {"id": f"shop{s}.test", "group": grp, "type": "button", "label": "🧪 Tes koneksi"},
             {"id": f"shop{s}.disconnect", "group": grp, "type": "button", "label": "⛔ Putuskan", "confirm": f"Putuskan Etsy toko {s}?"},
         ]
@@ -168,16 +168,16 @@ def settings_state() -> dict:
         "KAI-07": _shop_fields(),
         "VOLT-3": [
             {"id": "publish_target", "group": "SETELAH APPROVE", "type": "choice", "label": "Listing dikirim ke Etsy sebagai", "options": target_opts,
-             "value": ld.get("publish_target", "draft"), "ask": "Setelah owner approve, listing masuk DRAFT di Etsy atau langsung LIVE?"},
+             "value": ld.get("publish_target", "draft"), "ask": "Setelah owner approve, listing masuk DRAFT di Etsy atau langsung LIVE?", "ask_en": "After you approve, should listings go to Etsy as a draft, or live right away?"},
         ] + [{"id": f"shop{i['slot']}.target", "group": "PER TOKO", "type": "choice", "label": i["name"],
               "options": [{"v": "", "t": "Ikut pengaturan umum"}] + target_opts, "value": i["publish_target"] or "",
-              "ask": f"Khusus {i['name']}, mau DRAFT atau LIVE?"} for i in shops.all_info()],
+              "ask": f"Khusus {i['name']}, mau DRAFT atau LIVE?", "ask_en": f"For {i['name']} only, draft or live?"} for i in shops.all_info()],
         "JUNO-X9": [
             {"id": "gen", "group": "BUAT LISTING BARU", "type": "form", "label": "Tulis listing baru",
              "fields": [{"k": "product_id", "type": "choice", "label": "Produk", "options": prods},
                         {"k": "slot", "type": "choice", "label": "Untuk toko", "options": shop_opts},
                         {"k": "keyword", "type": "text", "label": "Kata kunci (boleh kosong)"}],
-             "ask": "Produk mana yang mau saya tulis listingnya, dan untuk toko yang mana?"},
+             "ask": "Produk mana yang mau saya tulis listingnya, dan untuk toko yang mana?", "ask_en": "Which product should I write a listing for, and for which shop?"},
             {"id": "seo.max_title_words", "group": "ATURAN SEO", "type": "number", "label": "Maks. kata di judul", "value": r["max_title_words"], "min": 5, "max": 30},
             {"id": "seo.tag_count", "group": "ATURAN SEO", "type": "number", "label": "Jumlah tag", "value": r.get("tag_count", 13), "min": 1, "max": 13},
             {"id": "seo.min_description_words", "group": "ATURAN SEO", "type": "number", "label": "Min. kata deskripsi", "value": r.get("min_description_words", 80), "min": 20, "max": 1000},
@@ -190,7 +190,7 @@ def settings_state() -> dict:
         ],
         "SABLE-6": [
             {"id": "assets.folders", "group": "FOLDER PRODUK", "type": "textarea", "label": "Folder file produk (satu per baris)", "value": "\n".join(s["assets"].get("folders", [])),
-             "ask": "Di folder mana file denah dan gambar produk disimpan?"},
+             "ask": "Di folder mana file denah dan gambar produk disimpan?", "ask_en": "Which folders hold your plan files and product images?"},
             {"id": "assets.scan_minutes", "group": "FOLDER PRODUK", "type": "number", "label": "Scan otomatis tiap (menit)", "value": s["assets"].get("scan_minutes", 30), "min": 5, "max": 1440},
             {"id": "assets.scan", "group": "FOLDER PRODUK", "type": "button", "label": "🔍 Scan sekarang"},
             {"id": "brain.path", "group": "OTAK BERSAMA", "type": "text", "label": "Folder catatan (opsional)", "value": s.get("brain", {}).get("path", "")},
@@ -211,15 +211,15 @@ def settings_state() -> dict:
         "ORIN-88": [
             {"id": "stats.import", "group": "SHOP STATS ETSY", "type": "upload", "label": "Impor file CSV Shop Stats",
              "options": [{"v": "daily", "t": "Kunjungan harian"}, {"v": "sources", "t": "Sumber trafik"}],
-             "ask": "Unduh CSV dari Etsy Shop Stats, lalu serahkan ke saya untuk dihitung konversinya."},
+             "ask": "Unduh CSV dari Etsy Shop Stats, lalu serahkan ke saya untuk dihitung konversinya.", "ask_en": "Download the CSV from Etsy Shop Stats and hand it to me. I will work out the conversion rate."},
         ],
         "RAZE-11": [
             {"id": "research", "group": "RISET", "type": "form", "label": "Riset kata kunci",
-             "fields": [{"k": "keyword", "type": "text", "label": "Kata kunci"}], "ask": "Kata kunci apa yang mau saya riset di Etsy?"},
+             "fields": [{"k": "keyword", "type": "text", "label": "Kata kunci"}], "ask": "Kata kunci apa yang mau saya riset di Etsy?", "ask_en": "Which keyword should I research on Etsy?"},
         ],
         "KADE-12": [
             {"id": "display.idr_per_usd", "group": "MATA UANG", "type": "number", "label": "Kurs: 1 USD = Rp", "value": s.get("display", {}).get("idr_per_usd", 16500),
-             "min": 1000, "max": 100000, "ask": "Berapa kurs dolar ke rupiah yang dipakai di laporan?"},
+             "min": 1000, "max": 100000, "ask": "Berapa kurs dolar ke rupiah yang dipakai di laporan?", "ask_en": "Which dollar to rupiah rate should I use in the reports?"},
         ],
         "NYX-21": [
             {"id": "etsy.sync", "group": "SINKRON ETSY", "type": "button", "label": "🔄 Sinkronkan semua toko sekarang"},
@@ -227,7 +227,10 @@ def settings_state() -> dict:
         "ZERO-1": [
             {"id": "mode", "group": "MODE", "type": "choice", "label": "Mode aplikasi", "value": s["mode"],
              "options": [{"v": "demo", "t": "DEMO (data contoh, aman)"}, {"v": "live", "t": "LIVE (pakai Etsy asli)"}],
-             "ask": "Mau tetap di mode DEMO, atau sudah siap LIVE dengan Etsy asli?", "confirm_value": {"live": "Pindah ke LIVE? Listing yang di-approve akan dikirim ke Etsy asli."}},
+             "ask": "Mau tetap di mode DEMO, atau sudah siap LIVE dengan Etsy asli?", "ask_en": "Stay in demo mode, or are you ready to go live with the real Etsy shops?", "confirm_value": {"live": "Pindah ke LIVE? Listing yang di-approve akan dikirim ke Etsy asli."}},
+            {"id": "display.graphics", "group": "GRAFIS", "type": "choice", "label": "Kualitas grafis 3D", "value": s.get("display", {}).get("graphics", "high"),
+             "options": [{"v": "auto", "t": "OTOMATIS (PC lemah)"}, {"v": "high", "t": "TINGGI (disarankan)"}, {"v": "ultra", "t": "ULTRA (GPU kuat, mis. RTX)"}],
+             "ask": "Kualitas grafis mau Otomatis, Tinggi, atau Ultra?", "ask_en": "Graphics quality: auto, high, or ultra?"},
             {"id": "ai.ollama_url", "group": "AI · GEMMA", "type": "text", "label": "Alamat Ollama", "value": a.get("ollama_url")},
             {"id": "ai.primary_model", "group": "AI · GEMMA", "type": "text", "label": "Model utama", "value": a.get("primary_model")},
             {"id": "ai.fallback_model", "group": "AI · GEMMA", "type": "text", "label": "Model cadangan", "value": a.get("fallback_model")},
@@ -243,6 +246,21 @@ def _hours(v: str) -> list[int]:
 
 
 def apply_setting(fid: str, value, extra: dict | None = None) -> dict:
+    r = _apply_setting(fid, value, extra)
+    if "en" not in r:
+        from . import shops
+        k = fid.split(".")[-1]
+        r["en"] = {"name": "Got it, the shop name is updated.", "enabled": "Done, the shop status is updated.", "target": "Got it, publishing preference saved.",
+                   "keys": "API keys saved and encrypted.", "connect": "Opening the Etsy login page.", "test": "Connection test finished.", "disconnect": "Disconnected from Etsy.",
+                   "publish_target": "After approval, listings go to Etsy as " + ("drafts, not live yet." if value == "draft" else "live listings right away."),
+                   "gen": "On it. I'll write the listing, then it shows up in the QA bay.", "folders": "Product folders saved. I only read them, never change them.",
+                   "scan": "Scanning the folders now.", "sync": "Syncing all shops now.", "mode": "Switched to " + ("demo mode." if value == "demo" else "live mode. We're using the real Etsy shops."),
+                   "backup": "Backup saved.", "benchmark": "Running the AI speed test.", "research": "Researching that keyword on Etsy.", "idr_per_usd": "Exchange rate saved.",
+                   "import": "Shop Stats imported."}.get(k, "Done. Saved.")
+    return r
+
+
+def _apply_setting(fid: str, value, extra: dict | None = None) -> dict:
     """Validated setter for one holographic control. Returns {"msg", ...}. Raises ValueError with a readable message."""
     import re
     from pathlib import Path
@@ -391,6 +409,11 @@ def apply_setting(fid: str, value, extra: dict | None = None) -> dict:
             raise ValueError("isi kata kunci")
         from .engines import research  # noqa: F401
         return {"msg": f"Meriset '{kw}' di Etsy (job #{jobs.enqueue('research_keyword', {'keyword': kw, 'pages': 2}, priority=2, actor='human')})."}
+    if fid == "display.graphics":
+        if value not in ("auto", "high", "ultra"):
+            raise ValueError("pilihan tidak valid")
+        U({"display": {"graphics": value}})
+        return {"msg": f"Grafis diset {value.upper()}. Memuat ulang tampilan…", "en": f"Graphics set to {value}. Reloading the view.", "reload": True}
     if fid == "display.idr_per_usd":
         U({"display": {"idr_per_usd": num(1000, 100000)}})
         return {"msg": f"Kurs dipakai: 1 USD = Rp {num(1000, 100000):,}".replace(",", ".") + "."}
