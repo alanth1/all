@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS listings (
   etsy_listing_id TEXT UNIQUE, state TEXT NOT NULL DEFAULT 'draft', current_version_id INTEGER,
   title TEXT, price_cents INTEGER, currency TEXT, url TEXT, views INTEGER, num_favorers INTEGER, raw TEXT,
   last_error TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL,
-  CHECK (state IN ('draft','pending_approval','approved','publishing','active','expired','inactive','deactivated','sold_out','failed','rejected','revision_requested')));
+  CHECK (state IN ('draft','pending_approval','approved','publishing','active','expired','inactive','deactivated','sold_out','failed','rejected','revision_requested','etsy_draft')));
 CREATE TABLE IF NOT EXISTS listing_versions (
   id INTEGER PRIMARY KEY, listing_id INTEGER NOT NULL REFERENCES listings(id), version INTEGER NOT NULL,
   content TEXT NOT NULL, content_hash TEXT NOT NULL, validation TEXT, source TEXT NOT NULL, created_at TEXT NOT NULL,

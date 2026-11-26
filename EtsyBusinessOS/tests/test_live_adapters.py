@@ -186,11 +186,11 @@ def test_ui_end_to_end(env, asset_root):
         jobs.drain()
         lid = db.q1("SELECT id FROM listings WHERE product_id=?", (pid,))["id"]
         page = c.get(f"/approvals/{lid}").text
-        assert "Approve &amp; Publish" in page or "Approve & Publish" in page
+        assert "Approve &amp; kirim ke Etsy" in page or "Approve & kirim ke Etsy" in page
         r = post(f"/approvals/{lid}/decide", decision="approve", note="ok")
         assert "msg=" in r.headers["location"], r.headers["location"]
         jobs.drain()
-        assert db.q1("SELECT state FROM listings WHERE id=?", (lid,))["state"] == "active"
+        assert db.q1("SELECT state FROM listings WHERE id=?", (lid,))["state"] == "etsy_draft"
         r = c.post("/analytics/import", data={"kind": "daily", "csrf": CSRF}, files={"file": ("s.csv", b"date,visits\n2026-11-01,50\n", "text/csv")},
                    follow_redirects=False)
         assert "Imported" in r.headers["location"]

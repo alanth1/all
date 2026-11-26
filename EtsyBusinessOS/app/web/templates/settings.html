@@ -30,6 +30,13 @@
 <label>Shared secret</label><input type="password" name="secret"><button class="sec">Simpan kunci</button></form>
 <p><a class="btn big" href="/connect/etsy">🔗 Hubungkan akun Etsy</a> <a class="small" href="/setup">cara mendapatkan kunci</a></p></div>
 
+<div class="step" style="border-color:#ffb347"><h3><span class="n">★</span>Listing otomatis ke Etsy</h3>
+<p>Setelah Anda approve, listing dikirim sebagai:</p>
+<form method="post" action="/settings/publish-target"><label style="display:block;margin:6px 0"><input type="radio" name="target" value="draft" {% if s.listing_defaults.publish_target != 'active' %}checked{% endif %}> <b>DRAFT di Etsy</b> — dibuat lengkap tapi <u>belum tayang</u>. Aman untuk tes. (disarankan)</label>
+<label style="display:block;margin:6px 0"><input type="radio" name="target" value="active" {% if s.listing_defaults.publish_target == 'active' %}checked{% endif %}> <b>LANGSUNG LIVE</b> — langsung tayang dan bisa dibeli.</label>
+<button class="sec">Simpan pilihan</button></form>
+<p class="small muted">Sekarang: <b>{{ 'LIVE' if s.listing_defaults.publish_target == 'active' else 'DRAFT' }}</b>. Draft bisa dijadikan LIVE kapan saja dari halaman listing (tombol "Jadikan LIVE").</p></div>
+
 <div class="step"><h3><span class="n">4</span>Folder produk</h3>
 <p>Folder berisi denah rumah Anda (satu sub-folder per produk). Lebih dari satu folder? Pisahkan dengan titik koma (;). Aplikasi hanya membaca, tidak pernah mengubah.</p>
 <form method="post" action="/settings/assets"><input type="text" name="folders" value="{{ s.assets.folders|join('; ') }}" placeholder="contoh: D:\Etsy\Produk"><input type="hidden" name="scan_minutes" value="{{ s.assets.scan_minutes }}"><input type="hidden" name="marketing_ready_dirname" value="{{ s.assets.marketing_ready_dirname }}"><button class="sec">Simpan folder</button></form></div>

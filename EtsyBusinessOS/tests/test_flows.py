@@ -82,6 +82,7 @@ def test_ai_cannot_approve(env, asset_root):
 
 
 def test_approve_publish_verify(env, asset_root):
+    db.update_settings({"listing_defaults": {"publish_target": "active"}}, "human")
     lid = _generate(asset_root)
     r = listings.decide(lid, "approve", "looks good", "human")
     jobs.drain()
@@ -294,3 +295,19 @@ def test_demo_seed_assets(env, monkeypatch, tmp_path):
     assert demo.ensure_demo_assets() is True
     assert len(list((tmp_path / "demo_assets").rglob("*.pdf"))) == 3
     assert str(tmp_path / "demo_assets") in db.settings()["assets"]["folders"]
+
+
+def test_publish_target_draft_then_go_live(env, asset_root):
+    """Default target is an Etsy DRAFT (nothing goes live); 'go live' later activates the same listing."""
+    assert db.settings()["listing_defaults"]["publish_target"] == "draft"
+    lid = _generate(asset_root)
+    r = listings.decide(lid, "approve", "", "human")
+    jobs.drain()
+    assert jobs.get(r["job_id"])["state"] == "DONE"
+    l = listings.current(lid)["listing"]
+    assert l["state"] == "etsy_draft" and l["etsy_listing_id"]
+    assert db.q1("SELECT 1 FROM audit_logs WHERE action='etsy.draft_ready' AND entity_id=?", (str(lid),))
+    appr = listings.valid_approval(lid)
+    jobs.enqueue("etsy_publish", {"listing_id": lid, "version_id": appr["version_id"], "target": "active"}, actor="human")
+    jobs.drain()
+    assert listings.current(lid)["listing"]["state"] == "active"

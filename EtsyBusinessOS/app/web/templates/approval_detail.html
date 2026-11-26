@@ -30,12 +30,14 @@
  </div>
  <div class="card" style="margin-top:14px"><h3 style="margin-top:0">Decision</h3>
   {% if valid_approval %}<p>{{ badge('approved') }} Approved version {{ cur.version.version }} at {{ valid_approval.created_at[:16] }}.</p>{% endif %}
-  {% if pj %}<p class="small">Publish job <a href="/automation/job/{{ pj.id }}">#{{ pj.id }}</a> {{ badge(pj.state) }} {{ (pj.error or '')[:200] }}</p>{% endif %}
+  {% if cur.listing.state == 'etsy_draft' %}<div class="card" style="border-color:#ffb347;margin:8px 0"><b>📝 Sudah jadi DRAFT di Etsy</b> — belum tayang. {% if cur.listing.url %}<a href="{{ cur.listing.url }}" target="_blank">Buka di Etsy</a>{% endif %}
+<form method="post" action="/approvals/{{ cur.listing.id }}/golive" style="margin-top:8px"><button class="ok" data-confirm="Jadikan listing ini LIVE di Etsy sekarang?">🚀 Jadikan LIVE</button></form></div>{% endif %}
+{% if pj %}<p class="small">Publish job <a href="/automation/job/{{ pj.id }}">#{{ pj.id }}</a> {{ badge(pj.state) }} {{ (pj.error or '')[:200] }}</p>{% endif %}
   {% if cur.listing.url %}<p><a href="{{ cur.listing.url }}" target="_blank">View on Etsy ↗</a></p>{% endif %}
   <form method="post" action="/approvals/{{ cur.listing.id }}/decide">
    <label>Note (optional; for revision requests, tell the AI what to change)</label><textarea name="note" style="min-height:60px"></textarea>
    <div class="row" style="margin-top:8px">
-    <button class="ok" name="decision" value="approve" {% if not v.ok or cur.listing.state in ['publishing','active'] %}disabled{% endif %} data-confirm="Approve and publish this exact version to Etsy?">✅ Approve & Publish</button>
+    <button class="ok" name="decision" value="approve" {% if not v.ok or cur.listing.state in ['publishing','active','etsy_draft'] %}disabled{% endif %} data-confirm="Approve dan kirim versi ini ke Etsy ({{ 'LIVE' if settings_target == 'active' else 'DRAFT, belum tayang' }})?">✅ Approve & kirim ke Etsy ({{ 'LIVE' if settings_target == 'active' else 'DRAFT' }})</button>
     <button class="sec" name="decision" value="request_revision">✏️ Request revision</button>
     <button class="danger" name="decision" value="reject">❌ Reject</button>
    </div>

@@ -340,7 +340,7 @@ def approval_detail(request: Request, lid: int):
     amap = {a["id"]: a for a in db.q(f"SELECT id, rel_path, kind, width, height FROM social_assets WHERE id IN ({','.join('?' * len(ids)) or 'NULL'})", ids)}
     pj = db.q1("SELECT * FROM jobs WHERE type='etsy_publish' AND payload LIKE ? ORDER BY id DESC LIMIT 1", (f'%"listing_id": {lid},%',))
     return page(request, "approval_detail.html", cur=cur, versions=versions, hist=hist, amap=amap, pj=pj,
-                valid_approval=listings.valid_approval(lid))
+                valid_approval=listings.valid_approval(lid), settings_target=db.settings()["listing_defaults"].get("publish_target", "draft"))
 
 
 @app.post("/approvals/{lid}/edit")
@@ -753,6 +753,25 @@ def settings_seo(max_title_words: int = Form(...), required_suffix: str = Form("
                                       "repeat_ignore": [w.strip() for w in repeat_ignore.split(",") if w.strip()],
                                       "focus_keyword_first": bool(focus_keyword_first), "no_repeated_words": bool(no_repeated_words)}}, "human")
     return back("/settings#seo", "SEO rules saved as a new rule version")
+
+
+@app.post("/settings/publish-target")
+def settings_publish_target(target: str = Form(...)):
+    if target not in ("draft", "active"):
+        return back("/settings", err="invalid target")
+    db.update_settings({"listing_defaults": {"publish_target": target}}, "human")
+    return back("/settings", "Listing akan dikirim sebagai " + ("DRAFT di Etsy (belum tayang)" if target == "draft" else "LIVE di Etsy"))
+
+
+@app.post("/approvals/{lid}/golive")
+def approval_golive(lid: int):
+    l = db.q1("SELECT * FROM listings WHERE id=?", (lid,))
+    appr = listings.valid_approval(lid)
+    if not l or l["state"] != "etsy_draft" or not appr:
+        return back(f"/approvals/{lid}", err="Hanya draft Etsy yang sudah di-approve yang bisa dijadikan LIVE")
+    jid = jobs.enqueue("etsy_publish", {"listing_id": lid, "version_id": appr["version_id"], "target": "active"}, priority=1, actor="human")
+    audit("human", "listing.go_live", "listing", lid, {"job": jid})
+    return back(f"/approvals/{lid}", f"Menjadikan LIVE di Etsy (job #{jid})")
 
 
 @app.post("/settings/listing-defaults")

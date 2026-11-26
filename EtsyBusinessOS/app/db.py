@@ -76,6 +76,14 @@ def migrate():
     schema = (Path(__file__).parent / "schema.sql").read_text(encoding="utf-8")
     c = conn()
     c.executescript(schema)
+    row = q1("SELECT sql FROM sqlite_master WHERE type='table' AND name='listings'")
+    if row and "etsy_draft" not in row[0]:
+        # widen the listings.state CHECK on existing DBs (adds 'etsy_draft')
+        new_sql = row[0].replace("'revision_requested')", "'revision_requested','etsy_draft')")
+        c.execute("PRAGMA writable_schema=ON")
+        c.execute("UPDATE sqlite_master SET sql=? WHERE type='table' AND name='listings'", (new_sql,))
+        c.execute("PRAGMA writable_schema=OFF")
+        c.execute("PRAGMA integrity_check")
     if not q1("SELECT 1 FROM schema_migrations WHERE version=?", (SCHEMA_VERSION,)):
         ex("INSERT INTO schema_migrations(version, applied_at) VALUES(?,?)", (SCHEMA_VERSION, now()))
     if not q1("SELECT 1 FROM users"):

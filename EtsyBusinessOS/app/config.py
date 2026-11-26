@@ -52,6 +52,7 @@ DEFAULT_SETTINGS: dict = {
         "type": "download",
         "quantity": 999,
         "taxonomy_id": 0,
+        "publish_target": "draft",  # draft = create as Etsy DRAFT (safe while testing) | active = go live
     },
     "assets": {"folders": [], "scan_minutes": 30, "marketing_ready_dirname": "marketing"},
     "brain": {"path": "", "max_chars": 6000},

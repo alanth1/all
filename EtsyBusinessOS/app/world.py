@@ -25,7 +25,7 @@ TYPE_TALK = {
     "research_competitor": ("Ngecek listing kompetitor via API…", "Data kompetitor tersimpan."),
     "research_competitor_interpret": ("Membedah strategi kompetitor…", "Analisis kompetitor selesai."),
     "listing_generate": ("Menulis judul, deskripsi & 13 tag…", "Draft listing siap, tolong dicek QA."),
-    "etsy_publish": ("Upload file & gambar ke Etsy…", "Listing LIVE di Etsy! ✅"),
+    "etsy_publish": ("Upload file & gambar ke Etsy…", "Listing terkirim ke Etsy ✅"),
     "etsy_sync": ("Sinkron toko, order & ledger…", "Sinkron Etsy beres: {listings} listing, {receipts} order."),
     "asset_scan": ("Memindai folder aset (read-only)…", "Scan aset selesai."),
     "social_copy": ("Nulis caption & hashtag…", "Caption baru siap dijadwalkan."),

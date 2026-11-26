@@ -268,6 +268,13 @@ def job_publish(payload, job):
     if l["etsy_listing_id"]:
         client.update_listing(shop, etsy_id, {"title": c["title"], "description": c["description"], "tags": ",".join(c["tags"]),
                                               "price": f"{float(c['price_usd']):.2f}"})
+    target = payload.get("target") or d.get("publish_target", "draft")
+    if target == "draft":
+        url = f"https://www.etsy.com/your/shops/me/listing-editor/edit/{etsy_id}"
+        db.ex("UPDATE listings SET state='etsy_draft', url=?, updated_at=?, last_error=NULL WHERE id=?", (url, now(), listing_id))
+        audit("system", "etsy.draft_ready", "listing", listing_id, {"etsy_listing_id": etsy_id, "approval_id": appr["id"]})
+        notify("success", "Draft created on Etsy (not live)", c["title"], url)
+        return {"_state": "DONE", "etsy_listing_id": etsy_id, "url": url, "target": "draft"}
     client.update_listing(shop, etsy_id, {"state": "active"})
     # verification
     live = [x for x in client.shop_listings(shop, "active") if str(x["listing_id"]) == etsy_id]
